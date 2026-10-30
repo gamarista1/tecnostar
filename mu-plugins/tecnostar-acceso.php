@@ -221,7 +221,9 @@ add_action(
 			. 'body.login #login{width:min(100%,24rem);padding:0;margin:0}'
 			. 'body.login h1{margin:0 0 1.5rem}'
 			. 'body.login h1 a{background:url(' . esc_url( $logo ) . ') center/contain no-repeat;width:100%;height:4.5rem;margin:0;'
-			. 'animation:ts-entra .6s var(--ts-ease) both}'
+			. 'animation:ts-entra .6s var(--ts-ease) backwards;transition:transform 250ms var(--ts-ease)}'
+			. 'body.login h1 a:hover{transform:scale(1.05)}body.login h1 a:active{transform:scale(.98)}'
+			. 'body.login h1 a:focus{outline:0;box-shadow:none}body.login h1 a:focus-visible{outline:2px solid var(--ts-azul);outline-offset:4px;border-radius:.5rem}'
 			. 'body.login form{margin:0;border:0;border-radius:1.25rem;box-shadow:0 12px 40px rgb(11 57 84/.14);padding:1.75rem;background:#fff;'
 			. 'animation:ts-entra .6s var(--ts-ease) .08s both}'
 			. 'body.login label{font-weight:500;transition:color 150ms}'
@@ -244,14 +246,19 @@ add_action(
 			. '@keyframes ts-sacude{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}'
 			. '@keyframes ts-carga{to{background-position:-200% 0}}'
 			. '@media (prefers-reduced-motion:reduce){body.login h1 a,body.login form,body.login .message,body.login #login_error,body.login #loginform.is-error,body.login .button-primary.is-loading{animation:none}'
-			. 'body.login .button-primary,body.login .button.wp-hide-pw{transition:none}}'
+			. 'body.login .button-primary,body.login .button.wp-hide-pw,body.login h1 a{transition:none}}'
 			. '@media (prefers-contrast:more){body.login form{box-shadow:none;border:2px solid var(--ts-marino)}}';
 		wp_register_style( 'tecnostar-acceso', false, array(), '0.2.0' );
 		wp_enqueue_style( 'tecnostar-acceso' );
 		wp_add_inline_style( 'tecnostar-acceso', $css );
 	}
 );
-add_filter( 'login_headerurl', 'home_url' );
+add_filter(
+	'login_headerurl',
+	function () {
+		return home_url( '/' );
+	}
+);
 add_filter(
 	'login_headertext',
 	function () {

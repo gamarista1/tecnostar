@@ -255,24 +255,3 @@
 
 /* Ancla vacía para el banner de Addi (ver front-page.php). */
 .addi-anchor { display: block; height: 0; margin: 0; padding: 0; }
-
-/* Acceso de clientes (/acceso): formulario de WooCommerce "Mi cuenta" */
-.woocommerce-account .woocommerce-form-login,
-.woocommerce-account .woocommerce-form-register { max-width: 26rem; margin-inline: auto; padding: var(--space-4); background: #fff; border: 0; border-radius: var(--radius-lg, 1rem); box-shadow: 0 8px 30px rgb(11 57 84 / 0.1); }
-.woocommerce-account .woocommerce-form-row { margin-bottom: var(--space-3); }
-.woocommerce-account .woocommerce-form-row label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
-.woocommerce-account input.input-text { width: 100%; min-height: 2.75rem; padding: 0 0.875rem; border: 1px solid #c9d6dc; border-radius: 0.625rem; font: inherit; transition: border-color var(--dur-fast, 150ms), box-shadow var(--dur-fast, 150ms); }
-.woocommerce-account input.input-text:focus { outline: 0; border-color: #37409a; box-shadow: 0 0 0 3px rgb(55 64 154 / 0.2); }
-.woocommerce-account .woocommerce-form-login__submit { width: 100%; min-height: 2.75rem; border: 0; border-radius: 999px; background: #37409a; color: #fff; font: inherit; font-weight: 600; cursor: pointer; transition: transform var(--dur-press, 100ms); }
-.woocommerce-account .woocommerce-form-login__submit:active { transform: scale(0.97); }
-.woocommerce-account .woocommerce-LostPassword a { color: #37409a; }
-@media (prefers-reduced-motion: reduce) { .woocommerce-account .woocommerce-form-login__submit { transition: none; } }
-
-/* Acceso de clientes: refuerzo de especificidad sobre los botones y campos de WooCommerce */
-.woocommerce-account .woocommerce form.woocommerce-form-login input.input-text,
-.woocommerce-account .woocommerce form.woocommerce-form-register input.input-text { border: 1px solid #c9d6dc; }
-.woocommerce-account .woocommerce form .woocommerce-form-login__submit.button,
-.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button { background: #37409a; color: #fff; border: 0; border-radius: 999px; min-height: 2.75rem; padding: 0 1.5rem; font-weight: 600; }
-.woocommerce-account .woocommerce form .woocommerce-form-login__submit.button:hover,
-.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button:hover { background: #2e367f; }
-.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button { width: 100%; }

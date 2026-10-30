@@ -45,6 +45,12 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'tecnostar-base', $css . 'base.css', array( 'tecnostar-tokens' ), tecnostar_asset_ver( '/assets/css/base.css' ) );
 	wp_enqueue_style( 'tecnostar-components', $css . 'components.css', array( 'tecnostar-base' ), tecnostar_asset_ver( '/assets/css/components.css' ) );
 	wp_enqueue_script( 'tecnostar-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), tecnostar_asset_ver( '/assets/js/motion.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+
+	// Acceso de clientes: estilos y volteo solo en esa pantalla y solo para visitantes.
+	if ( function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
+		wp_enqueue_style( 'tecnostar-acceso', $css . 'acceso.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/acceso.css' ) );
+		wp_enqueue_script( 'tecnostar-acceso', get_template_directory_uri() . '/assets/js/acceso.js', array(), tecnostar_asset_ver( '/assets/js/acceso.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	}
 } );
 
 // Precarga de la tipografía para evitar el salto de texto.

@@ -102,8 +102,11 @@ export function iniciar(raiz) {
 
   // Cortina de color: la ámbar abre paso, la azul la sigue; el cambio ocurre cuando la azul cubre todo.
   function cortina(inicio) {
-    tl.fromTo(cortinas[0], { xPercent: -150 }, { xPercent: 150, duration: CORTINA, ease: 'power3.inOut' }, inicio);
-    tl.fromTo(cortinas[1], { xPercent: -150 }, { xPercent: 150, duration: CORTINA, ease: 'power3.inOut' }, inicio + 0.12);
+    cortinas.forEach((c, k) => {
+      const t = inicio + k * 0.12;
+      tl.set(c, { xPercent: -150 }, t - 0.001);
+      tl.to(c, { xPercent: 150, duration: CORTINA, ease: 'power3.inOut', immediateRender: false }, t);
+    });
   }
 
   function escena(i) {

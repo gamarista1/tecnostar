@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 function tecnostar_hero_defaults() {
 	return array(
-		'hero_title'     => 'Tecnología que sí funciona, al mejor precio',
-		'hero_text'      => 'Accesorios, conectividad y equipos para tu día a día. Envío gratis en Bogotá desde $200.000.',
+		'hero_title'     => 'Laptops, equipos gamer y accesorios con despacho inmediato en Colombia',
+		'hero_text'      => 'Tecnología que sí funciona, al mejor precio, con envío express en Bogotá y a todo el país.',
 		'hero_cta_label' => 'Ver la tienda',
 		'hero_cta_url'   => '',
 	);

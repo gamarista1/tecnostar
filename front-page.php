@@ -78,7 +78,7 @@ if ( $cats && ! is_wp_error( $cats ) ) :
 	?>
 <section class="section" aria-labelledby="cats-title">
 	<div class="container">
-		<div class="section__head"><h2 id="cats-title" data-reveal>Compra por categoría</h2></div>
+		<div class="section__head"><div><h2 id="cats-title" data-reveal>Encuentra lo que necesitas</h2><p class="section__sub" data-reveal>Computación, gaming y accesorios, ordenados para que llegues rápido a lo que buscas.</p></div></div>
 		<ul class="cats">
 			<?php foreach ( $cats as $cat ) : ?>
 				<?php $thumb = (int) get_term_meta( $cat->term_id, 'thumbnail_id', true ); ?>
@@ -102,8 +102,8 @@ if ( $cats && ! is_wp_error( $cats ) ) :
 <section class="section" aria-labelledby="new-title">
 	<div class="container">
 		<div class="section__head">
-			<h2 id="new-title" data-reveal>Lo más nuevo</h2>
-			<a href="<?php echo esc_url( $shop_url ); ?>" data-reveal>Ver todo</a>
+			<div><h2 id="new-title" data-reveal>Recién llegados</h2><p class="section__sub" data-reveal>Lo último que entró a nuestro almacén, listo para despachar hoy.</p></div>
+			<a href="<?php echo esc_url( $shop_url ); ?>" data-reveal>Ver toda la tienda</a>
 		</div>
 		<?php echo do_shortcode( '[products limit="8" columns="4" orderby="date" order="DESC"]' ); ?>
 	</div>

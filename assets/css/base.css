@@ -65,3 +65,4 @@ p { margin: 0 0 var(--space-4); }
   [data-reveal].is-in { transition: opacity var(--dur) linear; transition-delay: 0ms; }
   .btn:active { transform: none; }
 }
+.section__sub { margin: var(--space-2) 0 0; color: #3d5566; font-size: 1.0625rem; max-width: 40rem; }

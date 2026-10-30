@@ -210,3 +210,39 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-co ul.wc_payment_methods > li.wc_payment_method { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--space-3); padding: 0 0 0 var(--space-4); list-style: none; }
 .ts-co ul.wc_payment_methods > li.wc_payment_method > label { grid-column: 2; padding: var(--space-4) var(--space-4) var(--space-4) 0; }
 .ts-co ul.wc_payment_methods > li.wc_payment_method > .payment_box { grid-column: 1 / -1; padding: 0 var(--space-4) var(--space-4) 0; }
+
+/* ---- Ajustes tras prueba en móvil real ---- */
+/* Resumen: la tabla se adapta al ancho y nada se corta */
+.ts-resumen .woocommerce-checkout-review-order-table { table-layout: fixed; }
+.ts-resumen .product-thumb { width: 3.75rem; }
+.ts-resumen .product-total { width: 7.25rem; }
+.ts-resumen .product-name { overflow-wrap: anywhere; }
+.ts-resumen tfoot th { width: auto; }
+.ts-resumen tfoot td { white-space: nowrap; }
+.ts-resumen .woocommerce-checkout-review-order-table { border: 0 !important; }
+.ts-resumen .woocommerce-checkout-review-order-table th, .ts-resumen .woocommerce-checkout-review-order-table td { border-left: 0; border-right: 0; }
+@media (max-width: 59.99rem) {
+	.ts-resumen__cuerpo { transition: grid-template-rows var(--dur) var(--ease-spring), visibility 0s linear var(--dur); visibility: hidden; padding-block: 0; }
+	.ts-resumen__toggle[aria-expanded="true"] + .ts-resumen__cuerpo { visibility: visible; transition-delay: 0s; }
+	.ts-resumen__cuerpo > * { padding: 0; border: 0; }
+	.ts-resumen__toggle[aria-expanded="true"] + .ts-resumen__cuerpo { padding-bottom: var(--space-2); }
+}
+
+/* Móvil: se aprovecha el ancho de la pantalla */
+@media (max-width: 39.99rem) {
+	.ts-co { margin-inline: -0.5rem; padding-inline: 0; }
+	.ts-co__form { padding: var(--space-4) var(--space-3); border-radius: 1rem; }
+	.ts-resumen { border-radius: 1rem; }
+	.ts-resumen__toggle { padding: var(--space-3); }
+	.ts-resumen__cuerpo { padding-inline: var(--space-3); }
+}
+
+/* Medios de pago: círculo propio alineado con el texto, sin el botón nativo */
+.ts-co ul.wc_payment_methods > li.wc_payment_method { display: block; padding: 0; position: relative; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > input.input-radio { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > label { display: flex; align-items: center; gap: var(--space-3); min-height: 3.5rem; padding: var(--space-3) var(--space-4); line-height: 1.25; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > label::before { content: ""; flex: none; box-sizing: border-box; width: 1.375rem; height: 1.375rem; border: 2px solid #9fb2bd; border-radius: 50%; background: #fff; transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast); }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > input.input-radio:checked + label::before { border-color: #37409a; background: #37409a; box-shadow: inset 0 0 0 4px #fff; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > input.input-radio:focus-visible + label::before { outline: 3px solid #37409a; outline-offset: 3px; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > label img { margin-left: auto; max-height: 1.5rem; width: auto; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > .payment_box { padding: 0 var(--space-4) var(--space-4); }

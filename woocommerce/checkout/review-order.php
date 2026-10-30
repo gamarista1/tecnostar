@@ -54,7 +54,7 @@ defined( 'ABSPATH' ) || exit;
 			<td colspan="2">
 				<?php
 				if ( WC()->cart->needs_shipping() && WC()->cart->show_shipping() && WC()->session->get( 'chosen_shipping_methods' ) ) {
-					echo wp_kses_post( WC()->cart->get_cart_shipping_total() );
+					echo wp_kses_post( tecnostar_envio_texto() );
 				} else {
 					esc_html_e( 'Se calcula en el paso 2', 'tecnostar' );
 				}

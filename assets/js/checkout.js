@@ -29,6 +29,7 @@
     billing_email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Revisa tu correo, parece incompleto'; },
     billing_phone: function (v) { return /^3\d{9}$/.test(v.replace(/\D/g, '')) || 'Escribe tu celular de 10 dígitos, empieza por 3 (ej. 300 123 4567)'; },
     billing_state: function (v) { return !!v || 'Elige tu departamento'; },
+    billing_localidad: function (v) { return !!v || 'Elige tu localidad'; },
     billing_city: function (v) { return v.trim().length >= 2 || 'Escribe tu ciudad'; },
     billing_address_1: function (v) { return v.trim().length >= 5 || 'Escribe tu dirección completa'; }
   };
@@ -45,6 +46,28 @@
   function recoge() {
     var el = raiz.querySelector('.ts-envio input.shipping_method:checked, .ts-envio input.shipping_method[type="hidden"]');
     return !!el && /^ts_recoger:/.test(el.value);
+  }
+
+  // Bogotá: el departamento ya es la ciudad; se pide la localidad en lugar de la ciudad.
+  function esBogota() {
+    var s = form.querySelector('[name="billing_state"]');
+    return !!s && s.value === 'DC';
+  }
+
+  function aplicarBogota() {
+    var b = esBogota();
+    var loc = raiz.querySelector('#billing_localidad_field');
+    var ciu = raiz.querySelector('#billing_city_field');
+    if (loc) loc.classList.toggle('ts-oculto', !b);
+    if (ciu) ciu.classList.toggle('ts-oculto', b);
+    var c = form.querySelector('[name="billing_city"]');
+    if (!c) return;
+    if (b) {
+      if (c.value !== 'Bogotá D.C.') c.setAttribute('data-previo', c.value);
+      c.value = 'Bogotá D.C.';
+    } else if (c.value === 'Bogotá D.C.') {
+      c.value = c.getAttribute('data-previo') || '';
+    }
   }
 
   function aplicarRecoge() {
@@ -132,6 +155,7 @@
     if (t.value || (fila && fila.classList.contains('ts-invalid'))) validar(t);
   });
   if ($) {
+    $(form).on('change', '[name="billing_state"]', function () { aplicarBogota(); recap(); actualizarSig(); });
     $(form).on('change', 'select', function () {
       if (REGLAS[this.name]) validar(this);
     });
@@ -157,7 +181,7 @@
     llenar(r0, 'Para ' + (v('billing_first_name') + ' ' + v('billing_last_name')).trim() + ' · ' + v('billing_email') + ' · ' + v('billing_phone'), 0);
     var estado = campo('billing_state');
     var depto = estado && estado.options && estado.selectedIndex >= 0 ? estado.options[estado.selectedIndex].text : v('billing_state');
-    llenar(r1, recoge() ? 'Retiras en tienda' + (depto ? ' · ' + depto : '') : 'Entrega en ' + v('billing_address_1') + ', ' + v('billing_city') + (depto ? ', ' + depto : ''), 1);
+    llenar(r1, recoge() ? 'Retiras en tienda' + (depto ? ' · ' + depto : '') : 'Entrega en ' + v('billing_address_1') + ', ' + (esBogota() ? (v('billing_localidad') ? v('billing_localidad') + ', ' : '') + 'Bogotá' : v('billing_city') + (depto ? ', ' + depto : '')), 1);
   }
 
   function pintarNav() {
@@ -373,6 +397,7 @@
   }
 
   form.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('shipping_method')) { aplicarRecoge(); actualizarSig(); } });
+  aplicarBogota();
   aplicarRecoge();
   recap();
   pintarNav();

@@ -19,7 +19,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 
 $billing   = $checkout->get_checkout_fields( 'billing' );
 $paso1     = array( 'billing_first_name', 'billing_last_name', 'billing_id', 'billing_email', 'billing_phone' );
-$paso2     = array( 'billing_country', 'billing_state', 'billing_city', 'billing_address_1', 'billing_address_2', 'billing_postcode' );
+$paso2     = array( 'billing_country', 'billing_state', 'billing_localidad', 'billing_city', 'billing_address_1', 'billing_address_2', 'billing_postcode' );
 $extras    = array_diff( array_keys( $billing ), $paso1, $paso2 );
 $nombres   = array( 'Contacto', 'Entrega', 'Pago' );
 $campos    = function ( array $claves ) use ( $billing, $checkout ) {

@@ -10,7 +10,7 @@ if ( ! class_exists( 'WooCommerce' ) ) {
 	return;
 }
 
-/** Compra mínima (en pesos) para el envío gratis en Bogotá. Se puede ajustar con el filtro. */
+/** Compra mínima (en pesos) para el domicilio gratis en Bogotá. Se puede ajustar con el filtro. */
 function tecnostar_envio_gratis_desde() {
 	return (float) apply_filters( 'tecnostar_envio_gratis_desde', 200000 );
 }
@@ -39,9 +39,9 @@ function tecnostar_minicart_cuerpo() {
 			<p>
 				<?php
 				if ( $falta <= 0 ) {
-					echo '<strong>' . esc_html__( '¡Tienes envío gratis en Bogotá!', 'tecnostar' ) . '</strong>';
+					echo '<strong>' . esc_html__( '¡Tienes domicilio gratis en Bogotá!', 'tecnostar' ) . '</strong>';
 				} else {
-					echo wp_kses_post( sprintf( /* translators: %s: monto que falta */ __( 'Te faltan <strong>%s</strong> para el envío gratis en Bogotá', 'tecnostar' ), wc_price( $falta ) ) );
+					echo wp_kses_post( sprintf( /* translators: %s: monto que falta */ __( 'Te faltan <strong>%s</strong> para el domicilio gratis en Bogotá', 'tecnostar' ), wc_price( $falta ) ) );
 				}
 				?>
 			</p>

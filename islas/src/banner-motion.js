@@ -259,6 +259,15 @@ export function iniciar(raiz) {
   pasos.forEach((p, k) =>
     p.addEventListener('click', () => {
       tl.seek(destinos[k], false);
+      // Al retroceder, GSAP dispara las llamadas en orden inverso: se fija el estado a mano.
+      if (k === 0) {
+        marcar(-1);
+        ponerPunto(0);
+        addi.play();
+      } else {
+        ponerPunto(1);
+        addi.stop();
+      }
       aplicarPausa();
     })
   );

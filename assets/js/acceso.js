@@ -10,9 +10,21 @@
 	// Sin registro habilitado no hay nada que voltear.
 	if (!caras.registro) return;
 
+	// La tarjeta toma la altura de la cara visible (la otra puede ser más alta o más baja).
+	function medir(sinAnimar) {
+		var activa = tarjeta.classList.contains('is-flipped') ? caras.registro : caras.entrar;
+		if (sinAnimar) tarjeta.style.transition = 'none';
+		tarjeta.style.height = activa.offsetHeight + 'px';
+		if (sinAnimar) {
+			void tarjeta.offsetHeight;
+			tarjeta.style.transition = '';
+		}
+	}
+
 	function mostrar(cual, interactivo) {
 		var registro = cual === 'registro';
 		tarjeta.classList.toggle('is-flipped', registro);
+		medir(!interactivo);
 		// La cara oculta no recibe foco ni la leen los lectores de pantalla.
 		caras.entrar.toggleAttribute('inert', registro);
 		caras.entrar.setAttribute('aria-hidden', String(registro));
@@ -35,6 +47,13 @@
 		e.preventDefault();
 		mostrar(boton.getAttribute('data-flip'), true);
 	});
+
+	// Si el contenido cambia (avisos de error, tipografía que termina de cargar), la altura se reajusta sin animar.
+	if ('ResizeObserver' in window) {
+		var observador = new ResizeObserver(function () { medir(true); });
+		observador.observe(caras.entrar);
+		observador.observe(caras.registro);
+	}
 
 	window.addEventListener('hashchange', function () {
 		mostrar(location.hash === '#registro' ? 'registro' : 'entrar', false);

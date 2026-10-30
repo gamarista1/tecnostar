@@ -11,19 +11,18 @@ body.woocommerce-account:not(.logged-in) .site-main h1 {
 .acceso__card {
 	display: grid; width: min(100%, 26rem); position: relative;
 	transform-style: preserve-3d;
-	transition: transform 700ms var(--ease-spring);
+	transition: transform 700ms var(--ease-spring), height 500ms var(--ease-spring);
 }
 .acceso__card.is-flipped { transform: rotateY(180deg); }
 
 .acceso__face {
-	grid-area: 1 / 1; position: relative; overflow: hidden;
+	grid-area: 1 / 1; align-self: start; position: relative;
 	-webkit-backface-visibility: hidden; backface-visibility: hidden;
 	padding: var(--space-8) var(--space-6) var(--space-6);
 	display: flex; flex-direction: column;
 	background: #fff; border-radius: 1.5rem;
 	box-shadow: 0 1px 2px rgb(11 57 84 / 0.06), 0 16px 48px rgb(11 57 84 / 0.14);
 }
-.acceso__face::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #37409a, #ffb128); }
 .acceso__face--back { transform: rotateY(180deg); }
 
 .acceso__eyebrow { margin: 0 0 0.25rem; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #37409a; }
@@ -94,3 +93,6 @@ body.woocommerce-account:not(.logged-in) .site-main h1 {
 .woocommerce-account .woocommerce .acceso .acceso__switch { margin-top: auto; padding-top: var(--space-6); }
 .woocommerce-account .woocommerce .acceso .acceso__row { justify-content: space-between; }
 .acceso .woocommerce-privacy-policy-text p { margin: 0 0 var(--space-3); font-size: 0.8125rem; line-height: 1.45; color: #5c676d; }
+
+/* La cara que queda detrás se oculta al terminar el giro, para que su altura no estire la página. */
+.acceso__face[inert] { visibility: hidden; transition: visibility 0s linear 400ms; }

@@ -94,6 +94,36 @@ add_filter(
 	}
 );
 
+/**
+ * Wompi: al elegirlo se muestran los medios que cubre y el sello de pago seguro (con tooltip propio, sin title del navegador).
+ */
+add_filter(
+	'woocommerce_gateway_description',
+	function ( $descripcion, $id ) {
+		if ( false === stripos( (string) $id, 'wompi' ) ) {
+			return $descripcion;
+		}
+		$img   = get_template_directory_uri() . '/assets/img/pagos/';
+		$medios = array(
+			array( 'visa', 'Visa', 'Tarjetas de crédito y débito Visa' ),
+			array( 'maestro', 'Mastercard y Maestro', 'Tarjetas Mastercard y Maestro' ),
+			array( 'nequi', 'Nequi', 'Paga desde tu app de Nequi' ),
+			array( 'pse', 'PSE', 'Débito desde tu cuenta bancaria con PSE' ),
+			array( 'bancolombia', 'Bancolombia', 'Botón Bancolombia y transferencia' ),
+		);
+		$html  = '<div class="ts-pagos">';
+		$html .= '<p class="ts-pagos__seguro"><button type="button" class="ts-tip" aria-describedby="ts-tip-seguro" data-tip><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.500-7-10V6l7-3z"/><path d="M9 12l2.200 2.200L15.500 10"/></svg><span>Pago 100% seguro con Wompi</span><span class="ts-tip__globo" id="ts-tip-seguro" role="tooltip">Tus datos viajan cifrados. Wompi es la pasarela de Bancolombia: Tecnostar nunca ve ni guarda los datos de tu tarjeta.</span></button></p>';
+		$html .= '<ul class="ts-pagos__lista" aria-label="Medios de pago disponibles">';
+		foreach ( $medios as $m ) {
+			$html .= '<li><button type="button" class="ts-tip ts-tip--medio" data-tip aria-label="' . esc_attr( $m[1] ) . '"><img src="' . esc_url( $img . $m[0] . '.svg' ) . '" alt="" width="54" height="24" loading="lazy" decoding="async"><span class="ts-tip__globo" role="tooltip"><b>' . esc_html( $m[1] ) . '</b>' . esc_html( $m[2] ) . '</span></button></li>';
+		}
+		$html .= '</ul></div>';
+		return $descripcion . $html;
+	},
+	10,
+	2
+);
+
 add_action(
 	'wp_enqueue_scripts',
 	function () {

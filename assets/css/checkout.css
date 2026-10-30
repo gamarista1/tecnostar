@@ -346,3 +346,30 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-co .ts-envio li > label:has(.ts-envio__logo) { display: flex !important; flex-direction: row !important; align-items: center; gap: var(--space-3); }
 .ts-co .ts-envio li > label:has(.ts-envio__logo) .ts-envio__texto { flex: 1; }
 .ts-co .ts-in-oculto { display: none !important; }
+
+/* ---- Wompi: medios de pago y sello seguro con tooltip propio ---- */
+.ts-pagos { display: grid; gap: var(--space-3); margin-top: var(--space-3); }
+.ts-pagos p { margin: 0; }
+.ts-tip { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: help; -webkit-tap-highlight-color: transparent; }
+.ts-pagos__seguro .ts-tip { color: #3d850e; font-weight: 600; font-size: 0.875rem; }
+.ts-pagos__seguro svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ts-pagos__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ts-tip--medio { padding: 0.375rem 0.625rem; border: 1px solid #dbe5ea; border-radius: 0.625rem; background: #fff; transition: border-color var(--dur-fast), transform var(--dur-press); }
+.ts-tip--medio:hover, .ts-tip--medio.is-abierto { border-color: #37409a; }
+.ts-tip--medio:active { transform: scale(0.96); }
+.ts-tip--medio img { display: block; width: 3.375rem; height: 1.5rem; object-fit: contain; }
+.ts-tip__globo { position: absolute; bottom: calc(100% + 0.625rem); left: 50%; z-index: 20; width: max-content; max-width: min(16rem, 70vw); padding: 0.625rem 0.75rem; border-radius: 0.75rem; background: #0b3954; color: #fff; font-size: 0.8125rem; font-weight: 400; line-height: 1.4; text-align: left; box-shadow: 0 0.5rem 1.5rem rgb(11 57 84 / 0.25); opacity: 0; transform: translate(-50%, 0.375rem) scale(0.96); transform-origin: 50% 100%; pointer-events: none; transition: opacity 160ms ease, transform 200ms var(--ease-spring); }
+.ts-tip__globo b { display: block; margin-bottom: 0.125rem; color: #ffb128; font-weight: 600; }
+.ts-tip__globo::after { content: ""; position: absolute; top: 100%; left: 50%; width: 0.625rem; height: 0.625rem; background: inherit; transform: translate(-50%, -50%) rotate(45deg); border-radius: 0.125rem; }
+.ts-pagos__seguro .ts-tip__globo { left: 0; transform: translate(0, 0.375rem) scale(0.96); transform-origin: 1.5rem 100%; }
+.ts-pagos__seguro .ts-tip__globo::after { left: 1.5rem; }
+.ts-pagos__lista li:nth-last-child(-n+2) .ts-tip__globo { left: auto; right: 0; transform: translate(0, 0.375rem) scale(0.96); transform-origin: calc(100% - 1.5rem) 100%; }
+.ts-pagos__lista li:nth-last-child(-n+2) .ts-tip__globo::after { left: auto; right: 1rem; transform: translate(0, -50%) rotate(45deg); }
+@media (hover: hover) {
+  .ts-tip:hover > .ts-tip__globo { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  .ts-pagos__seguro .ts-tip:hover > .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip:hover > .ts-tip__globo { transform: translate(0, 0) scale(1); }
+}
+.ts-tip:focus-visible { outline: 3px solid #37409a; outline-offset: 3px; border-radius: 0.5rem; }
+.ts-tip:focus-visible > .ts-tip__globo, .ts-tip.is-abierto > .ts-tip__globo { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.ts-pagos__seguro .ts-tip:focus-visible > .ts-tip__globo, .ts-pagos__seguro .ts-tip.is-abierto > .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip:focus-visible > .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip.is-abierto > .ts-tip__globo { transform: translate(0, 0) scale(1); }
+@media (prefers-reduced-motion: reduce) { .ts-tip__globo { transition: opacity 120ms ease; transform: translate(-50%, 0); } .ts-pagos__seguro .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip__globo { transform: none; } }

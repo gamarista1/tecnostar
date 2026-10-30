@@ -505,4 +505,14 @@
     modal.addEventListener('cancel', function (e) { e.preventDefault(); cerrar(); });
   }
 
+  // Tooltips propios (Wompi): toque o teclado los abren; tocar fuera o Escape los cierra.
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-tip]');
+    document.querySelectorAll('[data-tip].is-abierto').forEach(function (n) { if (n !== t) n.classList.remove('is-abierto'); });
+    if (t) t.classList.toggle('is-abierto');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('[data-tip].is-abierto').forEach(function (n) { n.classList.remove('is-abierto'); });
+  });
+
 })();

@@ -5,7 +5,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TECNOSTAR_VERSION', '0.3.0' );
+define( 'TECNOSTAR_VERSION', '0.4.0' );
 
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/woocommerce.php';
@@ -45,6 +45,19 @@ add_action( 'wp_head', function () {
 }, 1 );
 
 /**
+ * Contador del carrito en la cabecera (se actualiza solo vía fragmentos de WooCommerce).
+ */
+function tecnostar_cart_count_html() {
+	$count = function_exists( 'WC' ) && WC()->cart ? (int) WC()->cart->get_cart_contents_count() : 0;
+	return sprintf( '<span class="cart-count" data-count="%1$d">%2$s</span>', $count, $count ? esc_html( $count ) : '' );
+}
+
+add_filter( 'woocommerce_add_to_cart_fragments', function ( $fragments ) {
+	$fragments['span.cart-count'] = tecnostar_cart_count_html();
+	return $fragments;
+} );
+
+/**
  * Menú de respaldo: si el equipo aún no definió "Menú principal", se muestran las categorías.
  */
 function tecnostar_fallback_nav() {
@@ -53,7 +66,7 @@ function tecnostar_fallback_nav() {
 			'taxonomy'   => 'product_cat',
 			'hide_empty' => true,
 			'parent'     => 0,
-			'number'     => 6,
+			'number'     => 8,
 			'exclude'    => (int) get_option( 'default_product_cat' ),
 		)
 	);

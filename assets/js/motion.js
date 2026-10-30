@@ -17,6 +17,26 @@
     update();
   }
 
+  // Menú móvil: botón accesible que despliega el panel.
+  var toggle = document.querySelector('[data-nav-toggle]');
+  var panel = document.querySelector('[data-nav-panel]');
+  if (toggle && panel) {
+    var setOpen = function (open) {
+      panel.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    };
+    toggle.addEventListener('click', function () {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    panel.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setOpen(false);
+    });
+  }
+
   var items = document.querySelectorAll('[data-reveal]');
   if (!items.length) return;
   if (!('IntersectionObserver' in window)) {

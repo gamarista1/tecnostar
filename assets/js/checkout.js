@@ -315,18 +315,35 @@
         }, reducido ? 0 : 380);
         return;
       }
-      var li = raiz.querySelector('.woocommerce-error li[data-id]');
-      var destino = 2;
-      if (li) {
-        var el = form.querySelector('#' + li.getAttribute('data-id'));
-        var panel = el && el.closest('.ts-paso');
-        if (panel) {
-          destino = paneles.indexOf(panel);
-          if (destino !== actual) ir(destino);
-          if (REGLAS[el.name]) marcar(el, li.textContent.trim());
-          el.focus({ preventScroll: true });
+      // Cualquier otro error: el cursor va al primer campo que falta, en el paso donde está.
+      var el = null;
+      [].slice.call(raiz.querySelectorAll('.woocommerce-error li[data-id]')).some(function (li) {
+        var id = li.getAttribute('data-id');
+        var c = form.querySelector('#' + id) || form.querySelector('#' + id.replace(/_field$/, '')) || form.querySelector('[name="' + id.replace(/_field$/, '') + '"]');
+        if (!c) return false;
+        el = c;
+        if (REGLAS[c.name]) marcar(c, li.textContent.trim());
+        return true;
+      });
+      if (!el) {
+        for (var i = 0; i < 2 && !el; i++) {
+          var falla = camposRegla(paneles[i]).filter(function (c) { return REGLAS[c.name](c.value || '') !== true; })[0];
+          if (falla) { el = falla; marcar(falla, REGLAS[falla.name](falla.value || '')); }
         }
       }
+      if (!el) return;
+      var panel = el.closest('.ts-paso');
+      var destino = panel ? paneles.indexOf(panel) : actual;
+      if (destino !== actual) ir(destino);
+      setTimeout(function () {
+        if (el.tagName === 'SELECT' && $ && $.fn.select2 && $(el).data('select2')) {
+          el.closest('.form-row').scrollIntoView({ block: 'center', behavior: reducido ? 'auto' : 'smooth' });
+          $(el).select2('open');
+          return;
+        }
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ block: 'center', behavior: reducido ? 'auto' : 'smooth' });
+      }, destino !== actual || !reducido ? 380 : 0);
     });
   }
 

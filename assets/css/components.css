@@ -101,3 +101,61 @@
   .site-header .container { flex-direction: column; align-items: flex-start; padding-block: var(--space-3); gap: var(--space-2); }
   .nav { justify-content: flex-start; }
 }
+
+/* Migas de pan */
+.woocommerce-breadcrumb { font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: var(--space-4); }
+.woocommerce-breadcrumb a { color: var(--color-text-muted); text-decoration: none; }
+.woocommerce-breadcrumb a:hover { color: var(--color-primary); }
+
+/* Barra de la tienda: orden y resultados */
+.woocommerce .woocommerce-result-count { margin: 0 0 var(--space-4); color: var(--color-text-muted); font-size: 0.9375rem; }
+.woocommerce .woocommerce-ordering { margin: 0 0 var(--space-4); }
+.woocommerce .woocommerce-ordering select, .woocommerce .quantity .qty, .woocommerce div.product form.cart .variations select {
+  min-height: 2.75rem; padding: 0 var(--space-3); border: 1px solid #c9d3d8; border-radius: var(--radius-sm);
+  background: #fff; font: inherit; color: var(--color-text);
+}
+.woocommerce nav.woocommerce-pagination ul { border: 0; display: flex; gap: var(--space-2); justify-content: center; }
+.woocommerce nav.woocommerce-pagination ul li { border: 0; }
+.woocommerce nav.woocommerce-pagination ul li a, .woocommerce nav.woocommerce-pagination ul li span {
+  min-width: 2.5rem; min-height: 2.5rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 0;
+}
+.woocommerce nav.woocommerce-pagination ul li span.current { background: var(--color-primary); color: #fff; }
+
+/* Ficha de producto */
+.woocommerce div.product { display: grid; gap: var(--space-8); grid-template-columns: minmax(0, 1fr); align-items: start; }
+.woocommerce div.product div.images, .woocommerce div.product div.summary { float: none; width: auto; margin: 0; }
+.woocommerce div.product div.images img { border-radius: var(--radius); }
+.woocommerce div.product .woocommerce-tabs, .woocommerce div.product .related, .woocommerce div.product .upsells { grid-column: 1 / -1; }
+.woocommerce div.product .product_title { font-size: clamp(1.75rem, 3.4vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; }
+.woocommerce div.product p.price, .woocommerce div.product span.price { color: var(--color-primary); font-size: 1.75rem; font-weight: 700; letter-spacing: -0.01em; margin: var(--space-3) 0; }
+.woocommerce div.product p.price del { color: var(--color-text-muted); font-size: 1.125rem; font-weight: 400; }
+.woocommerce div.product p.price ins { text-decoration: none; }
+.woocommerce div.product form.cart { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-6) 0; }
+.woocommerce div.product form.cart .variations { width: 100%; margin: 0; }
+.woocommerce div.product form.cart .variations th, .woocommerce div.product form.cart .variations td { display: block; padding: 0 0 var(--space-2); text-align: left; }
+.woocommerce div.product form.cart .single_variation_wrap { width: 100%; }
+.woocommerce div.product form.cart .woocommerce-variation-add-to-cart { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.woocommerce div.product form.cart .single_add_to_cart_button {
+  flex: 1 1 14rem; min-height: 3.25rem; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--color-accent); color: var(--color-primary-dark); font: 700 1.0625rem/1 var(--font-sans); padding: 0 var(--space-8);
+  transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-spring);
+}
+.woocommerce div.product form.cart .single_add_to_cart_button:hover { background: var(--color-accent); color: var(--color-primary-dark); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.woocommerce div.product form.cart .single_add_to_cart_button:active { transform: scale(0.97); transition-duration: var(--dur-press); }
+.woocommerce div.product form.cart .single_add_to_cart_button.disabled { opacity: 0.5; cursor: not-allowed; }
+.trust { list-style: none; margin: var(--space-6) 0 0; padding: var(--space-4); border-radius: var(--radius); background: var(--color-surface); display: grid; gap: var(--space-2); font-size: 0.9375rem; color: var(--color-text-muted); }
+.trust strong { color: var(--color-primary-dark); }
+
+/* Pestañas */
+.woocommerce div.product .woocommerce-tabs ul.tabs { padding: 0; margin: 0 0 var(--space-4); display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.woocommerce div.product .woocommerce-tabs ul.tabs::before, .woocommerce div.product .woocommerce-tabs ul.tabs li::before, .woocommerce div.product .woocommerce-tabs ul.tabs li::after { display: none; }
+.woocommerce div.product .woocommerce-tabs ul.tabs li { border: 0; background: var(--color-surface); border-radius: 999px; margin: 0; padding: 0; }
+.woocommerce div.product .woocommerce-tabs ul.tabs li a { padding: var(--space-2) var(--space-4); color: var(--color-primary-dark); font-weight: 600; }
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active { background: var(--color-primary); }
+.woocommerce div.product .woocommerce-tabs ul.tabs li.active a { color: #fff; }
+.woocommerce div.product .related > h2, .woocommerce div.product .upsells > h2 { margin-bottom: var(--space-4); }
+
+@media (min-width: 52rem) {
+  .woocommerce div.product { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+  .woocommerce div.product div.summary { position: sticky; top: 5.5rem; }
+}

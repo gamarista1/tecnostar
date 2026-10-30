@@ -5,9 +5,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'TECNOSTAR_VERSION', '0.2.0' );
+define( 'TECNOSTAR_VERSION', '0.3.0' );
 
 require_once get_template_directory() . '/inc/customizer.php';
+require_once get_template_directory() . '/inc/woocommerce.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'tecnostar', get_template_directory() . '/languages' );

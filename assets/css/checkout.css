@@ -1,0 +1,188 @@
+/* Pago en 3 pasos (solo en la pantalla de pago). Paleta y tipografía de la marca; movimiento con transform y opacidad. */
+
+.ts-co { --co-borde: #cdd8df; --co-error: #b3261e; max-width: var(--container, 75rem); margin: 0 auto; padding: var(--space-4) var(--space-4) var(--space-12); font-family: var(--font-sans); color: #222; }
+
+/* ---- Indicador de pasos ---- */
+.ts-co__pasos { display: flex; list-style: none; margin: 0 0 var(--space-6); padding: 0; }
+.ts-co__paso { flex: 1 1 0; position: relative; }
+.ts-co__paso::before { content: ""; position: absolute; top: 1.125rem; left: calc(-50% + 1.625rem); right: calc(50% + 1.625rem); height: 2px; background: linear-gradient(#37409a, #37409a) left / 0% 100% no-repeat, #d6e3ea; transition: background-size 500ms var(--ease-spring); }
+.ts-co__paso:first-child::before { display: none; }
+.ts-co__paso.is-hecho::before, .ts-co__paso.is-actual::before { background-size: 100% 100%, auto; }
+.ts-co__paso-btn { width: 100%; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: 0; border: 0; background: none; font: inherit; color: #5c676d; cursor: default; }
+.ts-co__paso-btn:not(:disabled) { cursor: pointer; }
+.ts-co__num { position: relative; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 2px solid #cdd8df; background: #fff; font-weight: 600; font-size: 0.9375rem; transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform var(--dur) var(--ease-spring); }
+.ts-co__ok { position: absolute; inset: 0.4rem; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 26; stroke-dashoffset: 26; transition: stroke-dashoffset 400ms var(--ease-spring) 100ms; }
+.ts-co__num-n { transition: opacity var(--dur-fast); }
+.is-actual .ts-co__num { background: #37409a; border-color: #37409a; color: #fff; box-shadow: 0 0 0 4px rgb(255 177 40 / 0.45); transform: scale(1.06); }
+.is-hecho .ts-co__num { background: #3d850e; border-color: #3d850e; color: #fff; }
+.is-hecho .ts-co__ok { stroke-dashoffset: 0; }
+.is-hecho .ts-co__num-n { opacity: 0; }
+.ts-co__nombre { font-size: 0.8125rem; font-weight: 600; }
+.is-actual .ts-co__nombre, .is-hecho .ts-co__nombre { color: #0b3954; }
+.ts-co__paso-btn:not(:disabled):active .ts-co__num { transform: scale(0.94); transition-duration: var(--dur-press); }
+.ts-co__paso-btn:focus-visible { outline: 2px solid #37409a; outline-offset: 4px; border-radius: 0.5rem; }
+
+/* ---- Estructura ---- */
+.ts-co__grid { display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); align-items: start; }
+.ts-co__form { background: #fff; border: 1px solid #e1ebf0; border-radius: 1.25rem; padding: var(--space-4); position: relative; }
+.ts-resumen { order: -1; }
+@media (min-width: 40rem) { .ts-co__form { padding: var(--space-8); } }
+@media (min-width: 60rem) {
+	.ts-co__grid { grid-template-columns: minmax(0, 1fr) 24rem; gap: var(--space-8); }
+	.ts-resumen { order: 0; position: sticky; top: 6rem; }
+}
+
+/* Sin JavaScript se ven los tres pasos seguidos; con JavaScript, uno a la vez */
+html:not(.no-js) .ts-paso { display: none; }
+html:not(.no-js) .ts-paso.is-activo { display: block; }
+html.no-js .ts-co__pasos, html.no-js [data-sig], html.no-js [data-atras], html.no-js .ts-recap { display: none; }
+.ts-paso__titulo { margin: 0 0 var(--space-2); font-size: 1.5rem; line-height: 1.15; letter-spacing: -0.02em; color: #0b3954; outline: none; }
+.ts-paso__sub { margin: 0 0 var(--space-6); color: #3d5566; }
+.ts-subtitulo { margin: var(--space-6) 0 var(--space-3); font-size: 1.0625rem; color: #0b3954; }
+.ts-recap { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin: 0 0 var(--space-6); padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); background: #ecf7fb; font-size: 0.875rem; color: #0b3954; }
+.ts-recap button { padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: #37409a; text-decoration: underline; cursor: pointer; }
+.ts-recap:empty { display: none; }
+
+/* ---- Campos ---- */
+.ts-campos { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 40rem) {
+	.ts-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.ts-campos #billing_email_field, .ts-campos #billing_address_1_field, .ts-campos #billing_address_2_field { grid-column: 1 / -1; }
+}
+#billing_country_field, #billing_postcode_field, .ts-co .shipping_address, #ship-to-different-address { display: none !important; }
+.ts-co .form-row { margin: 0; padding: 0; float: none; width: auto; position: relative; }
+.ts-co .form-row label { display: block; margin: 0 0 0.375rem; font-size: 0.875rem; font-weight: 600; color: #0b3954; }
+.ts-co .form-row .required { display: none; }
+.ts-co .form-row .optional { font-weight: 400; color: #5c676d; }
+.ts-co .input-text, .ts-co select, .ts-co textarea {
+	width: 100%; height: 3.25rem; padding: 0 var(--space-4); border: 1.5px solid var(--co-borde); border-radius: 0.75rem; background: #fff; font: inherit; font-size: 1rem; color: #222; box-sizing: border-box;
+	transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.ts-co textarea { height: auto; min-height: 5.5rem; padding: var(--space-3) var(--space-4); resize: vertical; }
+.ts-co .input-text:hover, .ts-co select:hover { border-color: #9fb2bd; }
+.ts-co .input-text:focus, .ts-co select:focus, .ts-co textarea:focus, .ts-co .select2-container--open .select2-selection { outline: none; border-color: #37409a; box-shadow: 0 0 0 4px rgb(55 64 154 / 0.16); }
+.ts-co .input-text::placeholder, .ts-co textarea::placeholder { color: #8d9aa2; }
+.ts-co .select2-container { width: 100% !important; }
+.ts-co .select2-container .select2-selection--single { height: 3.25rem; display: flex; align-items: center; border: 1.5px solid var(--co-borde); border-radius: 0.75rem; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.ts-co .select2-container .select2-selection__rendered { padding-left: var(--space-4); line-height: 1.2; color: #222; }
+.ts-co .select2-container .select2-selection__arrow { height: 100%; right: 0.5rem; }
+.select2-dropdown { border: 1.5px solid #cdd8df !important; border-radius: 0.75rem !important; overflow: hidden; box-shadow: 0 12px 32px rgb(11 57 84 / 0.16); font-family: var(--font-sans); }
+.select2-results__option--highlighted { background: #37409a !important; }
+
+/* Estados de validación */
+.ts-valid .input-text, .ts-valid .select2-selection--single { border-color: #3d850e; }
+.ts-valid .input-text:not(textarea) { padding-right: 2.75rem; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233d850e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat right 1rem center / 1.125rem; }
+.ts-invalid .input-text, .ts-invalid .select2-selection--single { border-color: var(--co-error); animation: ts-sacudida 360ms; }
+.ts-error { display: block; margin-top: 0.375rem; font-size: 0.8125rem; color: var(--co-error); animation: ts-sube 240ms var(--ease-spring); }
+
+/* ---- Casillas ---- */
+.ts-co input[type="checkbox"], .ts-co input[type="radio"] { accent-color: #37409a; width: 1.125rem; height: 1.125rem; margin: 0; flex: none; }
+.ts-co .checkbox, .ts-co .woocommerce-form__label-for-checkbox { display: flex !important; align-items: flex-start; gap: var(--space-3); font-weight: 400 !important; cursor: pointer; }
+.ts-cuenta { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid #e1ebf0; }
+
+/* ---- Formas de entrega ---- */
+.ts-envio__tabla, .ts-envio__tabla tbody, .ts-envio__tabla tr, .ts-envio__tabla th, .ts-envio__tabla td { display: block; padding: 0; border: 0; }
+.ts-envio__tabla th, .ts-envio__tabla .woocommerce-shipping-destination, .ts-envio__tabla .shipping-calculator-button, .ts-envio__tabla .shipping-calculator-form { display: none; }
+.ts-envio ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.ts-envio li { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); border: 1.5px solid var(--co-borde); border-radius: 1rem; cursor: pointer; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-press); }
+.ts-envio li label { flex: 1; margin: 0; font-weight: 600; color: #0b3954; cursor: pointer; display: flex; justify-content: space-between; gap: var(--space-3); }
+.ts-envio li:hover { border-color: #9fb2bd; }
+.ts-envio li:active { transform: scale(0.99); }
+.ts-envio li:has(input:checked) { border-color: #37409a; background: #f6f8ff; box-shadow: 0 0 0 3px rgb(55 64 154 / 0.12); }
+.ts-envio__vacio { margin: 0; padding: var(--space-4); border-radius: 1rem; background: #ecf7fb; color: #3d5566; }
+
+/* ---- Medios de pago ---- */
+.ts-co .wc_payment_methods { list-style: none; margin: 0 0 var(--space-6); padding: 0; display: grid; gap: var(--space-3); }
+.ts-co .wc_payment_method { border: 1.5px solid var(--co-borde); border-radius: 1rem; overflow: hidden; transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-press); }
+.ts-co .wc_payment_method:hover { border-color: #9fb2bd; }
+.ts-co .wc_payment_method:active { transform: scale(0.995); }
+.ts-co .wc_payment_method:has(input:checked) { border-color: #37409a; background: #f6f8ff; box-shadow: 0 0 0 3px rgb(55 64 154 / 0.12); }
+.ts-co .wc_payment_method > label { display: flex; align-items: center; gap: var(--space-3); margin: 0; padding: var(--space-4); cursor: pointer; font-weight: 600; color: #0b3954; }
+.ts-co .wc_payment_method label img { max-height: 1.5rem; width: auto; margin-left: auto; }
+.ts-co .payment_box { margin: 0; padding: 0 var(--space-4) var(--space-4) calc(var(--space-4) + 1.125rem + var(--space-3)); color: #3d5566; font-size: 0.9375rem; background: transparent; animation: ts-sube 280ms var(--ease-spring); }
+.ts-co .payment_box::before { display: none; }
+.ts-co .payment_box p { margin: 0 0 var(--space-2); }
+.ts-co .woocommerce-terms-and-conditions-wrapper { margin: 0 0 var(--space-4); font-size: 0.875rem; color: #3d5566; }
+.ts-co .woocommerce-privacy-policy-text p { margin: 0 0 var(--space-3); }
+.ts-co #place_order { width: 100%; height: 3.5rem; border: 0; border-radius: 999px; background: #ffb128; color: #0b3954; font: inherit; font-size: 1.0625rem; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgb(255 177 40 / 0.4); transition: transform var(--dur-press) ease-out, box-shadow var(--dur-fast), filter var(--dur-fast); }
+.ts-co #place_order:hover { filter: brightness(1.04); box-shadow: 0 10px 24px rgb(255 177 40 / 0.5); }
+.ts-co #place_order:active { transform: scale(0.98); }
+.ts-co #place_order:focus-visible { outline: 3px solid #37409a; outline-offset: 3px; }
+.ts-co form.processing #place_order { color: transparent; position: relative; pointer-events: none; }
+.ts-co form.processing #place_order::after { content: ""; position: absolute; inset: 0; margin: auto; width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 3px solid rgb(11 57 84 / 0.25); border-top-color: #0b3954; animation: ts-gira 700ms linear infinite; }
+.ts-co .blockUI.blockOverlay { background: rgb(255 255 255 / 0.6) !important; border-radius: 1rem; }
+
+/* ---- Botones de los pasos ---- */
+.ts-paso__acciones { display: flex; gap: var(--space-3); justify-content: space-between; margin-top: var(--space-8); }
+.ts-paso__acciones--pago { margin-top: var(--space-6); justify-content: flex-start; }
+.ts-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: 3.25rem; padding: 0 var(--space-8); border: 0; border-radius: 999px; font: inherit; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform var(--dur-press) ease-out, background var(--dur-fast), box-shadow var(--dur-fast); }
+.ts-btn:active { transform: scale(0.97); }
+.ts-btn:focus-visible { outline: 3px solid #37409a; outline-offset: 3px; }
+.ts-btn--primario { margin-left: auto; background: #37409a; color: #fff; box-shadow: 0 8px 20px rgb(55 64 154 / 0.28); }
+.ts-btn--primario::after { content: ""; width: 0.5rem; height: 0.5rem; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); transition: transform var(--dur-fast) var(--ease-spring); }
+.ts-btn--primario:hover { background: #2f3787; }
+.ts-btn--primario:hover::after { transform: translateX(3px) rotate(45deg); }
+.ts-btn--suave { background: #ecf7fb; color: #0b3954; padding: 0 var(--space-6); }
+.ts-btn--suave:hover { background: #dcedf4; }
+@media (max-width: 39.99rem) {
+	.ts-paso__acciones { position: sticky; bottom: 0; margin-inline: calc(var(--space-4) * -1); padding: var(--space-3) var(--space-4); background: linear-gradient(rgb(255 255 255 / 0), #fff 28%); }
+	.ts-paso__acciones--pago { position: static; background: none; padding: 0; margin-inline: 0; }
+	.ts-btn--primario { flex: 1; }
+}
+
+/* ---- Resumen del pedido ---- */
+.ts-resumen { background: #ecf7fb; border-radius: 1.25rem; overflow: hidden; }
+.ts-resumen__toggle { width: 100%; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); border: 0; background: none; font: inherit; font-weight: 600; color: #0b3954; cursor: pointer; text-align: left; }
+.ts-resumen__toggle .ts-resumen__total { margin-left: auto; font-weight: 700; }
+.ts-resumen__toggle svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-spring); }
+.ts-resumen__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ts-resumen__cuerpo { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur) var(--ease-spring); }
+.ts-resumen__cuerpo > * { min-height: 0; overflow: hidden; }
+.ts-resumen__toggle[aria-expanded="true"] + .ts-resumen__cuerpo { grid-template-rows: 1fr; }
+.ts-resumen__titulo { display: none; margin: 0; font-size: 1.25rem; color: #0b3954; }
+.ts-resumen .woocommerce-checkout-review-order-table { width: calc(100% - var(--space-8)); margin: 0 var(--space-4) var(--space-4); border-collapse: collapse; background: none; border: 0; }
+.ts-resumen td, .ts-resumen th { padding: var(--space-2) 0; border: 0; text-align: left; vertical-align: middle; font-size: 0.9375rem; background: none; }
+.ts-resumen tfoot td { text-align: right; }
+.ts-resumen .cart_item td { padding: var(--space-3) 0; border-bottom: 1px solid rgb(11 57 84 / 0.1); }
+.ts-resumen .product-thumb { position: relative; width: 3.75rem; padding-right: var(--space-3); }
+.ts-resumen .product-thumb img { display: block; width: 3.25rem; height: 3.25rem; object-fit: cover; border-radius: 0.625rem; background: #fff; }
+.ts-resumen .product-qty { position: absolute; top: 0.25rem; left: 2.5rem; min-width: 1.25rem; height: 1.25rem; padding: 0 0.25rem; border-radius: 999px; background: #37409a; color: #fff; font-size: 0.75rem; font-weight: 600; display: grid; place-items: center; box-sizing: border-box; }
+.ts-resumen .product-name { color: #0b3954; font-weight: 500; line-height: 1.25; }
+.ts-resumen .product-total { text-align: right; font-weight: 600; white-space: nowrap; }
+.ts-resumen tfoot th { font-weight: 500; color: #3d5566; }
+.ts-resumen .order-total th, .ts-resumen .order-total td { padding-top: var(--space-4); border-top: 1px solid rgb(11 57 84 / 0.18); font-size: 1.25rem; font-weight: 700; color: #0b3954; }
+.ts-tick { animation: ts-tick 600ms var(--ease-spring); }
+@media (min-width: 60rem) {
+	.ts-resumen { padding-top: var(--space-4); }
+	.ts-resumen__toggle { display: none; }
+	.ts-resumen__titulo { display: block; padding: 0 var(--space-4) var(--space-3); }
+	.ts-resumen__cuerpo { display: block; }
+	.ts-resumen__cuerpo > * { overflow: visible; }
+}
+
+/* ---- Avisos y cupón de WooCommerce con la marca ---- */
+.ts-co .woocommerce-NoticeGroup, .woocommerce-notices-wrapper { margin: 0 0 var(--space-4); }
+.ts-co .woocommerce-error, .ts-co .woocommerce-message, .ts-co .woocommerce-info { list-style: none; margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); border: 0; border-left: 4px solid #37409a; border-radius: var(--radius-sm); background: #ecf7fb; color: #0b3954; animation: ts-sube 280ms var(--ease-spring); }
+.ts-co .woocommerce-error { border-left-color: var(--co-error); background: #fdecea; color: #7a1a14; }
+.ts-co .woocommerce-error::before, .ts-co .woocommerce-message::before, .ts-co .woocommerce-info::before { display: none; }
+.ts-co .woocommerce-info a, .ts-co .woocommerce-message a { font-weight: 600; color: #37409a; }
+.woocommerce-form-coupon-toggle { max-width: var(--container, 75rem); margin: 0 auto; padding-inline: var(--space-4); }
+.woocommerce-form-coupon-toggle .woocommerce-info { margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); border: 0; border-left: 4px solid #ffb128; border-radius: var(--radius-sm); background: #fff7e4; color: #0b3954; }
+.woocommerce-form-coupon-toggle .woocommerce-info::before { display: none; }
+.woocommerce-form-coupon-toggle .woocommerce-info a { font-weight: 600; color: #37409a; }
+form.checkout_coupon { max-width: var(--container, 75rem); margin: 0 auto var(--space-4); padding: var(--space-4); border: 1px dashed #cdd8df; border-radius: var(--radius); }
+form.checkout_coupon .input-text { height: 3rem; padding: 0 var(--space-4); border: 1.5px solid #cdd8df; border-radius: 0.75rem; font: inherit; }
+form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 0; border-radius: 999px; background: #37409a; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+
+/* ---- Movimiento ---- */
+@keyframes ts-sube { from { opacity: 0; transform: translateY(8px); } }
+@keyframes ts-sacudida { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+@keyframes ts-tick { 40% { transform: scale(1.06); color: #37409a; } }
+@keyframes ts-gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+	.ts-co *, .ts-co *::before, .ts-co *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+	.ts-invalid .input-text { animation: none; }
+}
+@media (prefers-contrast: more) {
+	.ts-co { --co-borde: #5c676d; }
+}

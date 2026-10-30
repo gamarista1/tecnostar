@@ -246,3 +246,7 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-co ul.wc_payment_methods > li.wc_payment_method > input.input-radio:focus-visible + label::before { outline: 3px solid #37409a; outline-offset: 3px; }
 .ts-co ul.wc_payment_methods > li.wc_payment_method > label img { margin-left: auto; max-height: 1.5rem; width: auto; }
 .ts-co ul.wc_payment_methods > li.wc_payment_method > .payment_box { padding: 0 var(--space-4) var(--space-4); }
+@media (max-width: 59.99rem) {
+	.ts-resumen__cuerpo { display: block; max-height: 0; overflow: hidden; transition: max-height var(--dur) var(--ease-spring), visibility 0s linear var(--dur); }
+	.ts-resumen__toggle[aria-expanded="true"] + .ts-resumen__cuerpo { max-height: 60rem; }
+}

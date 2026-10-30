@@ -337,3 +337,9 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 @keyframes ts-mapa-sale { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
 @keyframes ts-mapa-velo { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .ts-mapa, .ts-mapa::backdrop, .ts-mapa.is-cerrando, .ts-mapa.is-cerrando::backdrop { animation: none; } }
+
+/* Recoger en tienda: sin dirección ni notas */
+.ts-oculto { display: none !important; }
+.ts-envio .ts-envio__logo { flex: none; width: 3rem; height: 3rem; border-radius: 0.75rem; object-fit: cover; background: #fff; }
+.ts-envio .ts-envio__texto { display: grid; gap: 0.125rem; min-width: 0; }
+.ts-envio li label:has(.ts-envio__logo) { display: flex; align-items: center; gap: var(--space-3); }

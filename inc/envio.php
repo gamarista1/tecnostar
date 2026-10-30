@@ -109,3 +109,83 @@ add_action(
 		<?php
 	}
 );
+
+/** Transportadoras para el resto del país (fuera de Bogotá). Se ajusta con el filtro `tecnostar_transportadoras`. */
+function tecnostar_transportadoras() {
+	return apply_filters(
+		'tecnostar_transportadoras',
+		array(
+			'servientrega'    => array(
+				'nombre' => 'Servientrega',
+				'logo'   => 'servientrega.webp',
+				'costo'  => 0,
+				'nota'   => 'Flete por cobrar: lo pagas a la transportadora al recibir',
+			),
+			'interrapidisimo' => array(
+				'nombre' => 'Inter Rapidísimo',
+				'logo'   => 'interrapidisimo.webp',
+				'costo'  => 0,
+				'nota'   => 'Flete por cobrar: lo pagas a la transportadora al recibir',
+			),
+		)
+	);
+}
+
+// Fuera de Distrito Capital el cliente elige transportadora.
+add_filter(
+	'woocommerce_package_rates',
+	function ( $rates, $package ) {
+		$estado = isset( $package['destination']['state'] ) ? $package['destination']['state'] : '';
+		if ( '' === $estado || 'DC' === $estado ) {
+			return $rates;
+		}
+		foreach ( tecnostar_transportadoras() as $slug => $t ) {
+			$id           = 'ts_transportadora:' . $slug;
+			$rates[ $id ] = new WC_Shipping_Rate( $id, $t['nombre'], (float) $t['costo'], array(), 'ts_transportadora' );
+		}
+		return $rates;
+	},
+	99,
+	2
+);
+
+add_filter(
+	'woocommerce_cart_shipping_method_full_label',
+	function ( $label, $method ) {
+		if ( 0 !== strpos( $method->get_id(), 'ts_transportadora:' ) ) {
+			return $label;
+		}
+		$slug = substr( $method->get_id(), strlen( 'ts_transportadora:' ) );
+		$lista = tecnostar_transportadoras();
+		if ( ! isset( $lista[ $slug ] ) ) {
+			return $label;
+		}
+		$t    = $lista[ $slug ];
+		$logo = get_template_directory_uri() . '/assets/img/' . $t['logo'];
+		return '<img class="ts-envio__logo" src="' . esc_url( $logo ) . '" width="48" height="48" alt="" loading="lazy" /><span class="ts-envio__texto"><span class="ts-envio__nombre">' . esc_html( $t['nombre'] ) . '</span>' . ( $t['nota'] ? '<small class="ts-envio__sub">' . esc_html( $t['nota'] ) . '</small>' : '' ) . '</span>';
+	},
+	10,
+	2
+);
+
+// Si el cliente recoge en tienda, la dirección no es obligatoria.
+add_filter(
+	'woocommerce_checkout_fields',
+	function ( $fields ) {
+		$esta_enviando = isset( $_GET['wc-ajax'] ) && 'checkout' === $_GET['wc-ajax']; // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $esta_enviando || empty( $_POST['shipping_method'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			return $fields;
+		}
+		$elegido = (array) wp_unslash( $_POST['shipping_method'] ); // phpcs:ignore WordPress.Security.NonceVerification
+		$primero = reset( $elegido );
+		if ( is_string( $primero ) && 0 === strpos( $primero, 'ts_recoger:' ) ) {
+			foreach ( array( 'billing_state', 'billing_city', 'billing_address_1', 'billing_postcode' ) as $k ) {
+				if ( isset( $fields['billing'][ $k ] ) ) {
+					$fields['billing'][ $k ]['required'] = false;
+				}
+			}
+		}
+		return $fields;
+	},
+	100
+);

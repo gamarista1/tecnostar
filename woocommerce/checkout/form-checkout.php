@@ -99,18 +99,24 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 					<h2 id="ts-t1" class="ts-paso__titulo" tabindex="-1"><?php esc_html_e( '¿Dónde te lo llevamos?', 'tecnostar' ); ?></h2>
 					<p class="ts-recap" data-recap="0"></p>
 					<div class="ts-campos">
-						<?php $campos( $paso2 ); ?>
+						<?php $campos( array( 'billing_country', 'billing_state' ) ); ?>
 					</div>
 
 					<h3 class="ts-subtitulo"><?php esc_html_e( 'Forma de entrega', 'tecnostar' ); ?></h3>
 					<?php tecnostar_envio_html(); ?>
 
+					<div class="ts-campos" data-direccion>
+						<?php $campos( array_diff( $paso2, array( 'billing_country', 'billing_state' ) ) ); ?>
+					</div>
+
 					<?php do_action( 'woocommerce_after_checkout_billing_form', $checkout ); ?>
-					<?php do_action( 'woocommerce_before_order_notes', $checkout ); ?>
-					<?php foreach ( $checkout->get_checkout_fields( 'order' ) as $key => $field ) : ?>
-						<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
-					<?php endforeach; ?>
-					<?php do_action( 'woocommerce_after_order_notes', $checkout ); ?>
+					<div data-notas>
+						<?php do_action( 'woocommerce_before_order_notes', $checkout ); ?>
+						<?php foreach ( $checkout->get_checkout_fields( 'order' ) as $key => $field ) : ?>
+							<?php woocommerce_form_field( $key, $field, $checkout->get_value( $key ) ); ?>
+						<?php endforeach; ?>
+						<?php do_action( 'woocommerce_after_order_notes', $checkout ); ?>
+					</div>
 
 					<div class="ts-paso__acciones">
 						<button type="button" class="ts-btn ts-btn--suave" data-atras><?php esc_html_e( 'Atrás', 'tecnostar' ); ?></button>

@@ -41,6 +41,21 @@
     return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 10)].filter(Boolean).join(' ');
   }
 
+  // Recoger en tienda: no se pide dirección ni notas de entrega.
+  function recoge() {
+    var el = raiz.querySelector('.ts-envio input.shipping_method:checked, .ts-envio input.shipping_method[type="hidden"]');
+    return !!el && /^ts_recoger:/.test(el.value);
+  }
+
+  function aplicarRecoge() {
+    var r = recoge();
+    [].slice.call(raiz.querySelectorAll('[data-direccion], [data-notas]')).forEach(function (n) {
+      n.classList.toggle('ts-oculto', r);
+      n.toggleAttribute('inert', r);
+    });
+    raiz.classList.toggle('is-recoge', r);
+  }
+
   function campo(nombre) { return form.querySelector('[name="' + nombre + '"]'); }
 
   // ---- Validación por campo -----------------------------------------------------
@@ -77,7 +92,7 @@
 
   function camposRegla(panel) {
     return [].slice.call(panel.querySelectorAll('input, select, textarea')).filter(function (el) {
-      return REGLAS[el.name] && el.type !== 'hidden';
+      return REGLAS[el.name] && el.type !== 'hidden' && !el.closest('.ts-oculto') && !(el.name === 'billing_state' && recoge());
     });
   }
 
@@ -142,7 +157,7 @@
     llenar(r0, 'Para ' + (v('billing_first_name') + ' ' + v('billing_last_name')).trim() + ' · ' + v('billing_email') + ' · ' + v('billing_phone'), 0);
     var estado = campo('billing_state');
     var depto = estado && estado.options && estado.selectedIndex >= 0 ? estado.options[estado.selectedIndex].text : v('billing_state');
-    llenar(r1, 'Entrega en ' + v('billing_address_1') + ', ' + v('billing_city') + (depto ? ', ' + depto : ''), 1);
+    llenar(r1, recoge() ? 'Retiras en tienda' + (depto ? ' · ' + depto : '') : 'Entrega en ' + v('billing_address_1') + ', ' + v('billing_city') + (depto ? ', ' + depto : ''), 1);
   }
 
   function pintarNav() {
@@ -289,6 +304,8 @@
   // ---- WooCommerce: totales y errores del servidor ------------------------------
   if ($) {
     $(document.body).on('updated_checkout', function () {
+      aplicarRecoge();
+      actualizarSig();
       var total = raiz.querySelector('.order-total td');
       var rotulo = raiz.querySelector('[data-total]');
       if (total && rotulo) rotulo.textContent = total.textContent.trim();
@@ -355,6 +372,8 @@
     });
   }
 
+  form.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('shipping_method')) { aplicarRecoge(); actualizarSig(); } });
+  aplicarRecoge();
   recap();
   pintarNav();
   // ---- Mapa de la tienda en una ventana ----

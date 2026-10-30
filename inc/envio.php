@@ -136,7 +136,7 @@ add_filter(
 	'woocommerce_package_rates',
 	function ( $rates, $package ) {
 		$estado = isset( $package['destination']['state'] ) ? $package['destination']['state'] : '';
-		if ( '' === $estado || 'DC' === $estado ) {
+		if ( '' === $estado || 'CO-DC' === $estado ) {
 			return $rates;
 		}
 		foreach ( tecnostar_transportadoras() as $slug => $t ) {

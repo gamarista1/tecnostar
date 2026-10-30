@@ -15,7 +15,8 @@ function tecnostar_tiendas() {
 		'tecnostar_tiendas',
 		array(
 			'cat' => array(
-				'nombre'   => 'Tecnostar (CAT)',
+				'nombre'       => 'Tecnostar (CAT)',
+				'departamento' => 'CO-DC',
 				'detalles' => array(
 					'Lugar'     => 'Centro Comercial de Alta Tecnología (CAT)',
 					'Dirección' => 'Calle 77 # 15-58',
@@ -41,8 +42,17 @@ add_filter(
 // Recoger en tienda: una opción por tienda, gratis, disponible en cualquier departamento.
 add_filter(
 	'woocommerce_package_rates',
-	function ( $rates ) {
-		foreach ( tecnostar_tiendas() as $slug => $t ) {
+	function ( $rates, $package ) {
+		// Las tiendas del departamento del cliente van primero; las demás siguen disponibles para quien viaja a retirar.
+		$estado  = isset( $package['destination']['state'] ) ? $package['destination']['state'] : '';
+		$tiendas = tecnostar_tiendas();
+		uasort(
+			$tiendas,
+			function ( $a, $b ) use ( $estado ) {
+				return ( ( isset( $b['departamento'] ) && $b['departamento'] === $estado ) <=> ( isset( $a['departamento'] ) && $a['departamento'] === $estado ) );
+			}
+		);
+		foreach ( $tiendas as $slug => $t ) {
 			$id   = 'ts_recoger:' . $slug;
 			$rate = new WC_Shipping_Rate( $id, 'Recoger en ' . $t['nombre'], 0, array(), 'ts_recoger' );
 			$rate->add_meta_data( 'Tienda', $t['nombre'] . ' · ' . $t['detalles']['Dirección'] . ', ' . $t['detalles']['Localidad'] );
@@ -50,7 +60,8 @@ add_filter(
 		}
 		return $rates;
 	},
-	100
+	100,
+	2
 );
 
 // Presentación de la opción: nombre, datos de la tienda y botón para ver el mapa.

@@ -30,7 +30,7 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 	}
 };
 ?>
-<div class="ts-co" data-co>
+<div class="ts-co" data-co data-municipios="<?php echo esc_url( get_template_directory_uri() . '/assets/data/municipios.json' ); ?>">
 	<ol class="ts-co__pasos" aria-label="<?php esc_attr_e( 'Pasos del pago', 'tecnostar' ); ?>">
 		<?php foreach ( $nombres as $i => $nombre ) : ?>
 			<li class="ts-co__paso<?php echo 0 === $i ? ' is-actual' : ''; ?>" data-nav="<?php echo (int) $i; ?>">

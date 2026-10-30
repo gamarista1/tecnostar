@@ -19,7 +19,8 @@ add_filter(
 	'woocommerce_states',
 	function ( $estados ) {
 		if ( isset( $estados['CO']['CO-DC'] ) ) {
-			$estados['CO']['CO-DC'] = 'D.C. Bogotá';
+			// D.C. Bogotá va de primero en la lista.
+			$estados['CO'] = array( 'CO-DC' => 'D.C. Bogotá' ) + array_diff_key( $estados['CO'], array( 'CO-DC' => 1 ) );
 		}
 		return $estados;
 	}

@@ -68,6 +68,78 @@
     } else if (c.value === 'Bogotá D.C.') {
       c.value = c.getAttribute('data-previo') || '';
     }
+    aplicarMunicipios();
+  }
+
+  // Fuera de Bogotá: el municipio se elige de la lista oficial (DANE) del departamento.
+  var municipios = null;
+  var esperando = [];
+
+  function cargarMunicipios(cb) {
+    if (municipios) { cb(); return; }
+    esperando.push(cb);
+    if (esperando.length > 1) return;
+    fetch(raiz.getAttribute('data-municipios'))
+      .then(function (r) { return r.json(); })
+      .catch(function () { return {}; })
+      .then(function (j) {
+        municipios = j;
+        esperando.splice(0).forEach(function (f) { f(); });
+      });
+  }
+
+  function visible(el) {
+    return el.classList.contains('ts-in-oculto') ? (el.closest('.form-row').querySelector('select.ts-municipio') || el) : el;
+  }
+
+  function aplicarMunicipios() {
+    var ciu = form.querySelector('[name="billing_city"]');
+    var est = form.querySelector('[name="billing_state"]');
+    if (!ciu || !est) return;
+    var fila = ciu.closest('.form-row');
+    var sel = fila.querySelector('select.ts-municipio');
+    if (esBogota() || !est.value) {
+      if (sel) sel.remove();
+      ciu.classList.remove('ts-in-oculto');
+      return;
+    }
+    cargarMunicipios(function () {
+      var lista = municipios[est.value];
+      if (!lista) {
+        if (sel) sel.remove();
+        ciu.classList.remove('ts-in-oculto');
+        return;
+      }
+      if (!sel) {
+        sel = document.createElement('select');
+        sel.className = 'ts-municipio';
+        sel.id = 'ts_municipio';
+        sel.setAttribute('aria-label', 'Municipio');
+        ciu.parentNode.insertBefore(sel, ciu);
+        sel.addEventListener('change', function () {
+          ciu.value = sel.value;
+          validar(ciu);
+          recap();
+          actualizarSig();
+        });
+        var rotulo = fila.querySelector('label');
+        if (rotulo && rotulo.firstChild) rotulo.firstChild.textContent = 'Municipio ';
+      }
+      var previo = ciu.value;
+      sel.innerHTML = '';
+      var vacio = document.createElement('option');
+      vacio.value = '';
+      vacio.textContent = 'Selecciona tu municipio';
+      sel.appendChild(vacio);
+      lista.forEach(function (m) {
+        var o = document.createElement('option');
+        o.value = m;
+        o.textContent = m;
+        sel.appendChild(o);
+      });
+      if (lista.indexOf(previo) >= 0) sel.value = previo; else ciu.value = '';
+      ciu.classList.add('ts-in-oculto');
+    });
   }
 
   function aplicarRecoge() {
@@ -134,6 +206,7 @@
       }
     }
     if (primero) {
+      primero = visible(primero);
       primero.focus({ preventScroll: true });
       primero.scrollIntoView({ block: 'center', behavior: reducido ? 'auto' : 'smooth' });
       return false;
@@ -278,6 +351,7 @@
   }
 
   function enfocar(el) {
+    el = visible(el);
     if ($ && el.tagName === 'SELECT' && $.fn.select2 && $(el).data('select2')) {
       $(el).select2('open');
       return;
@@ -381,6 +455,7 @@
         }
       }
       if (!el) return;
+      el = visible(el);
       var panel = el.closest('.ts-paso');
       var destino = panel ? paneles.indexOf(panel) : actual;
       if (destino !== actual) ir(destino);

@@ -345,3 +345,4 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-envio li label:has(.ts-envio__logo) { display: flex; align-items: center; gap: var(--space-3); }
 .ts-co .ts-envio li > label:has(.ts-envio__logo) { display: flex !important; flex-direction: row !important; align-items: center; gap: var(--space-3); }
 .ts-co .ts-envio li > label:has(.ts-envio__logo) .ts-envio__texto { flex: 1; }
+.ts-co .ts-in-oculto { display: none !important; }

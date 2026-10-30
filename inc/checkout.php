@@ -72,7 +72,9 @@ add_action(
  */
 function tecnostar_envio_html() {
 	echo '<div class="ts-envio" aria-live="polite">';
-	if ( WC()->cart && WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) {
+	// Sin departamento elegido no se muestran formas de entrega.
+	$hay_departamento = WC()->customer && ( WC()->customer->get_shipping_state() || WC()->customer->get_billing_state() );
+	if ( $hay_departamento && WC()->cart && WC()->cart->needs_shipping() && WC()->cart->show_shipping() ) {
 		echo '<table class="ts-envio__tabla"><tbody>';
 		wc_cart_totals_shipping_html();
 		echo '</tbody></table>';

@@ -159,3 +159,14 @@
   .woocommerce div.product { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
   .woocommerce div.product div.summary { position: sticky; top: 5.5rem; }
 }
+
+/* La galería de WooCommerce nace con opacity:0 hasta que su JS arranca; con JS retrasado quedaba en blanco. */
+.woocommerce-product-gallery { opacity: 1 !important; }
+
+/* Compartir: iconos en línea y discretos. */
+.single-product-socials { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-4); color: var(--color-text-muted); font-size: 0.9375rem; }
+.single-product-socials a { display: inline-flex; width: 2.25rem; height: 2.25rem; align-items: center; justify-content: center; border-radius: 50%; background: var(--color-surface); color: var(--color-primary-dark); }
+.single-product-socials svg { width: 1.125rem; height: 1.125rem; fill: currentColor; }
+
+/* Restos del popup de consulta de XStore Core (necesitan el tema XStore para funcionar). */
+.et-call-popup, .with-static-block { display: none !important; }

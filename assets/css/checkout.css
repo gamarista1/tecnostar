@@ -243,3 +243,54 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 	.ts-resumen__cuerpo { display: block; max-height: 0; overflow: hidden; transition: max-height var(--dur) var(--ease-spring), visibility 0s linear var(--dur); }
 	.ts-resumen__toggle[aria-expanded="true"] + .ts-resumen__cuerpo { max-height: 60rem; }
 }
+
+/* ---- Acceso dentro del pago: tarjeta que voltea entre "Acceder" y "Recuperar contraseña" ---- */
+.ts-login { max-width: var(--container, 75rem); margin: 0 auto var(--space-3); padding: 0 var(--space-4); font-family: var(--font-sans); color: #222; }
+.ts-login__toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 0; border-radius: 0.875rem; background: #ecf7fb; color: #0b3954; font: inherit; font-size: 0.9375rem; text-align: left; cursor: pointer; transition: transform var(--dur-press), background var(--dur-fast); }
+.ts-login__toggle:hover { background: #dcedf4; }
+.ts-login__toggle:active { transform: scale(0.99); }
+.ts-login__toggle strong { color: #37409a; text-decoration: underline; text-underline-offset: 3px; }
+.ts-login__toggle svg { flex: none; width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur) var(--ease-spring); }
+.ts-login__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.ts-login__cuerpo { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows 420ms var(--ease-spring), visibility 0s linear 420ms; }
+.ts-login__cuerpo.is-abierto { grid-template-rows: 1fr; visibility: visible; transition-delay: 0s; }
+.ts-login__interior { min-height: 0; overflow: hidden; perspective: 1400px; }
+.ts-login__card { display: grid; position: relative; margin: var(--space-3) auto var(--space-1); width: min(100%, 28rem); transform-style: preserve-3d; transition: transform 700ms var(--ease-spring), height 500ms var(--ease-spring); }
+.ts-login__card.is-flipped { transform: rotateY(180deg); }
+.ts-login__face { grid-area: 1 / 1; align-self: start; display: flex; flex-direction: column; padding: var(--space-6) var(--space-4) var(--space-4); border-radius: 1.25rem; background: #fff; box-shadow: 0 1px 2px rgb(11 57 84 / 0.06), 0 12px 36px rgb(11 57 84 / 0.14); -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.ts-login__face--back { transform: rotateY(180deg); }
+.ts-login__face[inert] { visibility: hidden; transition: visibility 0s linear 400ms; }
+.ts-login__titulo { margin: 0; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.02em; color: #0b3954; }
+.ts-login__nota { margin: var(--space-1) 0 var(--space-4); font-size: 0.9375rem; color: #5c676d; }
+.ts-login__campo { margin: 0 0 var(--space-3); padding: 0; }
+.ts-login__campo label { display: block; margin-bottom: 0.375rem; font-weight: 500; font-size: 0.9375rem; color: #0b3954; }
+.ts-login .ts-login__campo input { width: 100%; box-sizing: border-box; height: 3.25rem; padding: 0 0.875rem; border: 1.5px solid #cdd8df; border-radius: 0.75rem; background: #fff; font: inherit; font-size: 1rem; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+.ts-login .ts-login__campo input:focus { outline: 0; border-color: #37409a; box-shadow: 0 0 0 4px rgb(55 64 154 / 0.16); }
+.ts-login__fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); margin: 0 0 var(--space-4); }
+.ts-login__recordar { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; }
+.ts-login__recordar input { accent-color: #37409a; width: 1.125rem; height: 1.125rem; }
+.ts-login__enlace { padding: 0.25rem 0; border: 0; background: none; font: inherit; font-size: 0.9375rem; font-weight: 600; color: #37409a; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; transition: transform var(--dur-press); }
+.ts-login__enlace:active { transform: scale(0.96); }
+.ts-login__pie { margin: var(--space-4) 0 0; }
+.ts-login__btn { display: flex; align-items: center; justify-content: center; width: 100%; height: 3.25rem; padding: 0; border: 0; border-radius: 999px; background: #37409a; color: #fff; font: inherit; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgb(55 64 154 / 0.28); transition: transform var(--dur-press), background var(--dur-fast); }
+.ts-login__btn:hover { background: #2f3787; }
+.ts-login__btn:active { transform: scale(0.97); }
+.ts-login__btn.is-cargando { pointer-events: none; background: linear-gradient(110deg, #37409a 30%, #5560c4 50%, #37409a 70%) 0 0 / 200% 100%; animation: ts-login-carga 1s linear infinite; }
+.ts-login__aviso { margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3); border-radius: 0.625rem; background: #fdecea; color: #7a1b15; font-size: 0.9375rem; animation: ts-aviso-entra 320ms var(--ease-spring) both; }
+.ts-login__aviso.is-ok { background: #eef7e8; color: #1f4d05; }
+.ts-login__aviso[hidden] { display: none; }
+.ts-login button:focus-visible, .ts-login a:focus-visible { outline: 3px solid #37409a; outline-offset: 2px; border-radius: 0.5rem; }
+.no-js .ts-login__cuerpo { grid-template-rows: 1fr; visibility: visible; }
+.no-js .ts-login__card { display: block; transform: none; }
+.no-js .ts-login__face { margin-bottom: var(--space-3); backface-visibility: visible; }
+.no-js .ts-login__face--back { transform: none; }
+@keyframes ts-login-carga { to { background-position: -200% 0; } }
+@media (max-width: 39.99rem) { .ts-login { margin-inline: -0.5rem; padding-inline: 0; } }
+@media (prefers-reduced-motion: reduce) {
+	.ts-login__card, .ts-login__card.is-flipped { transform: none; transition: none; }
+	.ts-login__face, .ts-login__face--back { transform: none; backface-visibility: visible; transition: opacity 200ms; }
+	.ts-login__face--back, .ts-login__card.is-flipped .ts-login__face--front { opacity: 0; visibility: hidden; }
+	.ts-login__card.is-flipped .ts-login__face--back { opacity: 1; visibility: visible; }
+	.ts-login__cuerpo { transition: none; }
+	.ts-login__btn.is-cargando, .ts-login__aviso { animation: none; }
+}

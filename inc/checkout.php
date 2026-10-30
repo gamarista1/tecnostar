@@ -103,3 +103,15 @@ add_action(
 	},
 	20
 );
+
+// Acceso dentro del pago (solo para visitantes): tarjeta con volteo y envío sin recargar.
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		if ( ! is_checkout() || is_order_received_page() || is_user_logged_in() ) {
+			return;
+		}
+		wp_enqueue_script( 'tecnostar-checkout-login', get_template_directory_uri() . '/assets/js/checkout-login.js', array(), tecnostar_asset_ver( '/assets/js/checkout-login.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	},
+	20
+);

@@ -343,3 +343,5 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-envio .ts-envio__logo { flex: none; width: 3rem; height: 3rem; border-radius: 0.75rem; object-fit: cover; background: #fff; }
 .ts-envio .ts-envio__texto { display: grid; gap: 0.125rem; min-width: 0; }
 .ts-envio li label:has(.ts-envio__logo) { display: flex; align-items: center; gap: var(--space-3); }
+.ts-co .ts-envio li > label:has(.ts-envio__logo) { display: flex !important; flex-direction: row !important; align-items: center; gap: var(--space-3); }
+.ts-co .ts-envio li > label:has(.ts-envio__logo) .ts-envio__texto { flex: 1; }

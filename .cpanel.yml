@@ -4,5 +4,5 @@ deployment:
     # Staging. Para producción se crea un despliegue aparte, con confirmación.
     - export DEPLOYPATH=/home/tecnosta/public_html/v2.tecnostaringenieria.com/wp-content/themes/tecnostar/
     - /bin/mkdir -p $DEPLOYPATH
-    - /bin/cp -R assets $DEPLOYPATH
-    - /bin/cp style.css functions.php header.php footer.php index.php woocommerce.php $DEPLOYPATH
+    - /bin/cp -R assets inc $DEPLOYPATH
+    - /bin/cp style.css functions.php header.php footer.php index.php front-page.php woocommerce.php $DEPLOYPATH

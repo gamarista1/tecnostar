@@ -12,7 +12,15 @@
 <?php /* Div con role=banner (no <header>): el script de Addi inserta su banner tras el primer <header>; ver front-page.php. */ ?>
 <div class="site-header" role="banner">
 	<div class="container site-header__bar">
-		<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">Tecnostar<span class="brand__dot">.</span></a>
+		<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+			<img
+				src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?>"
+				srcset="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?> 438w, <?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?> 875w"
+				sizes="170px"
+				width="438" height="83"
+				alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
+				fetchpriority="high" decoding="async">
+		</a>
 
 		<?php if ( function_exists( 'wc_get_cart_url' ) ) : ?>
 			<a class="icon-btn" href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="<?php esc_attr_e( 'Carrito', 'tecnostar' ); ?>">

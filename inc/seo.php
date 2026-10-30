@@ -41,6 +41,8 @@ add_action(
 			return;
 		}
 		printf( '<meta name="description" content="%s">' . "\n", esc_attr( tecnostar_meta_description() ) );
+		// Imagen por defecto al compartir en redes (el logo apilado a color).
+		printf( '<meta property="og:image" content="%s">' . "\n", esc_url( get_theme_file_uri( 'assets/img/logo/logo-vertical.png' ) ) );
 	},
 	2
 );

@@ -267,3 +267,12 @@
 .woocommerce-account .woocommerce-form-login__submit:active { transform: scale(0.97); }
 .woocommerce-account .woocommerce-LostPassword a { color: #37409a; }
 @media (prefers-reduced-motion: reduce) { .woocommerce-account .woocommerce-form-login__submit { transition: none; } }
+
+/* Acceso de clientes: refuerzo de especificidad sobre los botones y campos de WooCommerce */
+.woocommerce-account .woocommerce form.woocommerce-form-login input.input-text,
+.woocommerce-account .woocommerce form.woocommerce-form-register input.input-text { border: 1px solid #c9d6dc; }
+.woocommerce-account .woocommerce form .woocommerce-form-login__submit.button,
+.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button { background: #37409a; color: #fff; border: 0; border-radius: 999px; min-height: 2.75rem; padding: 0 1.5rem; font-weight: 600; }
+.woocommerce-account .woocommerce form .woocommerce-form-login__submit.button:hover,
+.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button:hover { background: #2e367f; }
+.woocommerce-account .woocommerce form .woocommerce-form-register__submit.button { width: 100%; }

@@ -13,6 +13,7 @@ require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/checkout.php';
 require_once get_template_directory() . '/inc/minicart.php';
 require_once get_template_directory() . '/inc/cart.php';
+require_once get_template_directory() . '/inc/envio.php';
 require_once get_template_directory() . '/inc/llms-txt.php';
 
 add_action( 'after_setup_theme', function () {

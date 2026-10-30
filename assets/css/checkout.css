@@ -300,3 +300,8 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-error--envio { margin: var(--space-2) 0 0; color: var(--co-error); font-size: 0.875rem; font-weight: 500; }
 @keyframes ts-llamar { 20% { transform: translateX(-6px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
 @media (prefers-reduced-motion: reduce) { .ts-envio.ts-llamar { animation: none; } }
+
+/* Recoger en tienda: nombre, "Gratis" y dirección */
+.ts-envio .ts-envio__nombre { font-weight: 600; color: #0b3954; }
+.ts-envio .ts-envio__gratis { margin-left: var(--space-2); padding: 0.125rem 0.5rem; border-radius: 999px; background: #eef7e8; color: #2d6a08; font-size: 0.75rem; font-weight: 600; }
+.ts-envio .ts-envio__sub { display: block; margin-top: 0.125rem; font-size: 0.8125rem; font-weight: 400; color: #5c676d; line-height: 1.35; }

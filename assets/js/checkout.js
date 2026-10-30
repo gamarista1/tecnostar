@@ -27,11 +27,19 @@
       return (d.length >= 5 && d.length <= 12) || 'Escribe tu cédula o NIT, solo números';
     },
     billing_email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Revisa tu correo, parece incompleto'; },
-    billing_phone: function (v) { return v.replace(/\D/g, '').length >= 10 || 'Escribe tu celular de 10 dígitos'; },
+    billing_phone: function (v) { return /^3\d{9}$/.test(v.replace(/\D/g, '')) || 'Escribe tu celular de 10 dígitos, empieza por 3 (ej. 300 123 4567)'; },
     billing_state: function (v) { return !!v || 'Elige tu departamento'; },
     billing_city: function (v) { return v.trim().length >= 2 || 'Escribe tu ciudad'; },
     billing_address_1: function (v) { return v.trim().length >= 5 || 'Escribe tu dirección completa'; }
   };
+
+  // Celular colombiano: 10 dígitos, "300 123 4567". Acepta pegar con +57 o 57 delante.
+  function mascaraCelular(v) {
+    var d = v.replace(/\D/g, '');
+    if (d.length > 10 && d.indexOf('57') === 0) d = d.slice(2);
+    d = d.slice(0, 10);
+    return [d.slice(0, 3), d.slice(3, 6), d.slice(6, 10)].filter(Boolean).join(' ');
+  }
 
   function campo(nombre) { return form.querySelector('[name="' + nombre + '"]'); }
 
@@ -98,7 +106,7 @@
   form.addEventListener('input', function (e) {
     var t = e.target;
     if (t.name === 'billing_id') t.value = t.value.replace(/[^\d.\-\s]/g, '');
-    if (t.name === 'billing_phone') t.value = t.value.replace(/[^\d+\s]/g, '');
+    if (t.name === 'billing_phone') t.value = mascaraCelular(t.value);
     var fila = t.closest && t.closest('.form-row');
     if (fila && fila.classList.contains('ts-invalid')) validar(t);
   });

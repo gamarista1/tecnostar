@@ -23,8 +23,8 @@ add_filter(
 			'billing_last_name'  => array( 'Apellido', 'Ej. Pérez', 'family-name', '' ),
 			'billing_id'         => array( 'Cédula o NIT', 'Solo números', 'off', 'numeric' ),
 			'billing_email'      => array( 'Correo electrónico', 'tucorreo@ejemplo.com', 'email', 'email' ),
-			'billing_phone'      => array( 'Celular (WhatsApp)', '3001234567', 'tel', 'tel' ),
-			'billing_state'      => array( 'Departamento', '', 'address-level1', '' ),
+			'billing_phone'      => array( 'Celular (WhatsApp)', '300 123 4567', 'tel', 'tel' ),
+			'billing_state'      => array( 'Departamento', 'Selecciona tu departamento', 'address-level1', '' ),
 			'billing_city'       => array( 'Ciudad', 'Ej. Bogotá', 'address-level2', '' ),
 			'billing_address_1'  => array( 'Dirección', 'Ej. Cra 7 #12-30', 'address-line1', '' ),
 			'billing_address_2'  => array( 'Apartamento, torre o referencias', 'Ej. Apto 402, portería', 'address-line2', '' ),
@@ -48,6 +48,7 @@ add_filter(
 		}
 		if ( isset( $fields['order']['order_comments'] ) ) {
 			$fields['order']['order_comments']['label']       = 'Notas para la entrega';
+		$fields['billing']['billing_phone']['custom_attributes']['maxlength'] = '12';
 			$fields['order']['order_comments']['placeholder'] = 'Ej. Dejar con el portero';
 		}
 		return $fields;
@@ -76,7 +77,7 @@ function tecnostar_envio_html() {
 		wc_cart_totals_shipping_html();
 		echo '</tbody></table>';
 	} else {
-		echo '<p class="ts-envio__vacio">Completa tu ciudad y dirección para ver las formas de entrega.</p>';
+		echo '<p class="ts-envio__vacio">Elige tu departamento y escribe tu dirección para ver cómo recibir tu pedido.</p>';
 	}
 	echo '</div>';
 }

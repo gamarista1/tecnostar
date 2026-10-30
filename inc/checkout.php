@@ -27,7 +27,7 @@ add_filter(
 			'billing_state'      => array( 'Departamento', '', 'address-level1', '' ),
 			'billing_city'       => array( 'Ciudad', 'Ej. Bogotá', 'address-level2', '' ),
 			'billing_address_1'  => array( 'Dirección', 'Ej. Cra 7 #12-30', 'address-line1', '' ),
-			'billing_address_2'  => array( 'Apartamento, torre o referencias (opcional)', 'Ej. Apto 402, portería', 'address-line2', '' ),
+			'billing_address_2'  => array( 'Apartamento, torre o referencias', 'Ej. Apto 402, portería', 'address-line2', '' ),
 		);
 		foreach ( $cfg as $key => $c ) {
 			if ( ! isset( $fields['billing'][ $key ] ) ) {
@@ -47,7 +47,7 @@ add_filter(
 			$fields['billing']['billing_postcode']['required'] = false;
 		}
 		if ( isset( $fields['order']['order_comments'] ) ) {
-			$fields['order']['order_comments']['label']       = 'Notas para la entrega (opcional)';
+			$fields['order']['order_comments']['label']       = 'Notas para la entrega';
 			$fields['order']['order_comments']['placeholder'] = 'Ej. Dejar con el portero';
 		}
 		return $fields;

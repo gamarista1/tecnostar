@@ -43,6 +43,18 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 	</ol>
 
 	<div class="ts-co__grid">
+		<aside class="ts-resumen" aria-label="<?php esc_attr_e( 'Resumen del pedido', 'tecnostar' ); ?>">
+			<button type="button" class="ts-resumen__toggle" aria-expanded="false" aria-controls="ts-resumen-cuerpo">
+				<span><?php esc_html_e( 'Resumen del pedido', 'tecnostar' ); ?></span>
+				<span class="ts-resumen__total" data-total><?php echo wp_kses_post( WC()->cart->get_total() ); ?></span>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+			</button>
+			<div class="ts-resumen__cuerpo" id="ts-resumen-cuerpo">
+				<h2 class="ts-resumen__titulo"><?php esc_html_e( 'Tu pedido', 'tecnostar' ); ?></h2>
+				<?php woocommerce_order_review(); ?>
+			</div>
+		</aside>
+
 		<form name="checkout" method="post" class="checkout woocommerce-checkout ts-co__form" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data" novalidate aria-label="<?php esc_attr_e( 'Finalizar compra', 'tecnostar' ); ?>">
 
 			<?php if ( $checkout->get_checkout_fields() ) : ?>
@@ -115,7 +127,12 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 				<?php do_action( 'woocommerce_checkout_before_order_review_heading' ); ?>
 				<?php do_action( 'woocommerce_checkout_before_order_review' ); ?>
 				<div id="order_review" class="woocommerce-checkout-review-order">
-					<?php do_action( 'woocommerce_checkout_order_review' ); ?>
+					<?php
+					// Algunos plugins de pago dejan etiquetas HTML sin cerrar; se equilibran para que no se desordene el resto de la página.
+					ob_start();
+					do_action( 'woocommerce_checkout_order_review' );
+					echo force_balance_tags( ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
 				</div>
 				<?php do_action( 'woocommerce_checkout_after_order_review' ); ?>
 				<div class="ts-paso__acciones ts-paso__acciones--pago">
@@ -123,18 +140,6 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 				</div>
 			</section>
 		</form>
-
-		<aside class="ts-resumen" aria-label="<?php esc_attr_e( 'Resumen del pedido', 'tecnostar' ); ?>">
-			<button type="button" class="ts-resumen__toggle" aria-expanded="false" aria-controls="ts-resumen-cuerpo">
-				<span><?php esc_html_e( 'Resumen del pedido', 'tecnostar' ); ?></span>
-				<span class="ts-resumen__total" data-total><?php echo wp_kses_post( WC()->cart->get_total() ); ?></span>
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-			</button>
-			<div class="ts-resumen__cuerpo" id="ts-resumen-cuerpo">
-				<h2 class="ts-resumen__titulo"><?php esc_html_e( 'Tu pedido', 'tecnostar' ); ?></h2>
-				<?php woocommerce_order_review(); ?>
-			</div>
-		</aside>
 	</div>
 </div>
 

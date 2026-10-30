@@ -79,7 +79,7 @@
       if (!validar(el) && !primero) primero = el;
     });
     if (i === 1 && !primero) {
-      var radios = [].slice.call(paneles[1].querySelectorAll('.ts-envio input.shipping_method'));
+      var radios = [].slice.call(paneles[1].querySelectorAll('.ts-envio input.shipping_method[type="radio"]'));
       if (radios.length && !radios.some(function (r) { return r.checked; })) {
         var caja = paneles[1].querySelector('.ts-envio');
         marcar(radios[0], 'Elige cómo quieres recibir tu pedido');

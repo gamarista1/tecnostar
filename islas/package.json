@@ -1,0 +1,14 @@
+{
+  "name": "tecnostar-islas",
+  "private": true,
+  "type": "module",
+  "description": "Islas interactivas del tema (GSAP). Se compilan a ../assets/js/islas con `npm run build`.",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "gsap": "^3.13.0",
+    "vite": "^7.0.0"
+  }
+}

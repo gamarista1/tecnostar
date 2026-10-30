@@ -46,6 +46,12 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'tecnostar-components', $css . 'components.css', array( 'tecnostar-base' ), tecnostar_asset_ver( '/assets/css/components.css' ) );
 	wp_enqueue_script( 'tecnostar-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), tecnostar_asset_ver( '/assets/js/motion.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 
+	// Portada: banner motion (estilos y cargador de islas; GSAP se descarga solo al acercarse el banner).
+	if ( is_front_page() ) {
+		wp_enqueue_style( 'tecnostar-banner-motion', $css . 'banner-motion.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/banner-motion.css' ) );
+		wp_enqueue_script( 'tecnostar-islas', get_template_directory_uri() . '/assets/js/islas/cargador.js', array(), tecnostar_asset_ver( '/assets/js/islas/cargador.js' ), array( 'in_footer' => true ) );
+	}
+
 	// Acceso de clientes: estilos y volteo solo en esa pantalla y solo para visitantes.
 	if ( function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
 		wp_enqueue_style( 'tecnostar-acceso', $css . 'acceso.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/acceso.css' ) );
@@ -96,3 +102,11 @@ function tecnostar_fallback_nav() {
 	}
 	echo '</ul>';
 }
+
+// El cargador de islas es un módulo ES (importa su código bajo demanda).
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+	if ( 'tecnostar-islas' === $handle ) {
+		$tag = str_replace( '<script ', '<script type="module" ', $tag );
+	}
+	return $tag;
+}, 10, 2 );

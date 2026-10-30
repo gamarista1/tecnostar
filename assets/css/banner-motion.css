@@ -1,0 +1,95 @@
+/* Banner "motion" de la portada: misma altura que el banner de Addi (280 px en escritorio y móvil).
+   Movimiento solo con transform y opacity. Se carga únicamente en la home. */
+
+.bm { position: relative; height: 280px; overflow: hidden; background: #ecf7fb; isolation: isolate; contain: layout paint; }
+
+/* Fondos por escena (se cruzan con opacidad) y dos manchas que derivan despacio */
+.bm__bg { position: absolute; inset: 0; z-index: -1; }
+.bm__fondo { position: absolute; inset: 0; opacity: 0; transition: opacity 600ms; }
+.bm__fondo.is-on { opacity: 1; }
+.bm__fondo--0 { background: linear-gradient(120deg, #ecf7fb 0%, #dfe4ff 100%); }
+.bm__fondo--1 { background: linear-gradient(120deg, #ecf7fb 0%, #fff0d2 100%); }
+.bm__fondo--2 { background: linear-gradient(120deg, #ecf7fb 0%, #d4ecf6 100%); }
+.bm__fondo--3 { background: linear-gradient(120deg, #fff7e4 0%, #ecf7fb 100%); }
+.bm__blob { position: absolute; width: 22rem; height: 22rem; border-radius: 50%; animation: bm-deriva 16s ease-in-out infinite alternate; }
+.bm__blob--a { top: -9rem; left: -6rem; background: radial-gradient(closest-side, rgb(55 64 154 / 0.16), transparent); }
+.bm__blob--b { right: -7rem; bottom: -10rem; background: radial-gradient(closest-side, rgb(255 177 40 / 0.22), transparent); animation-duration: 20s; animation-direction: alternate-reverse; }
+@keyframes bm-deriva { to { transform: translate3d(3rem, 1.5rem, 0) scale(1.12); } }
+
+.bm__stage { position: relative; height: 100%; }
+.bm__scene {
+	position: absolute; inset: 0; display: grid; align-items: center;
+	grid-template-columns: minmax(0, 1fr) 6.5rem; gap: var(--space-3);
+	visibility: hidden;
+}
+.bm__scene.is-active { visibility: visible; }
+
+/* Texto */
+.bm__n { margin: 0 0 var(--space-2); font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; color: #37409a; font-variant-numeric: tabular-nums; }
+.bm__n span { padding: 0.125rem 0.5rem; border-radius: 999px; background: #37409a; color: #fff; }
+.bm__title { margin: 0 0 var(--space-2); font-size: 1.5rem; line-height: 1.08; letter-spacing: -0.02em; color: #0b3954; }
+.bm__title .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; }
+.bm__title .w__i { display: inline-block; will-change: transform; }
+.bm__desc { margin: 0; font-size: 0.875rem; line-height: 1.4; color: #3d5566; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Ilustración: el blanco del fondo del PNG se funde con el color del banner */
+.bm__art { position: relative; display: grid; place-items: center; width: 6.5rem; aspect-ratio: 1; justify-self: end; }
+.bm__art::before { content: ""; position: absolute; inset: -30%; border-radius: 50%; background: radial-gradient(closest-side, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0)); }
+.bm__art img { position: relative; width: 100%; height: auto; mix-blend-mode: multiply; }
+
+/* Efectos de cada escena (los posiciona la escena; el movimiento lo pone GSAP) */
+.bm__fx { position: absolute; inset: 0; pointer-events: none; }
+.bm__fx i { position: absolute; display: block; opacity: 0; }
+[data-fx="orbita"] .bm__fx { inset: -14%; }
+[data-fx="orbita"] .bm__fx i { width: 0.625rem; height: 0.625rem; border-radius: 50%; background: #ffb128; opacity: 1; }
+[data-fx="orbita"] .bm__fx i:nth-child(1) { top: 0; left: 50%; }
+[data-fx="orbita"] .bm__fx i:nth-child(2) { bottom: 14%; left: 6%; background: #37409a; width: 0.5rem; height: 0.5rem; }
+[data-fx="orbita"] .bm__fx i:nth-child(3) { bottom: 14%; right: 6%; width: 0.4375rem; height: 0.4375rem; }
+[data-fx="veloz"] .bm__fx i { right: 92%; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, #ffb128); transform-origin: right center; }
+[data-fx="veloz"] .bm__fx i:nth-child(1) { top: 34%; width: 3.5rem; }
+[data-fx="veloz"] .bm__fx i:nth-child(2) { top: 50%; width: 5rem; }
+[data-fx="veloz"] .bm__fx i:nth-child(3) { top: 66%; width: 2.75rem; }
+[data-fx="ping"] .bm__fx i { inset: 12%; border-radius: 50%; border: 2px solid #37409a; }
+[data-fx="chispa"] .bm__fx i { top: 28%; left: 48%; width: 0.5rem; height: 0.5rem; border-radius: 2px; background: #ffb128; transform: rotate(45deg); }
+[data-fx="chispa"] .bm__fx i:nth-child(2) { background: #37409a; }
+
+/* Navegación: segmentos de progreso y pausa */
+.bm__nav { position: absolute; left: 0; right: 0; bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; padding-inline: var(--space-4); max-width: 75rem; margin-inline: auto; }
+.bm__paso { flex: 1 1 0; max-width: 5rem; height: 2rem; padding: 0; border: 0; background: none; cursor: pointer; display: grid; align-items: center; }
+.bm__pista { display: block; height: 4px; border-radius: 2px; background: rgb(11 57 84 / 0.16); overflow: hidden; }
+.bm__relleno { display: block; height: 100%; background: #37409a; transform-origin: left center; transform: scaleX(0); }
+.bm__paso[aria-current="true"] .bm__relleno { background: #ffb128; }
+.bm__paso:focus-visible, .bm__pausa:focus-visible { outline: 2px solid #37409a; outline-offset: 2px; border-radius: 4px; }
+.bm__pausa { width: 2rem; height: 2rem; margin-left: auto; padding: 0; border: 0; border-radius: 50%; background: rgb(11 57 84 / 0.08); color: #0b3954; cursor: pointer; display: grid; place-items: center; transition: transform 100ms; }
+.bm__pausa:active { transform: scale(0.92); }
+.bm__pausa svg { width: 0.875rem; height: 0.875rem; fill: currentColor; }
+.bm__pausa .i-play { display: none; }
+.bm__pausa[aria-pressed="true"] .i-play { display: block; }
+.bm__pausa[aria-pressed="true"] .i-pausa { display: none; }
+
+@media (min-width: 40rem) {
+	.bm__scene { grid-template-columns: minmax(0, 1fr) 11rem; gap: var(--space-8); }
+	.bm__title { font-size: 2.25rem; }
+	.bm__desc { font-size: 1.0625rem; max-width: 34rem; -webkit-line-clamp: 4; }
+	.bm__art { width: 9.5rem; justify-self: center; }
+}
+@media (min-width: 52rem) {
+	.bm__scene { grid-template-columns: minmax(0, 36rem) 1fr; }
+	.bm__title { font-size: 2.75rem; }
+	.bm__art { width: 10rem; }
+}
+
+/* Sin JavaScript: se ve la primera escena, quieta */
+.no-js .bm__scene:not(:first-child), .bm__nav[hidden] { display: none; }
+.bm__scene[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+	.bm__blob { animation: none; }
+	.bm__scene { transition: opacity 250ms; opacity: 0; }
+	.bm__scene.is-active { opacity: 1; }
+	.bm__pausa { transition: none; }
+}
+@media (prefers-contrast: more) {
+	.bm__desc { color: #0b3954; }
+	.bm__pista { background: rgb(11 57 84 / 0.4); }
+}

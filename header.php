@@ -9,7 +9,8 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 <a class="screen-reader-text" href="#contenido"><?php esc_html_e( 'Saltar al contenido', 'tecnostar' ); ?></a>
-<header class="site-header">
+<?php /* Div con role=banner (no <header>): el script de Addi inserta su banner tras el primer <header>; ver front-page.php. */ ?>
+<div class="site-header" role="banner">
 	<div class="container site-header__bar">
 		<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">Tecnostar<span class="brand__dot">.</span></a>
 
@@ -41,7 +42,7 @@
 			</div>
 		</div>
 	</div>
-</header>
+</div>
 <main id="contenido" class="site-main">
 <?php if ( ! is_front_page() ) : ?>
 <div class="container section">

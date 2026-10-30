@@ -32,6 +32,9 @@ $cta_url  = tecnostar_hero( 'hero_cta_url' ) ?: $shop_url;
 	</div>
 </section>
 
+<?php /* Ancla del banner de Addi: su script lo inserta justo después de este <header>. */ ?>
+<header class="addi-anchor" aria-hidden="true"></header>
+
 <?php
 $cats = function_exists( 'wc_get_page_permalink' ) ? get_terms(
 	array(

@@ -294,3 +294,9 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 	.ts-login__cuerpo { transition: none; }
 	.ts-login__btn.is-cargando, .ts-login__aviso { animation: none; }
 }
+
+/* Falta elegir envío: la zona se sacude suave y se marca en rojo */
+.ts-envio.ts-llamar { animation: ts-llamar 520ms var(--ease-spring); outline: 2px solid var(--co-error); outline-offset: 4px; border-radius: 1rem; }
+.ts-error--envio { margin: var(--space-2) 0 0; color: var(--co-error); font-size: 0.875rem; font-weight: 500; }
+@keyframes ts-llamar { 20% { transform: translateX(-6px); } 45% { transform: translateX(5px); } 70% { transform: translateX(-3px); } }
+@media (prefers-reduced-motion: reduce) { .ts-envio.ts-llamar { animation: none; } }

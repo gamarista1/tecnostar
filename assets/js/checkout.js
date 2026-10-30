@@ -293,6 +293,28 @@
     });
 
     $(document.body).on('checkout_error', function () {
+      var envio = [].slice.call(raiz.querySelectorAll('.woocommerce-error li')).filter(function (l) { return /m[eé]todo de env[ií]o|env[ií]o/i.test(l.textContent) && !l.hasAttribute('data-id'); })[0];
+      if (envio) {
+        if (actual !== 1) ir(1);
+        setTimeout(function () {
+          var caja = paneles[1].querySelector('.ts-envio');
+          if (!caja) return;
+          var radio = caja.querySelector('input.shipping_method[type="radio"]');
+          var previo = caja.parentNode.querySelector('.ts-error--envio');
+          if (previo) previo.remove();
+          var aviso = document.createElement('p');
+          aviso.className = 'ts-error ts-error--envio';
+          aviso.setAttribute('role', 'alert');
+          aviso.textContent = radio ? 'Elige cómo quieres recibir tu pedido.' : 'No hay envío disponible para esa dirección. Revísala o escríbenos por WhatsApp.';
+          caja.parentNode.insertBefore(aviso, caja.nextSibling);
+          caja.classList.remove('ts-llamar');
+          void caja.offsetWidth;
+          caja.classList.add('ts-llamar');
+          caja.scrollIntoView({ block: 'center', behavior: reducido ? 'auto' : 'smooth' });
+          if (radio) radio.focus({ preventScroll: true });
+        }, reducido ? 0 : 380);
+        return;
+      }
       var li = raiz.querySelector('.woocommerce-error li[data-id]');
       var destino = 2;
       if (li) {

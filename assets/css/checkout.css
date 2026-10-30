@@ -194,3 +194,19 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-envio li:has(input[type="hidden"]) label { cursor: default; }
 .ts-envio li:has(input[type="hidden"]) label::before { content: ""; width: 1.125rem; height: 1.125rem; flex: none; border-radius: 50%; background: #37409a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center / 70% no-repeat; }
 .ts-envio li:has(input[type="hidden"]) label { justify-content: flex-start; align-items: center; gap: var(--space-3); }
+
+/* ---- Ajustes sobre los estilos por defecto de WooCommerce ---- */
+.ts-co #payment { background: none; border-radius: 0; }
+.ts-co #payment ul.payment_methods { padding: 0; border: 0; }
+.ts-co #payment .place-order { padding: 0; margin: 0; background: none; }
+.ts-co #payment div.payment_box { background: transparent; color: #3d5566; margin: 0; }
+.ts-co #payment div.payment_box::before { display: none; }
+.ts-co .shop_table { border: 0; margin: 0; }
+.ts-co .woocommerce-privacy-policy-text, .ts-co .woocommerce-privacy-policy-text p { font-weight: 400; font-size: 0.8125rem; line-height: 1.45; }
+.ts-co .woocommerce-terms-and-conditions-checkbox-text { font-weight: 400; }
+.ts-co .woocommerce-form__label-for-checkbox { align-items: center; }
+
+/* Cada medio de pago: botón de opción a la izquierda, nombre y logo a la derecha, detalle debajo */
+.ts-co ul.wc_payment_methods > li.wc_payment_method { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--space-3); padding: 0 0 0 var(--space-4); list-style: none; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > label { grid-column: 2; padding: var(--space-4) var(--space-4) var(--space-4) 0; }
+.ts-co ul.wc_payment_methods > li.wc_payment_method > .payment_box { grid-column: 1 / -1; padding: 0 var(--space-4) var(--space-4) 0; }

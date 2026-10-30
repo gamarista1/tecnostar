@@ -1,7 +1,18 @@
 import gsap from 'gsap';
 
-const DURACION = 5.6; // segundos por escena
-const SALIDA = 0.55;
+/*
+  Banner de portada como un video corto de 15 s, en bucle, con una sola línea de tiempo:
+    0.00  intro: el logo entra con un destello
+    1.75  01 Comunidad     5.15  02 Entrega Express
+    8.55  03 Medios de pago   11.95  04 Despacho inmediato
+    14.35 cierre y vuelta al inicio
+  Entre capítulos pasa una cortina de color; el contenido cambia justo cuando la cubre.
+*/
+const TOTAL = 15;
+const INICIOS = [1.75, 5.15, 8.55, 11.95];
+const DURACION = 3.4; // duración de cada capítulo
+const CORTINA = 0.85; // recorrido de cada cortina
+const ANTES = 0.55; // la cortina empieza esto antes del cambio
 
 // Chispas de la escena "despacho": hacia dónde salta cada una.
 const CHISPAS = [
@@ -10,6 +21,8 @@ const CHISPAS = [
   [10, -78],
 ];
 
+const limitar = (v) => Math.min(1, Math.max(0, v));
+
 export function iniciar(raiz) {
   const escenas = [...raiz.querySelectorAll('.bm__scene')];
   const pasos = [...raiz.querySelectorAll('.bm__paso')];
@@ -17,6 +30,10 @@ export function iniciar(raiz) {
   const fondos = [...raiz.querySelectorAll('.bm__fondo')];
   const pausa = raiz.querySelector('.bm__pausa');
   const nav = raiz.querySelector('.bm__nav');
+  const intro = raiz.querySelector('.bm__intro');
+  const logo = raiz.querySelector('.bm__logo img');
+  const brillo = raiz.querySelector('.bm__brillo');
+  const cortinas = [...raiz.querySelectorAll('.bm__wipe')];
   const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   escenas.forEach((s) => (s.hidden = false));
@@ -39,13 +56,7 @@ export function iniciar(raiz) {
     });
   });
 
-  let actual = 0;
-  let linea = null;
-  let pausaUsuario = false;
-  let pausaTemporal = false;
-
   function marcar(i) {
-    actual = i;
     escenas.forEach((s, j) => {
       s.classList.toggle('is-active', j === i);
       s.setAttribute('aria-hidden', String(j !== i));
@@ -73,77 +84,113 @@ export function iniciar(raiz) {
 
   pausa.hidden = false;
 
-  function construir(i) {
+  // ---- Línea de tiempo maestra -------------------------------------------------
+  const tl = gsap.timeline({ repeat: -1, paused: true, onUpdate: actualizarProgreso });
+
+  // Estado inicial (también se reaplica en cada vuelta del bucle)
+  tl.set(escenas, { autoAlpha: 0 }, 0);
+  tl.set(cortinas, { xPercent: -150, skewX: -18, autoAlpha: 1 }, 0);
+  tl.set(intro, { autoAlpha: 1 }, 0);
+  tl.call(() => marcar(-1), null, 0);
+  tl.set(fondos, { autoAlpha: 0 }, 0);
+
+  // Intro
+  tl.fromTo(logo, { scale: 0.78, autoAlpha: 0, y: 12 }, { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, 0.15);
+  tl.fromTo(brillo, { xPercent: -160 }, { xPercent: 160, duration: 0.75, ease: 'power2.inOut' }, 0.7);
+  tl.to(logo, { scale: 1.06, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, INICIOS[0] - ANTES - 0.05);
+  tl.set(intro, { autoAlpha: 0 }, INICIOS[0]);
+
+  // Cortina de color: la ámbar abre paso, la azul la sigue; el cambio ocurre cuando la azul cubre todo.
+  function cortina(inicio) {
+    tl.fromTo(cortinas[0], { xPercent: -150 }, { xPercent: 150, duration: CORTINA, ease: 'power3.inOut' }, inicio);
+    tl.fromTo(cortinas[1], { xPercent: -150 }, { xPercent: 150, duration: CORTINA, ease: 'power3.inOut' }, inicio + 0.12);
+  }
+
+  function escena(i) {
+    const t0 = INICIOS[i];
     const s = escenas[i];
     const q = (sel) => s.querySelectorAll(sel);
     const texto = s.querySelector('.bm__text');
     const arte = s.querySelector('.bm__art');
     const imagen = s.querySelector('.bm__art img');
+    const fantasma = s.querySelector('.bm__ghost');
     const palabras = q('.w__i');
     const fx = [...q('.bm__fx i')];
     const envoltura = s.querySelector('.bm__fx');
     const tipo = s.dataset.fx;
+    const anterior = i === 0 ? null : escenas[i - 1];
 
-    gsap.set([texto, arte, envoltura], { clearProps: 'all' });
-    gsap.set(texto, { autoAlpha: 1, y: 0 });
+    cortina(t0 - ANTES);
+    if (anterior) tl.set(anterior, { autoAlpha: 0 }, t0);
+    tl.set(s, { autoAlpha: 1 }, t0);
+    tl.call(() => marcar(i), null, t0);
+    tl.to(fondos, { autoAlpha: (k) => (k === i ? 1 : 0), duration: 0.01 }, t0);
 
-    const tl = gsap.timeline({ onComplete: () => ir((i + 1) % escenas.length) });
+    // Cámara lenta: la escena se acerca un poco mientras dura
+    tl.fromTo(s, { scale: 1 }, { scale: 1.035, duration: DURACION, ease: 'none' }, t0);
 
-    // Progreso de la escena en su barra
-    tl.fromTo(rellenos[i], { scaleX: 0 }, { scaleX: 1, duration: DURACION, ease: 'none' }, 0);
+    // Número gigante de fondo (paralaje)
+    tl.fromTo(fantasma, { x: 70, autoAlpha: 0 }, { x: -50, autoAlpha: 1, duration: DURACION, ease: 'none' }, t0);
 
-    // Texto: etiqueta, título palabra por palabra, descripción
-    tl.fromTo(q('.bm__n'), { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, ease: 'power3.out' }, 0.1);
-    tl.fromTo(palabras, { yPercent: 118, rotate: 5 }, { yPercent: 0, rotate: 0, duration: 0.9, ease: 'power4.out', stagger: 0.07 }, 0.2);
-    tl.fromTo(q('.bm__desc'), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, 0.55);
+    // Texto
+    tl.fromTo(q('.bm__n'), { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, ease: 'power3.out' }, t0 + 0.2);
+    tl.fromTo(palabras, { yPercent: 118, rotate: 6, skewX: -8 }, { yPercent: 0, rotate: 0, skewX: 0, duration: 0.85, ease: 'power4.out', stagger: 0.07 }, t0 + 0.3);
+    tl.fromTo(q('.bm__desc'), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, t0 + 0.7);
 
-    // Ilustración: entra con rebote suave y flota
-    const desdeX = tipo === 'veloz' ? -110 : 0;
+    // Ilustración
     tl.fromTo(
       arte,
-      { scale: 0.6, rotate: -10, x: desdeX, autoAlpha: 0 },
+      { scale: 0.55, rotate: -12, x: tipo === 'veloz' ? -120 : 0, autoAlpha: 0 },
       { scale: 1, rotate: 0, x: 0, autoAlpha: 1, duration: 1, ease: tipo === 'veloz' ? 'power4.out' : 'back.out(1.6)' },
-      0.15
+      t0 + 0.3
     );
-    tl.to(imagen, { y: -8, duration: 1.5, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 1.1);
+    tl.fromTo(imagen, { y: 0 }, { y: -8, duration: 1.4, yoyo: true, repeat: 1, ease: 'sine.inOut' }, t0 + 1.1);
 
     // Efecto propio de cada escena
     if (tipo === 'orbita') {
-      tl.fromTo(envoltura, { rotation: 0, autoAlpha: 0 }, { rotation: 360, autoAlpha: 1, duration: DURACION, ease: 'none' }, 0.2);
+      tl.fromTo(envoltura, { rotation: 0, autoAlpha: 0 }, { rotation: 360, autoAlpha: 1, duration: DURACION, ease: 'none' }, t0 + 0.2);
     } else if (tipo === 'veloz') {
-      tl.fromTo(fx, { scaleX: 0, autoAlpha: 0.9 }, { scaleX: 1, autoAlpha: 0, duration: 0.7, ease: 'power2.out', stagger: 0.12, repeat: 3, repeatDelay: 0.35 }, 0.3);
+      tl.fromTo(fx, { scaleX: 0, autoAlpha: 0.9 }, { scaleX: 1, autoAlpha: 0, duration: 0.7, ease: 'power2.out', stagger: 0.12, repeat: 1, repeatDelay: 0.3 }, t0 + 0.4);
     } else if (tipo === 'ping') {
-      tl.fromTo(fx, { scale: 0.5, autoAlpha: 0.7 }, { scale: 2.1, autoAlpha: 0, duration: 1.4, ease: 'power1.out', stagger: 0.35, repeat: 2, repeatDelay: 0.1 }, 0.6);
+      tl.fromTo(fx, { scale: 0.5, autoAlpha: 0.7 }, { scale: 2.1, autoAlpha: 0, duration: 1, ease: 'power1.out', stagger: 0.35, repeat: 1 }, t0 + 0.8);
     } else if (tipo === 'chispa') {
       tl.fromTo(
         fx,
         { x: 0, y: 0, scale: 0.4, autoAlpha: 1 },
-        { x: (k) => CHISPAS[k % CHISPAS.length][0], y: (k) => CHISPAS[k % CHISPAS.length][1], scale: 1, autoAlpha: 0, duration: 1, ease: 'power2.out', stagger: 0.15, repeat: 2, repeatDelay: 0.4 },
-        0.8
+        { x: (k) => CHISPAS[k % CHISPAS.length][0], y: (k) => CHISPAS[k % CHISPAS.length][1], scale: 1, autoAlpha: 0, duration: 0.9, ease: 'power2.out', stagger: 0.15, repeat: 1, repeatDelay: 0.3 },
+        t0 + 0.9
       );
     }
-
-    // Salida
-    tl.to(texto, { autoAlpha: 0, y: -14, duration: SALIDA - 0.1, ease: 'power2.in' }, DURACION - SALIDA);
-    tl.to(arte, { autoAlpha: 0, scale: 0.9, duration: SALIDA - 0.1, ease: 'power2.in' }, DURACION - SALIDA);
-    tl.set({}, {}, DURACION); // fija la duración total
-    return tl;
   }
 
+  escenas.forEach((_, i) => escena(i));
+
+  // Cierre: cortina final, se vacía el escenario y el video vuelve a empezar
+  const cierre = INICIOS[3] + DURACION;
+  cortina(cierre - ANTES);
+  tl.set(escenas[3], { autoAlpha: 0 }, cierre);
+  tl.call(() => marcar(-1), null, cierre);
+  tl.set({}, {}, TOTAL); // fija la duración total
+
+  // ---- Barra de progreso: un capítulo por barra --------------------------------
+  function actualizarProgreso() {
+    const t = tl.time();
+    rellenos.forEach((r, k) => gsap.set(r, { scaleX: limitar((t - INICIOS[k]) / DURACION) }));
+  }
+
+  pasos.forEach((p, k) =>
+    p.addEventListener('click', () => {
+      tl.seek(INICIOS[k] + 0.45);
+      aplicarPausa();
+    })
+  );
+
+  // ---- Pausa -------------------------------------------------------------------
+  let pausaUsuario = false;
+  let pausaTemporal = false;
   function aplicarPausa() {
-    if (linea) linea.paused(pausaUsuario || pausaTemporal);
+    tl.paused(pausaUsuario || pausaTemporal);
   }
-
-  function ir(i) {
-    if (linea) linea.kill();
-    marcar(i);
-    rellenos.forEach((r, j) => gsap.set(r, { scaleX: j < i ? 1 : 0 }));
-    gsap.to(fondos, { autoAlpha: (k) => (k === i ? 1 : 0), duration: 0.8, ease: 'power2.out', overwrite: true });
-    linea = construir(i);
-    aplicarPausa();
-  }
-
-  pasos.forEach((p, j) => p.addEventListener('click', () => ir(j)));
 
   pausa.addEventListener('click', () => {
     pausaUsuario = !pausaUsuario;
@@ -171,5 +218,9 @@ export function iniciar(raiz) {
     new IntersectionObserver((es) => { visible = es[es.length - 1].isIntersecting; evaluar(); }, { threshold: 0.1 }).observe(raiz);
   }
 
-  ir(0);
+  // Exponer el control para pruebas y para saltar a un momento concreto (?bm=7.5)
+  raiz.__linea = tl;
+  const salto = parseFloat(new URLSearchParams(location.search).get('bm'));
+  if (!Number.isNaN(salto)) tl.seek(salto);
+  aplicarPausa();
 }

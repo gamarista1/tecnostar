@@ -6,31 +6,10 @@ defined( 'ABSPATH' ) || exit;
 get_header();
 
 $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
-$cta_url  = tecnostar_hero( 'hero_cta_url' ) ?: $shop_url;
 ?>
 
-<section class="hero" aria-labelledby="hero-title">
-	<div class="container">
-		<div class="hero__inner">
-			<h1 id="hero-title" data-reveal><?php echo esc_html( tecnostar_hero( 'hero_title' ) ); ?></h1>
-			<p data-reveal><?php echo esc_html( tecnostar_hero( 'hero_text' ) ); ?></p>
-			<div class="hero__actions" data-reveal>
-				<a class="btn btn--accent" href="<?php echo esc_url( $cta_url ); ?>"><?php echo esc_html( tecnostar_hero( 'hero_cta_label' ) ); ?></a>
-			</div>
-		</div>
-	</div>
-</section>
-
-<section class="benefits" aria-label="<?php esc_attr_e( 'Beneficios', 'tecnostar' ); ?>">
-	<div class="container">
-		<ul>
-			<li data-reveal><strong>Envío gratis en Bogotá</strong><span>En compras desde $200.000</span></li>
-			<li data-reveal><strong>Recoge en la tienda</strong><span>Sin costo de envío</span></li>
-			<li data-reveal><strong>Paga como prefieras</strong><span>Wompi, Addi, Sistecrédito y más</span></li>
-			<li data-reveal><strong>Compra por WhatsApp</strong><span>Te atendemos al instante</span></li>
-		</ul>
-	</div>
-</section>
+<?php /* H1 de la página: se conserva para SEO y lectores de pantalla; el banner de portada anterior se retiró. */ ?>
+<h1 class="screen-reader-text"><?php echo esc_html( tecnostar_hero( 'hero_title' ) ); ?></h1>
 
 <?php /* Ancla del banner de Addi: su script lo inserta justo después de este <header>. */ ?>
 <header class="addi-anchor" aria-hidden="true"></header>
@@ -52,9 +31,13 @@ $total = count( $escenas );
 		<?php endforeach; ?>
 		<span class="bm__blob bm__blob--a"></span><span class="bm__blob bm__blob--b"></span>
 	</div>
+	<div class="bm__intro" aria-hidden="true">
+		<div class="bm__logo"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?>" width="849" height="227" alt="" decoding="async"><span class="bm__brillo"></span></div>
+	</div>
 	<div class="container bm__stage" aria-live="off">
 		<?php foreach ( $escenas as $i => $e ) : ?>
 			<article class="bm__scene<?php echo 0 === $i ? ' is-active' : ''; ?>" data-fx="<?php echo esc_attr( $e['fx'] ); ?>" role="group" aria-roledescription="<?php esc_attr_e( 'diapositiva', 'tecnostar' ); ?>" aria-label="<?php echo esc_attr( ( $i + 1 ) . ' / ' . $total ); ?>"<?php echo 0 === $i ? '' : ' hidden'; ?>>
+				<span class="bm__ghost" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span>
 				<div class="bm__text">
 					<p class="bm__n"><span><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span> / <?php echo esc_html( sprintf( '%02d', $total ) ); ?></p>
 					<h2 class="bm__title"><?php echo esc_html( $e['t'] ); ?></h2>
@@ -67,6 +50,7 @@ $total = count( $escenas );
 			</article>
 		<?php endforeach; ?>
 	</div>
+	<span class="bm__wipe bm__wipe--a" aria-hidden="true"></span><span class="bm__wipe bm__wipe--b" aria-hidden="true"></span>
 	<div class="bm__nav" hidden>
 		<?php foreach ( $escenas as $i => $e ) : ?>
 			<button class="bm__paso" type="button" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: título de la diapositiva */ __( 'Ir a: %s', 'tecnostar' ), $e['t'] ) ); ?>"><span class="bm__pista"><span class="bm__relleno"></span></span></button>

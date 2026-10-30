@@ -51,7 +51,7 @@
   // Bogotá: el departamento ya es la ciudad; se pide la localidad en lugar de la ciudad.
   function esBogota() {
     var s = form.querySelector('[name="billing_state"]');
-    return !!s && s.value === 'DC';
+    return !!s && s.value === 'CO-DC';
   }
 
   function aplicarBogota() {

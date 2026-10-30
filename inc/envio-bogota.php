@@ -18,8 +18,8 @@ function tecnostar_envio_bogota_costo() {
 add_filter(
 	'woocommerce_states',
 	function ( $estados ) {
-		if ( isset( $estados['CO']['DC'] ) ) {
-			$estados['CO']['DC'] = 'D.C. Bogotá';
+		if ( isset( $estados['CO']['CO-DC'] ) ) {
+			$estados['CO']['CO-DC'] = 'D.C. Bogotá';
 		}
 		return $estados;
 	}
@@ -52,7 +52,7 @@ add_filter(
 add_filter(
 	'woocommerce_checkout_posted_data',
 	function ( $datos ) {
-		if ( isset( $datos['billing_state'] ) && 'DC' === $datos['billing_state'] ) {
+		if ( isset( $datos['billing_state'] ) && 'CO-DC' === $datos['billing_state'] ) {
 			$datos['billing_city'] = 'Bogotá D.C.';
 		}
 		return $datos;
@@ -63,7 +63,7 @@ add_action(
 	'woocommerce_after_checkout_validation',
 	function ( $datos, $errores ) {
 		$metodo = isset( $datos['shipping_method'][0] ) ? (string) $datos['shipping_method'][0] : '';
-		if ( isset( $datos['billing_state'] ) && 'DC' === $datos['billing_state'] && 0 !== strpos( $metodo, 'ts_recoger:' ) && empty( $datos['billing_localidad'] ) ) {
+		if ( isset( $datos['billing_state'] ) && 'CO-DC' === $datos['billing_state'] && 0 !== strpos( $metodo, 'ts_recoger:' ) && empty( $datos['billing_localidad'] ) ) {
 			$errores->add( 'billing_localidad_required', 'Elige tu <strong>localidad</strong> de Bogotá.', array( 'id' => 'billing_localidad' ) );
 		}
 	},
@@ -75,7 +75,7 @@ add_action(
 add_action(
 	'woocommerce_checkout_create_order',
 	function ( $pedido, $datos ) {
-		if ( ! empty( $datos['billing_localidad'] ) && isset( $datos['billing_state'] ) && 'DC' === $datos['billing_state'] ) {
+		if ( ! empty( $datos['billing_localidad'] ) && isset( $datos['billing_state'] ) && 'CO-DC' === $datos['billing_state'] ) {
 			$pedido->set_billing_address_2( trim( $pedido->get_billing_address_2() . ' · Localidad ' . $datos['billing_localidad'], ' ·' ) );
 		}
 	},
@@ -88,7 +88,7 @@ add_filter(
 	'woocommerce_package_rates',
 	function ( $rates, $package ) {
 		$estado = isset( $package['destination']['state'] ) ? $package['destination']['state'] : '';
-		if ( 'DC' !== $estado ) {
+		if ( 'CO-DC' !== $estado ) {
 			return $rates;
 		}
 		foreach ( array_keys( $rates ) as $id ) {

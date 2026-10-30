@@ -33,9 +33,8 @@
 .bm__desc { margin: 0; font-size: 0.875rem; line-height: 1.4; color: #3d5566; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* Ilustración: el blanco del fondo del PNG se funde con el color del banner */
-.bm__art { position: relative; display: grid; place-items: center; width: 6.5rem; aspect-ratio: 1; justify-self: end; }
-.bm__art::before { content: ""; position: absolute; inset: -30%; border-radius: 50%; background: radial-gradient(closest-side, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0)); }
-.bm__art img { position: relative; width: 100%; height: auto; mix-blend-mode: multiply; }
+.bm__art { position: relative; display: grid; place-items: center; width: 6.5rem; aspect-ratio: 1; justify-self: end; mix-blend-mode: multiply; }
+.bm__art img { position: relative; width: 100%; height: auto; }
 
 /* Efectos de cada escena (los posiciona la escena; el movimiento lo pone GSAP) */
 .bm__fx { position: absolute; inset: 0; pointer-events: none; }

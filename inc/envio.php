@@ -14,9 +14,16 @@ function tecnostar_tiendas() {
 	return apply_filters(
 		'tecnostar_tiendas',
 		array(
-			'chapinero-cat' => array(
-				'nombre'    => 'Tecnostar Chapinero (CAT)',
-				'direccion' => 'Calle 77 # 15-58, Entrada 3, Centro de Alta Tecnología, Local 1-94 / 1-116, Bogotá',
+			'cat' => array(
+				'nombre'   => 'Tecnostar (CAT)',
+				'detalles' => array(
+					'Lugar'     => 'Centro Comercial de Alta Tecnología (CAT)',
+					'Dirección' => 'Calle 77 # 15-58',
+					'Acceso'    => 'Entrada 3, locales 1-94 / 1-116',
+					'Localidad' => 'Chapinero',
+					'Barrio'    => 'El Lago Gaitán',
+				),
+				'mapa'     => 'Tecnostar Ingeniería Electrónica, Cl. 77 #15-58, Chapinero, Bogotá, Colombia',
 			),
 		)
 	);
@@ -38,7 +45,7 @@ add_filter(
 		foreach ( tecnostar_tiendas() as $slug => $t ) {
 			$id   = 'ts_recoger:' . $slug;
 			$rate = new WC_Shipping_Rate( $id, 'Recoger en ' . $t['nombre'], 0, array(), 'ts_recoger' );
-			$rate->add_meta_data( 'Tienda', $t['nombre'] . ' · ' . $t['direccion'] );
+			$rate->add_meta_data( 'Tienda', $t['nombre'] . ' · ' . $t['detalles']['Dirección'] . ', ' . $t['detalles']['Localidad'] );
 			$rates[ $id ] = $rate;
 		}
 		return $rates;
@@ -46,18 +53,59 @@ add_filter(
 	100
 );
 
-// Debajo del nombre de la opción se muestra la dirección de la tienda.
+// Presentación de la opción: nombre, datos de la tienda y botón para ver el mapa.
 add_filter(
 	'woocommerce_cart_shipping_method_full_label',
 	function ( $label, $method ) {
 		if ( 0 !== strpos( $method->get_id(), 'ts_recoger:' ) ) {
 			return $label;
 		}
-		$slug = substr( $method->get_id(), strlen( 'ts_recoger:' ) );
-		$t    = tecnostar_tiendas();
-		$dir  = isset( $t[ $slug ] ) ? $t[ $slug ]['direccion'] : '';
-		return '<span class="ts-envio__nombre">' . esc_html( $method->get_label() ) . ' <b class="ts-envio__gratis">Gratis</b></span>' . ( $dir ? '<small class="ts-envio__sub">' . esc_html( $dir ) . '</small>' : '' );
+		$slug   = substr( $method->get_id(), strlen( 'ts_recoger:' ) );
+		$tienda = tecnostar_tiendas();
+		if ( ! isset( $tienda[ $slug ] ) ) {
+			return $label;
+		}
+		$t    = $tienda[ $slug ];
+		$html = '<span class="ts-envio__nombre">' . esc_html( $t['nombre'] ) . ' <b class="ts-envio__gratis">Recoger gratis</b></span><dl class="ts-envio__datos">';
+		foreach ( $t['detalles'] as $k => $v ) {
+			$html .= '<div><dt>' . esc_html( $k ) . '</dt><dd>' . esc_html( $v ) . '</dd></div>';
+		}
+		$html .= '</dl>';
+		if ( ! empty( $t['mapa'] ) ) {
+			$html .= '<a href="#mapa" class="ts-envio__mapa" role="button" data-mapa="' . esc_attr( $slug ) . '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>Ver en el mapa</a>';
+		}
+		return $html;
 	},
 	10,
 	2
+);
+
+// Ventana con el mapa de Google (el mapa se carga solo al abrirla).
+add_action(
+	'wp_footer',
+	function () {
+		if ( ! is_checkout() || is_order_received_page() ) {
+			return;
+		}
+		$mapas = array();
+		foreach ( tecnostar_tiendas() as $slug => $t ) {
+			if ( ! empty( $t['mapa'] ) ) {
+				$mapas[ $slug ] = array(
+					'nombre' => $t['nombre'],
+					'src'    => 'https://www.google.com/maps?q=' . rawurlencode( $t['mapa'] ) . '&output=embed',
+					'abrir'  => 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $t['mapa'] ),
+				);
+			}
+		}
+		?>
+		<dialog class="ts-mapa" data-mapa-modal aria-labelledby="ts-mapa-t" data-mapas="<?php echo esc_attr( wp_json_encode( $mapas ) ); ?>">
+			<div class="ts-mapa__cab">
+				<h2 id="ts-mapa-t"></h2>
+				<button type="button" class="ts-mapa__x" data-mapa-cerrar aria-label="<?php esc_attr_e( 'Cerrar mapa', 'tecnostar' ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+			</div>
+			<div class="ts-mapa__cuerpo"><iframe title="<?php esc_attr_e( 'Mapa de la tienda', 'tecnostar' ); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+			<a class="ts-mapa__abrir" href="#" target="_blank" rel="noopener"><?php esc_html_e( 'Abrir en Google Maps', 'tecnostar' ); ?></a>
+		</dialog>
+		<?php
+	}
 );

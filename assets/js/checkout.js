@@ -357,4 +357,33 @@
 
   recap();
   pintarNav();
+  // ---- Mapa de la tienda en una ventana ----
+  var modal = document.querySelector('[data-mapa-modal]');
+  if (modal && modal.showModal) {
+    var mapas = {};
+    try { mapas = JSON.parse(modal.getAttribute('data-mapas') || '{}'); } catch (e) { mapas = {}; }
+    var marco = modal.querySelector('iframe');
+    var cerrando = false;
+    var cerrar = function () {
+      if (cerrando || !modal.open) return;
+      cerrando = true;
+      modal.classList.add('is-cerrando');
+      setTimeout(function () { modal.close(); modal.classList.remove('is-cerrando'); cerrando = false; marco.removeAttribute('src'); }, reducido ? 0 : 220);
+    };
+    raiz.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-mapa]');
+      if (!a) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var m = mapas[a.getAttribute('data-mapa')];
+      if (!m) return;
+      modal.querySelector('h2').textContent = m.nombre;
+      modal.querySelector('.ts-mapa__abrir').href = m.abrir;
+      marco.src = m.src;
+      modal.showModal();
+    });
+    modal.addEventListener('click', function (e) { if (e.target === modal || e.target.closest('[data-mapa-cerrar]')) cerrar(); });
+    modal.addEventListener('cancel', function (e) { e.preventDefault(); cerrar(); });
+  }
+
 })();

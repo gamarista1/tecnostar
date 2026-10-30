@@ -305,3 +305,35 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-envio .ts-envio__nombre { font-weight: 600; color: #0b3954; }
 .ts-envio .ts-envio__gratis { margin-left: var(--space-2); padding: 0.125rem 0.5rem; border-radius: 999px; background: #eef7e8; color: #2d6a08; font-size: 0.75rem; font-weight: 600; }
 .ts-envio .ts-envio__sub { display: block; margin-top: 0.125rem; font-size: 0.8125rem; font-weight: 400; color: #5c676d; line-height: 1.35; }
+
+/* Recoger en tienda: datos ordenados y botón del mapa */
+.ts-envio .ts-envio__datos { display: grid; gap: 0.125rem; margin: var(--space-2) 0 var(--space-2); }
+.ts-envio .ts-envio__datos div { display: flex; gap: var(--space-2); font-size: 0.8125rem; line-height: 1.35; }
+.ts-envio .ts-envio__datos dt { flex: none; min-width: 4.75rem; color: #5c676d; }
+.ts-envio .ts-envio__datos dd { margin: 0; color: #0b3954; font-weight: 500; }
+.ts-envio .ts-envio__mapa { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.875rem 0.375rem 0.625rem; border-radius: 999px; background: #ecf7fb; color: #37409a; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: transform var(--dur-press), background var(--dur-fast); }
+.ts-envio .ts-envio__mapa:hover { background: #dcedf4; }
+.ts-envio .ts-envio__mapa:active { transform: scale(0.96); }
+.ts-envio .ts-envio__mapa svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ts-envio .ts-envio__gratis { background: #eef7e8; }
+
+/* Ventana del mapa */
+.ts-mapa { width: min(100% - 1rem, 44rem); max-height: calc(100dvh - 1rem); margin: auto; padding: 0; border: 0; border-radius: 1.25rem; overflow: hidden; background: #fff; box-shadow: 0 24px 64px rgb(11 57 84 / 0.35); font-family: var(--font-sans); animation: ts-mapa-entra 360ms var(--ease-spring) both; }
+.ts-mapa::backdrop { background: rgb(11 57 84 / 0.55); animation: ts-mapa-velo 260ms ease both; }
+.ts-mapa.is-cerrando { animation: ts-mapa-sale 220ms ease-in both; }
+.ts-mapa.is-cerrando::backdrop { animation: ts-mapa-velo 220ms ease reverse both; }
+.ts-mapa__cab { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); }
+.ts-mapa__cab h2 { margin: 0; font-size: 1.25rem; letter-spacing: -0.02em; color: #0b3954; }
+.ts-mapa__x { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border: 0; border-radius: 50%; background: #ecf7fb; color: #0b3954; cursor: pointer; transition: transform var(--dur-press), background var(--dur-fast); }
+.ts-mapa__x:hover { background: #dcedf4; }
+.ts-mapa__x:active { transform: scale(0.9); }
+.ts-mapa__x svg { width: 1.125rem; height: 1.125rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.ts-mapa__cuerpo { height: min(60dvh, 28rem); background: #e8eef1; }
+.ts-mapa__cuerpo iframe { display: block; width: 100%; height: 100%; border: 0; }
+.ts-mapa__abrir { display: block; padding: var(--space-3) var(--space-4); text-align: center; font-weight: 600; color: #37409a; text-decoration: none; }
+.ts-mapa__abrir:hover { text-decoration: underline; }
+.ts-mapa button:focus-visible, .ts-mapa a:focus-visible { outline: 3px solid #37409a; outline-offset: -3px; }
+@keyframes ts-mapa-entra { from { opacity: 0; transform: translateY(16px) scale(0.97); } }
+@keyframes ts-mapa-sale { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes ts-mapa-velo { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ts-mapa, .ts-mapa::backdrop, .ts-mapa.is-cerrando, .ts-mapa.is-cerrando::backdrop { animation: none; } }

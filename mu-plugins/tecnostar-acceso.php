@@ -52,9 +52,9 @@ function tecnostar_acceso_404() {
 	exit;
 }
 
-/** Atiende /tsi con el formulario de wp-login.php y cierra la puerta a las rutas por defecto. */
+/** Atiende /tsi con el formulario de wp-login.php. Va en wp_loaded: WordPress ya terminó de arrancar. */
 add_action(
-	'plugins_loaded',
+	'wp_loaded',
 	function () {
 		global $pagenow, $error, $interim_login, $action, $user_login;
 
@@ -62,13 +62,24 @@ add_action(
 			return;
 		}
 
-		$ruta = tecnostar_acceso_ruta();
-
-		if ( tecnostar_acceso_slug( 'admin' ) === $ruta ) {
+		if ( tecnostar_acceso_slug( 'admin' ) === tecnostar_acceso_ruta() ) {
 			$pagenow = 'wp-login.php';
 			require_once ABSPATH . 'wp-login.php';
 			exit;
 		}
+	},
+	9
+);
+
+/** Cierra la puerta a las rutas por defecto (wp-login.php y wp-admin para visitantes). */
+add_action(
+	'plugins_loaded',
+	function () {
+		if ( wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+			return;
+		}
+
+		$ruta = tecnostar_acceso_ruta();
 
 		if ( 'wp-login.php' === $ruta || 'wp-register.php' === $ruta || 'wp-signup.php' === $ruta ) {
 			tecnostar_acceso_404();

@@ -130,7 +130,7 @@ export function iniciar(raiz) {
     tl.to(fondos, { autoAlpha: (k) => (k === i ? 1 : 0), duration: 0.01 }, t0);
 
     // Cámara lenta: la escena se acerca un poco mientras dura
-    tl.fromTo(s, { scale: 1 }, { scale: 1.035, duration: DURACION, ease: 'none' }, t0);
+    tl.fromTo(texto, { scale: 1 }, { scale: 1.035, transformOrigin: 'left center', duration: DURACION, ease: 'none' }, t0);
 
     // Número gigante de fondo (paralaje)
     tl.fromTo(fantasma, { x: 70, autoAlpha: 0 }, { x: -50, autoAlpha: 1, duration: DURACION, ease: 'none' }, t0);

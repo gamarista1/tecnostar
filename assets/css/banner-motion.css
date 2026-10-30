@@ -113,7 +113,8 @@
 }
 
 /* ---- Carrusel único: posición 1 Addi, posición 2 video ---- */
-.hc { position: relative; height: 280px; overflow: hidden; isolation: isolate; contain: layout paint; }
+/* Sin contain ni isolation: el modal de Addi (position: fixed) debe poder salir del carrusel y quedar por encima de la página. */
+.hc { position: relative; height: 280px; overflow: hidden; }
 .hc__slide { position: absolute; inset: 0; }
 .hc__slide--motion { visibility: hidden; }
 .hc__slide .bm { position: absolute; inset: 0; height: auto; }

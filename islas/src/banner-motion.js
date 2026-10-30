@@ -20,6 +20,63 @@ const CHISPAS = [
   [10, -78],
 ];
 
+/*
+  Da vida al banner de Addi desde fuera: sus componentes tienen shadow DOM abierto, así que se le
+  inyecta una hoja de estilos con animaciones de entrada (foto, logo, título, botón) y un destello en
+  el botón. No se modifica su texto, su enlace ni su modal. Si Addi cambia su estructura, no pasa nada:
+  simplemente no se anima.
+*/
+const CSS_ADDI = `
+@media (prefers-reduced-motion: no-preference) {
+  .ts-play { animation: ts-foto 1.1s cubic-bezier(.22,1,.36,1) both; }
+  .ts-play .addi-home-banner-02-content-container__logo-title { animation: ts-in .7s .1s cubic-bezier(.22,1,.36,1) both; }
+  .ts-play .addi-home-banner-02-content-container__title { animation: ts-in .8s .25s cubic-bezier(.22,1,.36,1) both; }
+  .ts-play .addi-home-banner-02-content-container__button { position: relative; overflow: hidden; animation: ts-in .7s .5s cubic-bezier(.22,1,.36,1) both, ts-pulso 2.6s 1.6s ease-in-out infinite; }
+  .ts-play .addi-home-banner-02-content-container__button::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 35%, rgb(255 255 255 / .55) 50%, transparent 65%); transform: translateX(-120%); animation: ts-brillo 3.2s 1.2s ease-in-out infinite; }
+}
+@keyframes ts-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes ts-foto { from { background-position: 112% 50%, 0% 0%; } }
+@keyframes ts-pulso { 50% { transform: scale(1.05); } }
+@keyframes ts-brillo { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+`;
+
+function animarAddi(slide, alPrincipio) {
+  let objetivo = null;
+  const ctl = {
+    play() {
+      if (!objetivo) return;
+      objetivo.classList.remove('ts-play');
+      void objetivo.offsetWidth; // reinicia las animaciones
+      objetivo.classList.add('ts-play');
+    },
+    stop() {
+      if (objetivo) objetivo.classList.remove('ts-play');
+    },
+  };
+  let intentos = 0;
+  const buscar = setInterval(() => {
+    intentos += 1;
+    try {
+      const raiz = slide.querySelector('addi-home-banner')?.shadowRoot;
+      const interno = raiz?.querySelector('addi-home-banner-02')?.shadowRoot;
+      const caja = interno?.querySelector('.addi-home-banner-02');
+      if (caja) {
+        clearInterval(buscar);
+        const estilo = document.createElement('style');
+        estilo.textContent = CSS_ADDI;
+        interno.appendChild(estilo);
+        objetivo = caja;
+        if (alPrincipio()) ctl.play();
+        return;
+      }
+    } catch (e) {
+      /* estructura distinta: se deja el banner como lo entrega Addi */
+    }
+    if (intentos > 60) clearInterval(buscar);
+  }, 250);
+  return ctl;
+}
+
 export function iniciar(raiz) {
   const slideAddi = raiz.querySelector('.hc__slide--addi');
   const slideVideo = raiz.querySelector('.hc__slide--motion');
@@ -94,6 +151,9 @@ export function iniciar(raiz) {
   // ---- Línea de tiempo maestra -------------------------------------------------
   const tl = gsap.timeline({ repeat: -1, paused: true });
 
+  // Animación suave sobre el banner de Addi, sin tocar su lógica (ver animarAddi)
+  const addi = animarAddi(slideAddi, () => tl.time() < BASE - 0.5);
+
   // Estado inicial (también se reaplica en cada vuelta del bucle)
   tl.set(slideAddi, { autoAlpha: 1 }, 0);
   tl.set(slideVideo, { autoAlpha: 0 }, 0);
@@ -101,7 +161,7 @@ export function iniciar(raiz) {
   tl.set(cortinas, { xPercent: -150, skewX: -18, autoAlpha: 1 }, 0);
   tl.set(intro, { autoAlpha: 1 }, 0);
   tl.set(fondos, { autoAlpha: 0 }, 0);
-  tl.call(() => { marcar(-1); ponerPunto(0); }, null, 0);
+  tl.call(() => { marcar(-1); ponerPunto(0); addi.play(); }, null, 0);
 
   // Cortina de color: la ámbar abre paso, la azul la sigue; el cambio ocurre cuando la azul cubre todo.
   function cortina(inicio) {
@@ -116,7 +176,7 @@ export function iniciar(raiz) {
   cortina(BASE - ANTES);
   tl.set(slideAddi, { autoAlpha: 0 }, BASE);
   tl.set(slideVideo, { autoAlpha: 1 }, BASE);
-  tl.call(() => ponerPunto(1), null, BASE);
+  tl.call(() => { ponerPunto(1); addi.stop(); }, null, BASE);
 
   // Intro del video
   tl.fromTo(logo, { scale: 0.78, autoAlpha: 0, y: 12 }, { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, BASE + 0.15);
@@ -191,7 +251,7 @@ export function iniciar(raiz) {
   tl.set(escenas[3], { autoAlpha: 0 }, cierre);
   tl.set(slideVideo, { autoAlpha: 0 }, cierre);
   tl.set(slideAddi, { autoAlpha: 1 }, cierre);
-  tl.call(() => { marcar(-1); ponerPunto(0); }, null, cierre);
+  tl.call(() => { marcar(-1); ponerPunto(0); addi.play(); }, null, cierre);
   tl.set({}, {}, TOTAL); // fija una duración mínima
 
   // ---- Puntos del carrusel ------------------------------------------------------

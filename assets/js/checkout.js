@@ -146,6 +146,7 @@
       if (i === actual) btn.setAttribute('aria-current', 'step');
       else btn.removeAttribute('aria-current');
     });
+    actualizarSig();
   }
 
   function cancelar() {
@@ -193,9 +194,69 @@
     if (n === 2 && $) $(document.body).trigger('update_checkout');
   }
 
+  // ---- Botón contextual: "Siguiente" pasa al campo contiguo; "Continuar" cambia de paso ----
+  function camposPaso(i) {
+    return [].slice.call(paneles[i].querySelectorAll('input, select, textarea')).filter(function (el) {
+      return ['hidden', 'checkbox', 'radio', 'submit', 'button'].indexOf(el.type) < 0 && !el.disabled && !el.readOnly && el.offsetParent !== null;
+    });
+  }
+
+  function indiceActivo(campos) {
+    var a = document.activeElement;
+    if (!a || a === document.body) return -1;
+    for (var k = 0; k < campos.length; k++) {
+      var c = campos[k];
+      if (c === a || (c.nextElementSibling && c.nextElementSibling.contains(a))) return k;
+    }
+    return -1;
+  }
+
+  function pasoCompleto(i) {
+    return camposRegla(paneles[i]).every(function (el) { return REGLAS[el.name](el.value || '') === true; });
+  }
+
+  function estadoSig() {
+    var campos = camposPaso(actual);
+    var k = indiceActivo(campos);
+    var proximo = k >= 0 && k < campos.length - 1 && !pasoCompleto(actual) ? campos[k + 1] : null;
+    return { actual: k >= 0 ? campos[k] : null, proximo: proximo };
+  }
+
+  function actualizarSig() {
+    var btn = paneles[actual] && paneles[actual].querySelector('[data-sig]');
+    if (!btn) return;
+    if (!btn.hasAttribute('data-texto')) btn.setAttribute('data-texto', btn.textContent);
+    var texto = estadoSig().proximo ? 'Siguiente' : btn.getAttribute('data-texto');
+    if (btn.textContent !== texto) btn.textContent = texto;
+  }
+
+  function enfocar(el) {
+    if ($ && el.tagName === 'SELECT' && $.fn.select2 && $(el).data('select2')) {
+      $(el).select2('open');
+      return;
+    }
+    el.focus({ preventScroll: true });
+    el.scrollIntoView({ block: 'center', behavior: reducido ? 'auto' : 'smooth' });
+  }
+
   function siguiente() {
+    var e = estadoSig();
+    if (e.proximo) {
+      if (e.actual && REGLAS[e.actual.name] && !validar(e.actual)) return;
+      enfocar(e.proximo);
+      return;
+    }
     if (validarPaso(actual)) ir(actual + 1);
   }
+
+  // Pulsar el botón no le quita el foco al campo: el teclado del móvil se queda abierto.
+  raiz.addEventListener('mousedown', function (e) {
+    if (e.target.closest('[data-sig]')) e.preventDefault();
+  });
+  raiz.addEventListener('focusin', actualizarSig);
+  raiz.addEventListener('focusout', function () { setTimeout(actualizarSig, 0); });
+  form.addEventListener('input', actualizarSig);
+  form.addEventListener('change', actualizarSig);
 
   raiz.addEventListener('click', function (e) {
     var b = e.target.closest('button');

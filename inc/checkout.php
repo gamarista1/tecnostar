@@ -48,9 +48,9 @@ add_filter(
 		}
 		if ( isset( $fields['order']['order_comments'] ) ) {
 			$fields['order']['order_comments']['label']       = 'Notas para la entrega';
-		$fields['billing']['billing_phone']['custom_attributes']['maxlength'] = '12';
 			$fields['order']['order_comments']['placeholder'] = 'Ej. Dejar con el portero';
 		}
+		$fields['billing']['billing_phone']['custom_attributes']['maxlength'] = '12';
 		return $fields;
 	},
 	99

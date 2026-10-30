@@ -164,14 +164,7 @@ html.no-js .ts-co__pasos, html.no-js [data-sig], html.no-js [data-atras], html.n
 
 /* ---- Avisos y cupón de WooCommerce con la marca ---- */
 .ts-co .woocommerce-NoticeGroup, .woocommerce-notices-wrapper { margin: 0 0 var(--space-4); }
-.ts-co .woocommerce-error, .ts-co .woocommerce-message, .ts-co .woocommerce-info { list-style: none; margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); border: 0; border-left: 4px solid #37409a; border-radius: var(--radius-sm); background: #ecf7fb; color: #0b3954; animation: ts-sube 280ms var(--ease-spring); }
-.ts-co .woocommerce-error { border-left-color: var(--co-error); background: #fdecea; color: #7a1a14; }
-.ts-co .woocommerce-error::before, .ts-co .woocommerce-message::before, .ts-co .woocommerce-info::before { display: none; }
-.ts-co .woocommerce-info a, .ts-co .woocommerce-message a { font-weight: 600; color: #37409a; }
 .woocommerce-checkout .woocommerce-form-login-toggle, .woocommerce-form-coupon-toggle { max-width: var(--container, 75rem); margin: 0 auto; padding-inline: var(--space-4); }
-.woocommerce-checkout .woocommerce-form-login-toggle .woocommerce-info, .woocommerce-form-coupon-toggle .woocommerce-info { margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4); border: 0; border-left: 4px solid #ffb128; border-radius: var(--radius-sm); background: #fff7e4; color: #0b3954; }
-.woocommerce-checkout .woocommerce-form-login-toggle .woocommerce-info::before, .woocommerce-form-coupon-toggle .woocommerce-info::before { display: none; }
-.woocommerce-checkout .woocommerce-form-login-toggle .woocommerce-info a, .woocommerce-form-coupon-toggle .woocommerce-info a { font-weight: 600; color: #37409a; }
 form.checkout_coupon { max-width: var(--container, 75rem); margin: 0 auto var(--space-4); padding: var(--space-4); border: 1px dashed #cdd8df; border-radius: var(--radius); }
 form.checkout_coupon .input-text { height: 3rem; padding: 0 var(--space-4); border: 1.5px solid #cdd8df; border-radius: 0.75rem; font: inherit; }
 form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 0; border-radius: 999px; background: #37409a; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }

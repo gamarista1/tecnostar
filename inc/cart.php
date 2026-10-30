@@ -31,3 +31,14 @@ add_action(
 	},
 	20
 );
+
+// Avisos de WooCommerce con la marca, en toda la tienda.
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		if ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() ) {
+			wp_enqueue_style( 'tecnostar-avisos', get_template_directory_uri() . '/assets/css/avisos.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/avisos.css' ) );
+		}
+	},
+	20
+);

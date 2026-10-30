@@ -23,7 +23,7 @@
 		</a>
 
 		<?php if ( function_exists( 'wc_get_cart_url' ) ) : ?>
-			<a class="icon-btn" href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="<?php esc_attr_e( 'Carrito', 'tecnostar' ); ?>">
+			<a class="icon-btn" data-mc-abrir href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="<?php esc_attr_e( 'Carrito', 'tecnostar' ); ?>">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
 				<?php echo tecnostar_cart_count_html(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			</a>

@@ -28,12 +28,21 @@ add_action( 'after_setup_theme', function () {
 	);
 } );
 
+/**
+ * Versión de un recurso del tema = fecha de modificación del archivo, para que
+ * navegadores y cachés lo recarguen en cuanto cambie.
+ */
+function tecnostar_asset_ver( $relative_path ) {
+	$file = get_template_directory() . $relative_path;
+	return file_exists( $file ) ? (string) filemtime( $file ) : TECNOSTAR_VERSION;
+}
+
 add_action( 'wp_enqueue_scripts', function () {
 	$css = get_template_directory_uri() . '/assets/css/';
-	wp_enqueue_style( 'tecnostar-tokens', $css . 'tokens.css', array(), TECNOSTAR_VERSION );
-	wp_enqueue_style( 'tecnostar-base', $css . 'base.css', array( 'tecnostar-tokens' ), TECNOSTAR_VERSION );
-	wp_enqueue_style( 'tecnostar-components', $css . 'components.css', array( 'tecnostar-base' ), TECNOSTAR_VERSION );
-	wp_enqueue_script( 'tecnostar-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), TECNOSTAR_VERSION, array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	wp_enqueue_style( 'tecnostar-tokens', $css . 'tokens.css', array(), tecnostar_asset_ver( '/assets/css/tokens.css' ) );
+	wp_enqueue_style( 'tecnostar-base', $css . 'base.css', array( 'tecnostar-tokens' ), tecnostar_asset_ver( '/assets/css/base.css' ) );
+	wp_enqueue_style( 'tecnostar-components', $css . 'components.css', array( 'tecnostar-base' ), tecnostar_asset_ver( '/assets/css/components.css' ) );
+	wp_enqueue_script( 'tecnostar-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), tecnostar_asset_ver( '/assets/js/motion.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 } );
 
 // Precarga de la tipografía para evitar el salto de texto.

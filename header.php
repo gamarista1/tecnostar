@@ -16,7 +16,7 @@
 			<img
 				src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?>"
 				srcset="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?> 425w, <?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?> 849w"
-				sizes="150px"
+				sizes="(min-width: 52rem) 224px, 150px"
 				width="425" height="114"
 				alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
 				fetchpriority="high" decoding="async">

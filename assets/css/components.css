@@ -231,9 +231,9 @@
 /* ---------- Escritorio (>= 52rem) ---------- */
 @media (min-width: 52rem) {
   .icon-btn--menu { display: none; }
-  .site-header__bar { flex-wrap: nowrap; gap: var(--space-4); min-height: 4rem; }
+  .site-header__bar { flex-wrap: nowrap; gap: var(--space-4); min-height: 5rem; }
   .brand { margin-right: 0; }
-  .brand img { height: 2.75rem; }
+  .brand img { height: 3.75rem; }
   .nav-panel { display: block; flex: 1 1 auto; order: 0; overflow: visible; }
   .nav-panel > div { overflow: visible; }
   .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-1); padding: 0; }

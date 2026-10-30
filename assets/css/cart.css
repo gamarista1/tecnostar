@@ -115,3 +115,14 @@
 	.ts-ca__item, .ts-ca-vacio, .ts-ok__sello, .ts-ok__titulo, .ts-ok__hero p, .ts-ok__datos li { animation: none; }
 	.ts-ok__sello svg { animation: none; stroke-dashoffset: 0; }
 }
+
+/* Anular valores de WooCommerce */
+.ts-ca .ts-ca__actualizar[hidden] { display: none !important; }
+.ts-ca__resumen .cart-collaterals, .ts-ca__resumen .cart-collaterals .cart_totals { float: none !important; width: 100% !important; }
+.ts-ca__resumen .cart-collaterals .wc-proceed-to-checkout a.checkout-button.button.alt { display: flex !important; align-items: center; justify-content: center; width: 100%; height: 3.5rem; padding: 0 !important; line-height: 1 !important; border-radius: 999px; background: #37409a !important; color: #fff !important; font-size: 1.0625rem; font-weight: 600; }
+.ts-ca__resumen .cart-collaterals .wc-proceed-to-checkout a.checkout-button.button.alt:hover { background: #2f3787 !important; }
+.ts-ca__resumen .shop_table tr.shipping td, .ts-ca__resumen .shop_table tr.shipping th { background: none; }
+.woocommerce-cart .woocommerce-message, .woocommerce-cart .woocommerce-info, .woocommerce-cart .woocommerce-error { margin: 0 0 var(--space-4); padding: var(--space-3) var(--space-4) var(--space-3) 3rem; border: 0; border-radius: 0.75rem; background: #ecf7fb; color: #0b3954; font-size: 0.9375rem; box-shadow: none; outline: 0; }
+.woocommerce-cart .woocommerce-message::before { color: #3d850e; }
+.woocommerce-cart .woocommerce-error { background: #fdecea; color: #7a1b15; }
+.woocommerce-cart .woocommerce-message a.button, .woocommerce-cart .woocommerce-info a.button { display: none; }

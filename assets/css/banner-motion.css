@@ -97,11 +97,6 @@
 .bm__text { position: relative; z-index: 1; }
 .bm__art { z-index: 1; }
 
-.bm__ghost {
-	position: absolute; inset: 0; display: grid; align-items: center; justify-items: end; padding-right: 2%;
-	font-size: clamp(8rem, 26vw, 15rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
-	color: transparent; -webkit-text-stroke: 2px rgb(55 64 154 / 0.16); pointer-events: none; user-select: none;
-}
 
 .bm__intro { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; visibility: hidden; pointer-events: none; }
 .bm__logo { position: relative; overflow: hidden; width: clamp(11rem, 30vw, 21rem); }
@@ -114,6 +109,35 @@
 .bm__nav { z-index: 4; }
 
 @media (prefers-reduced-motion: reduce) {
-	.bm__ghost { -webkit-text-stroke-color: rgb(55 64 154 / 0.1); }
 	.bm__wipe, .bm__intro { display: none; }
 }
+
+/* ---- Carrusel único: posición 1 Addi, posición 2 video ---- */
+.hc { position: relative; height: 280px; overflow: hidden; isolation: isolate; contain: layout paint; }
+.hc__slide { position: absolute; inset: 0; }
+.hc__slide--motion { visibility: hidden; }
+.hc__slide .bm { position: absolute; inset: 0; height: auto; }
+.hc__slide--addi > * { max-width: 100%; }
+.hc .bm__wipe { z-index: 3; }
+
+/* Puntos del carrusel, centrados abajo; el punto activo se alarga */
+.bm__nav { left: 50%; right: auto; width: max-content; max-width: none; transform: translateX(-50%); padding-inline: 0; gap: 0.25rem; }
+.bm__paso { flex: 0 0 auto; width: 1.5rem; max-width: none; height: 1.75rem; transition: width var(--dur, 300ms) var(--ease-spring, ease); }
+.bm__paso[aria-current="true"] { width: 2.5rem; }
+.bm__pista { background: rgb(11 57 84 / 0.28); }
+.bm__relleno { background: #37409a; transform: scaleX(0); transition: transform 300ms ease; }
+.bm__paso[aria-current="true"] .bm__relleno { transform: scaleX(1); background: #37409a; }
+.bm__pausa { margin-left: 0.5rem; background: rgb(11 57 84 / 0.12); }
+
+/* Escena 3 con la ilustración a la izquierda: cada escena tiene su propia composición */
+.bm__scene[data-fx="ping"] { grid-template-columns: 6.5rem minmax(0, 1fr); }
+.bm__scene[data-fx="ping"] .bm__art { order: -1; justify-self: start; }
+@media (min-width: 40rem) {
+	.bm__scene[data-fx="ping"] { grid-template-columns: 11rem minmax(0, 1fr); }
+	.bm__scene[data-fx="ping"] .bm__art { justify-self: center; }
+}
+@media (min-width: 52rem) {
+	.bm__scene[data-fx="ping"] { grid-template-columns: 1fr minmax(0, 36rem); }
+	.bm__scene[data-fx="ping"] .bm__art { justify-self: end; margin-right: 3rem; }
+}
+.bm__art { mix-blend-mode: normal; }

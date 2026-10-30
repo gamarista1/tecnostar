@@ -1,16 +1,15 @@
 import gsap from 'gsap';
 
 /*
-  Banner de portada como un video corto de 15 s, en bucle, con una sola línea de tiempo:
-    0.00  intro: el logo entra con un destello
-    1.75  01 Comunidad     5.15  02 Entrega Express
-    8.55  03 Medios de pago   11.95  04 Despacho inmediato
-    14.35 cierre y vuelta al inicio
-  Entre capítulos pasa una cortina de color; el contenido cambia justo cuando la cubre.
+  Carrusel de portada con una sola línea de tiempo:
+    posición 1  Addi (se queda quieto unos segundos)
+    posición 2  video intro de 15 s: logo, Comunidad, Entrega Express, Medios de pago, Despacho inmediato
+  Entre posiciones y entre escenas pasa una cortina de color; el contenido cambia justo cuando la cubre.
 */
-const TOTAL = 15;
-const INICIOS = [1.75, 5.15, 8.55, 11.95];
-const DURACION = 3.4; // duración de cada capítulo
+const BASE = 6; // segundos que se ve Addi antes de que arranque el video
+const TOTAL = BASE + 15;
+const INICIOS = [1.75, 5.15, 8.55, 11.95].map((t) => t + BASE);
+const DURACION = 3.4; // duración de cada escena
 const CORTINA = 0.85; // recorrido de cada cortina
 const ANTES = 0.55; // la cortina empieza esto antes del cambio
 
@@ -21,12 +20,11 @@ const CHISPAS = [
   [10, -78],
 ];
 
-const limitar = (v) => Math.min(1, Math.max(0, v));
-
 export function iniciar(raiz) {
+  const slideAddi = raiz.querySelector('.hc__slide--addi');
+  const slideVideo = raiz.querySelector('.hc__slide--motion');
   const escenas = [...raiz.querySelectorAll('.bm__scene')];
-  const pasos = [...raiz.querySelectorAll('.bm__paso')];
-  const rellenos = pasos.map((p) => p.querySelector('.bm__relleno'));
+  let pasos = [...raiz.querySelectorAll('.bm__paso')];
   const fondos = [...raiz.querySelectorAll('.bm__fondo')];
   const pausa = raiz.querySelector('.bm__pausa');
   const nav = raiz.querySelector('.bm__nav');
@@ -56,49 +54,54 @@ export function iniciar(raiz) {
     });
   });
 
+  // Qué punto del carrusel está activo (0 = Addi, 1 = video; en movimiento reducido, uno por escena)
+  function ponerPunto(n) {
+    pasos.forEach((p, j) => {
+      if (j === n) p.setAttribute('aria-current', 'true');
+      else p.removeAttribute('aria-current');
+    });
+  }
+
   function marcar(i) {
     escenas.forEach((s, j) => {
       s.classList.toggle('is-active', j === i);
       s.setAttribute('aria-hidden', String(j !== i));
     });
-    pasos.forEach((p, j) => {
-      if (j === i) p.setAttribute('aria-current', 'true');
-      else p.removeAttribute('aria-current');
-    });
     fondos.forEach((f, j) => f.classList.toggle('is-on', j === i));
   }
 
-  // Sin movimiento: solo cambia la escena visible, sin reproducción automática.
+  // Sin movimiento: sin reproducción automática; los puntos cambian entre Addi y cada escena.
   if (reducido) {
     pausa.hidden = true;
-    marcar(0);
-    rellenos.forEach((r, j) => gsap.set(r, { scaleX: j === 0 ? 1 : 0 }));
-    pasos.forEach((p, j) =>
-      p.addEventListener('click', () => {
-        marcar(j);
-        rellenos.forEach((r, k) => gsap.set(r, { scaleX: k === j ? 1 : 0 }));
-      })
-    );
+    for (let k = 1; k < escenas.length; k++) {
+      nav.insertBefore(pasos[1].cloneNode(true), pausa);
+    }
+    pasos = [...raiz.querySelectorAll('.bm__paso')];
+    const mostrar = (n) => {
+      const video = n > 0;
+      slideAddi.style.visibility = video ? 'hidden' : 'visible';
+      slideVideo.style.visibility = video ? 'visible' : 'hidden';
+      marcar(video ? n - 1 : -1);
+      ponerPunto(n);
+    };
+    pasos.forEach((p, n) => p.addEventListener('click', () => mostrar(n)));
+    mostrar(0);
     return;
   }
 
   pausa.hidden = false;
 
   // ---- Línea de tiempo maestra -------------------------------------------------
-  const tl = gsap.timeline({ repeat: -1, paused: true, onUpdate: actualizarProgreso });
+  const tl = gsap.timeline({ repeat: -1, paused: true });
 
   // Estado inicial (también se reaplica en cada vuelta del bucle)
+  tl.set(slideAddi, { autoAlpha: 1 }, 0);
+  tl.set(slideVideo, { autoAlpha: 0 }, 0);
   tl.set(escenas, { autoAlpha: 0 }, 0);
   tl.set(cortinas, { xPercent: -150, skewX: -18, autoAlpha: 1 }, 0);
   tl.set(intro, { autoAlpha: 1 }, 0);
-  tl.call(() => marcar(-1), null, 0);
   tl.set(fondos, { autoAlpha: 0 }, 0);
-
-  // Intro
-  tl.fromTo(logo, { scale: 0.78, autoAlpha: 0, y: 12 }, { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, 0.15);
-  tl.fromTo(brillo, { xPercent: -160 }, { xPercent: 160, duration: 0.75, ease: 'power2.inOut' }, 0.7);
-  tl.to(logo, { scale: 1.06, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, INICIOS[0] - ANTES - 0.05);
-  tl.set(intro, { autoAlpha: 0 }, INICIOS[0]);
+  tl.call(() => { marcar(-1); ponerPunto(0); }, null, 0);
 
   // Cortina de color: la ámbar abre paso, la azul la sigue; el cambio ocurre cuando la azul cubre todo.
   function cortina(inicio) {
@@ -109,6 +112,19 @@ export function iniciar(raiz) {
     });
   }
 
+  // Addi -> video
+  cortina(BASE - ANTES);
+  tl.set(slideAddi, { autoAlpha: 0 }, BASE);
+  tl.set(slideVideo, { autoAlpha: 1 }, BASE);
+  tl.call(() => ponerPunto(1), null, BASE);
+
+  // Intro del video
+  tl.fromTo(logo, { scale: 0.78, autoAlpha: 0, y: 12 }, { scale: 1, autoAlpha: 1, y: 0, duration: 0.8, ease: 'back.out(1.5)' }, BASE + 0.15);
+  tl.fromTo(brillo, { xPercent: -160 }, { xPercent: 160, duration: 0.75, ease: 'power2.inOut' }, BASE + 0.7);
+  tl.to(logo, { scale: 1.06, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, INICIOS[0] - ANTES - 0.05);
+  tl.set(intro, { autoAlpha: 0 }, INICIOS[0]);
+
+  // Cada escena entra a su manera.
   function escena(i) {
     const t0 = INICIOS[i];
     const s = escenas[i];
@@ -116,8 +132,8 @@ export function iniciar(raiz) {
     const texto = s.querySelector('.bm__text');
     const arte = s.querySelector('.bm__art');
     const imagen = s.querySelector('.bm__art img');
-    const fantasma = s.querySelector('.bm__ghost');
     const palabras = q('.w__i');
+    const desc = s.querySelector('.bm__desc');
     const fx = [...q('.bm__fx i')];
     const envoltura = s.querySelector('.bm__fx');
     const tipo = s.dataset.fx;
@@ -129,61 +145,60 @@ export function iniciar(raiz) {
     tl.call(() => marcar(i), null, t0);
     tl.to(fondos, { autoAlpha: (k) => (k === i ? 1 : 0), duration: 0.01 }, t0);
 
-    // Cámara lenta: la escena se acerca un poco mientras dura
+    // Cámara lenta: solo el texto se acerca un poco
     tl.fromTo(texto, { scale: 1 }, { scale: 1.035, transformOrigin: 'left center', duration: DURACION, ease: 'none' }, t0);
 
-    // Número gigante de fondo (paralaje)
-    tl.fromTo(fantasma, { x: 70, autoAlpha: 0 }, { x: -50, autoAlpha: 1, duration: DURACION, ease: 'none' }, t0);
-
-    // Texto
-    tl.fromTo(q('.bm__n'), { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.5, ease: 'power3.out' }, t0 + 0.2);
-    tl.fromTo(palabras, { yPercent: 118, rotate: 6, skewX: -8 }, { yPercent: 0, rotate: 0, skewX: 0, duration: 0.85, ease: 'power4.out', stagger: 0.07 }, t0 + 0.3);
-    tl.fromTo(q('.bm__desc'), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, t0 + 0.7);
-
-    // Ilustración
-    tl.fromTo(
-      arte,
-      { scale: 0.55, rotate: -12, x: tipo === 'veloz' ? -120 : 0, autoAlpha: 0 },
-      { scale: 1, rotate: 0, x: 0, autoAlpha: 1, duration: 1, ease: tipo === 'veloz' ? 'power4.out' : 'back.out(1.6)' },
-      t0 + 0.3
-    );
-    tl.fromTo(imagen, { y: 0 }, { y: -8, duration: 1.4, yoyo: true, repeat: 1, ease: 'sine.inOut' }, t0 + 1.1);
-
-    // Efecto propio de cada escena
     if (tipo === 'orbita') {
+      // 1 · Comunidad: las palabras suben, el icono gira hacia su sitio y late rodeado de satélites
+      tl.fromTo(palabras, { yPercent: 118, rotate: 6, skewX: -8 }, { yPercent: 0, rotate: 0, skewX: 0, duration: 0.85, ease: 'power4.out', stagger: 0.07 }, t0 + 0.3);
+      tl.fromTo(desc, { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, t0 + 0.7);
+      tl.fromTo(arte, { scale: 0.3, rotate: -200, autoAlpha: 0 }, { scale: 1, rotate: 0, autoAlpha: 1, duration: 1.1, ease: 'back.out(1.7)' }, t0 + 0.3);
+      tl.fromTo(imagen, { scale: 1 }, { scale: 1.07, duration: 0.45, yoyo: true, repeat: 3, ease: 'sine.inOut' }, t0 + 1.4);
       tl.fromTo(envoltura, { rotation: 0, autoAlpha: 0 }, { rotation: 360, autoAlpha: 1, duration: DURACION, ease: 'none' }, t0 + 0.2);
     } else if (tipo === 'veloz') {
-      tl.fromTo(fx, { scaleX: 0, autoAlpha: 0.9 }, { scaleX: 1, autoAlpha: 0, duration: 0.7, ease: 'power2.out', stagger: 0.12, repeat: 1, repeatDelay: 0.3 }, t0 + 0.4);
+      // 2 · Entrega Express: el texto entra veloz desde la izquierda y el icono llega desde la derecha dejando estelas
+      tl.fromTo(palabras, { xPercent: -140, skewX: 24 }, { xPercent: 0, skewX: 0, duration: 0.7, ease: 'power4.out', stagger: 0.06 }, t0 + 0.25);
+      tl.fromTo(desc, { x: -70, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.7, ease: 'power3.out' }, t0 + 0.6);
+      tl.fromTo(arte, { x: 700, skewX: -16, autoAlpha: 0 }, { x: 0, skewX: 0, autoAlpha: 1, duration: 0.9, ease: 'power4.out' }, t0 + 0.2);
+      tl.fromTo(imagen, { y: 0 }, { y: -6, duration: 0.18, yoyo: true, repeat: 9, ease: 'sine.inOut' }, t0 + 1.1);
+      tl.fromTo(fx, { scaleX: 0, autoAlpha: 0.9 }, { scaleX: 1, autoAlpha: 0, duration: 0.6, ease: 'power2.out', stagger: 0.1, repeat: 2, repeatDelay: 0.15 }, t0 + 0.4);
     } else if (tipo === 'ping') {
-      tl.fromTo(fx, { scale: 0.5, autoAlpha: 0.7 }, { scale: 2.1, autoAlpha: 0, duration: 1, ease: 'power1.out', stagger: 0.35, repeat: 1 }, t0 + 0.8);
+      // 3 · Medios de pago: la tarjeta da la vuelta, los anillos laten y el texto se escribe de izquierda a derecha
+      tl.fromTo(palabras, { xPercent: -108 }, { xPercent: 0, duration: 0.55, ease: 'power3.out', stagger: 0.14 }, t0 + 0.35);
+      tl.fromTo(desc, { clipPath: 'inset(0 100% 0 0)', autoAlpha: 1 }, { clipPath: 'inset(0 0% 0 0)', duration: 1, ease: 'power2.inOut' }, t0 + 0.8);
+      tl.fromTo(arte, { rotationY: 180, scale: 0.6, autoAlpha: 0, transformPerspective: 700 }, { rotationY: 0, scale: 1, autoAlpha: 1, duration: 1, ease: 'power3.out' }, t0 + 0.3);
+      tl.fromTo(fx, { scale: 0.5, autoAlpha: 0.7 }, { scale: 2.1, autoAlpha: 0, duration: 1, ease: 'power1.out', stagger: 0.35, repeat: 1 }, t0 + 1.0);
     } else if (tipo === 'chispa') {
+      // 4 · Despacho inmediato: la caja cae desde arriba, aterriza con un rebote y salta una lluvia de chispas
+      tl.fromTo(palabras, { scale: 0, yPercent: 40, transformOrigin: '50% 100%' }, { scale: 1, yPercent: 0, duration: 0.6, ease: 'back.out(2.6)', stagger: 0.1 }, t0 + 0.35);
+      tl.fromTo(desc, { y: -14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, t0 + 0.9);
+      tl.fromTo(arte, { y: -240, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'bounce.out' }, t0 + 0.2);
+      tl.fromTo(imagen, { scaleY: 0.86, transformOrigin: '50% 100%' }, { scaleY: 1, duration: 0.5, ease: 'elastic.out(1,0.4)' }, t0 + 0.95);
       tl.fromTo(
         fx,
         { x: 0, y: 0, scale: 0.4, autoAlpha: 1 },
-        { x: (k) => CHISPAS[k % CHISPAS.length][0], y: (k) => CHISPAS[k % CHISPAS.length][1], scale: 1, autoAlpha: 0, duration: 0.9, ease: 'power2.out', stagger: 0.15, repeat: 1, repeatDelay: 0.3 },
-        t0 + 0.9
+        { x: (k) => CHISPAS[k % CHISPAS.length][0], y: (k) => CHISPAS[k % CHISPAS.length][1], scale: 1, autoAlpha: 0, duration: 0.9, ease: 'power2.out', stagger: 0.12, repeat: 1, repeatDelay: 0.3 },
+        t0 + 0.95
       );
     }
   }
 
   escenas.forEach((_, i) => escena(i));
 
-  // Cierre: cortina final, se vacía el escenario y el video vuelve a empezar
+  // Cierre: cortina final, se vacía el escenario y vuelve Addi
   const cierre = INICIOS[3] + DURACION;
   cortina(cierre - ANTES);
   tl.set(escenas[3], { autoAlpha: 0 }, cierre);
-  tl.call(() => marcar(-1), null, cierre);
-  tl.set({}, {}, TOTAL); // fija la duración total
+  tl.set(slideVideo, { autoAlpha: 0 }, cierre);
+  tl.set(slideAddi, { autoAlpha: 1 }, cierre);
+  tl.call(() => { marcar(-1); ponerPunto(0); }, null, cierre);
+  tl.set({}, {}, TOTAL); // fija una duración mínima
 
-  // ---- Barra de progreso: un capítulo por barra --------------------------------
-  function actualizarProgreso() {
-    const t = tl.time();
-    rellenos.forEach((r, k) => gsap.set(r, { scaleX: limitar((t - INICIOS[k]) / DURACION) }));
-  }
-
+  // ---- Puntos del carrusel ------------------------------------------------------
+  const destinos = [0.4, BASE + 0.3];
   pasos.forEach((p, k) =>
     p.addEventListener('click', () => {
-      tl.seek(INICIOS[k] + 0.45);
+      tl.seek(destinos[k], false);
       aplicarPausa();
     })
   );
@@ -224,6 +239,6 @@ export function iniciar(raiz) {
   // Exponer el control para pruebas y para saltar a un momento concreto (?bm=7.5)
   raiz.__linea = tl;
   const salto = parseFloat(new URLSearchParams(location.search).get('bm'));
-  if (!Number.isNaN(salto)) tl.seek(salto);
+  if (!Number.isNaN(salto)) tl.seek(salto, false);
   aplicarPausa();
 }

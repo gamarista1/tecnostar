@@ -99,7 +99,7 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 					<h2 id="ts-t1" class="ts-paso__titulo" tabindex="-1"><?php esc_html_e( '¿Dónde te lo llevamos?', 'tecnostar' ); ?></h2>
 					<p class="ts-recap" data-recap="0"></p>
 					<div class="ts-campos">
-						<?php $campos( array( 'billing_country', 'billing_state' ) ); ?>
+						<?php $campos( array( 'billing_country', 'billing_state', 'billing_localidad', 'billing_city' ) ); ?>
 					</div>
 
 					<h3 class="ts-subtitulo"><?php esc_html_e( 'Forma de entrega', 'tecnostar' ); ?></h3>

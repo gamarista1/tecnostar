@@ -1,0 +1,69 @@
+/* Páginas internas (Persona Natural, servicios; luego Empresas y Nosotros). Móvil primero. */
+.pn .es-ejemplo, .ts-servicio .es-ejemplo { display: block; }
+
+/* ---------- Hero ---------- */
+.pn-hero { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color: #fff; }
+.pn-hero__in { display: grid; justify-items: start; gap: var(--space-4); padding-block: var(--space-12); }
+.pn-hero__eyebrow { margin: 0; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 0.875rem; color: var(--color-accent); }
+.pn-hero__t { margin: 0; max-width: 40rem; color: #fff; font-size: clamp(1.5rem, 5.2vw, 2.5rem); line-height: 1.2; }
+.pn-hero__precio { margin: 0; font-size: 1.25rem; color: #fff; }
+.pn-hero__precio strong { display: inline-block; padding: var(--space-1) var(--space-3); border-radius: 999px; background: rgb(255 255 255 / 0.14); }
+
+/* ---------- Tarjetas de servicio ---------- */
+.pn-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.pn-card {
+  position: relative; display: grid; align-content: start; gap: var(--space-2);
+  padding: var(--space-6); border-radius: var(--radius); background: #fff; border: 1px solid rgb(11 57 84 / 0.12);
+  box-shadow: var(--shadow-1); color: var(--color-primary-dark);
+  transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast) var(--ease-spring);
+}
+.pn-card__ico { display: inline-grid; place-items: center; width: 3.5rem; height: 3.5rem; border-radius: 50%; background: var(--color-surface); }
+.pn-card__ico svg { width: 1.75rem; height: 1.75rem; fill: none; stroke: var(--color-primary); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.pn-card__t { margin: var(--space-2) 0 0; font-size: 1.25rem; line-height: 1.2; }
+.pn-card__d { margin: 0; color: #3d5566; font-size: 0.9375rem; line-height: 1.4; }
+.pn-card__p { margin: 0; font-weight: 700; color: var(--color-primary); }
+.pn-card__a { margin-top: var(--space-2); display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 700; color: var(--color-primary); text-decoration: none; }
+/* Toda la tarjeta es clicable a través de su enlace. */
+.pn-card__a::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+.pn-card:focus-within { outline: 3px solid var(--color-accent); outline-offset: 2px; }
+.pn-card__a:focus-visible { outline: none; }
+.pn-card:active { transform: scale(0.985); transition-duration: var(--dur-press); }
+
+/* ---------- Antes y después ---------- */
+.pn-ad__par { display: grid; gap: var(--space-4); }
+.pn-ad__f { margin: 0; position: relative; overflow: hidden; border-radius: var(--radius); background: #fff; box-shadow: var(--shadow-1); }
+.pn-ad__f img { display: block; width: 100%; height: auto; }
+.pn-ad__f figcaption {
+  position: absolute; left: var(--space-3); top: var(--space-3); padding: var(--space-1) var(--space-3);
+  border-radius: 999px; background: var(--color-primary-dark); color: #fff; font-weight: 700; font-size: 0.875rem;
+}
+
+/* ---------- Llamada final ---------- */
+.pn-cta__in { display: grid; justify-items: start; gap: var(--space-3); }
+.pn-cta h2 { margin: 0; }
+.pn-cta p { margin: 0; color: #3d5566; }
+
+/* ---------- Página de un servicio ---------- */
+.ts-servicio { padding-block: var(--space-8) var(--space-12); max-width: 46rem; }
+.ts-servicio__volver { margin: 0 0 var(--space-4); }
+.ts-servicio__volver a { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 600; color: var(--color-primary); }
+.ts-servicio__cab { display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4); }
+.ts-servicio__cab h1 { margin: 0; font-size: clamp(1.5rem, 5vw, 2.25rem); line-height: 1.15; color: var(--color-primary-dark); }
+.ts-servicio__contenido { color: var(--color-text); line-height: 1.6; }
+.ts-servicio__precio { margin: var(--space-4) 0; font-size: 1.375rem; font-weight: 700; color: var(--color-primary); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pn-card:active { transform: none; }
+}
+@media (min-width: 40rem) {
+  .pn-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pn-ad__par { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 52rem) {
+  .pn-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pn-hero__in { padding-block: var(--space-16); }
+  .pn-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
+}
+@media (min-width: 52rem) and (prefers-reduced-motion: reduce) {
+  .pn-card:hover { transform: none; }
+}

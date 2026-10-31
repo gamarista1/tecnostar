@@ -10,3 +10,6 @@ deployment:
     - export MUPATH=/home/tecnosta/public_html/v2.tecnostaringenieria.com/wp-content/mu-plugins/
     - /bin/mkdir -p $MUPATH
     - /bin/cp mu-plugins/tecnostar-acceso.php $MUPATH
+    # Núcleo: cargador + carpeta de módulos (pendientes, etc.).
+    - /bin/cp mu-plugins/tecnostar-nucleo.php $MUPATH
+    - /bin/cp -R mu-plugins/tecnostar-nucleo $MUPATH

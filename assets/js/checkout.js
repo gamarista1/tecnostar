@@ -515,6 +515,8 @@
     g.style.maxWidth = Math.min(256, max - min) + 'px';
     var w = g.offsetWidth;
     var izq = Math.max(min, Math.min((min + max - w) / 2, max - w));
+    var cen = r.left + r.width / 2;
+    izq = Math.max(cen - w + 14, Math.min(izq, cen - 14)); // la flecha siempre alcanza al botón
     var ax = Math.max(14, Math.min(r.left + r.width / 2 - izq, w - 14));
     g.style.setProperty('--gl', (izq - r.left) + 'px');
     g.style.setProperty('--ax', ax + 'px');

@@ -213,6 +213,16 @@ function tecnostar_contacto_procesar( array $in ): array {
 		return $r;
 	}
 
+	// Para visitantes WordPress pasa kses al guardar y convierte "&" en "&amp;". El texto ya viene sin etiquetas
+	// (sanitize_*_field), así que se guarda tal cual: se quitan esos filtros solo durante esta inserción.
+	$kses = array();
+	foreach ( array( 'content_save_pre' => 'wp_filter_post_kses', 'title_save_pre' => 'wp_filter_kses' ) as $gancho => $fn ) {
+		$prio = has_filter( $gancho, $fn );
+		if ( false !== $prio ) {
+			$kses[ $gancho ] = array( $fn, $prio );
+			remove_filter( $gancho, $fn, $prio );
+		}
+	}
 	$id = wp_insert_post(
 		array(
 			'post_type'    => 'ts_contacto',
@@ -228,6 +238,9 @@ function tecnostar_contacto_procesar( array $in ): array {
 		),
 		true
 	);
+	foreach ( $kses as $gancho => $f ) {
+		add_filter( $gancho, $f[0], $f[1] );
+	}
 	if ( is_wp_error( $id ) || ! $id ) {
 		$r['estado']  = 500;
 		$r['mensaje'] = 'No pudimos guardar tu mensaje. Escríbenos directo por WhatsApp.';
@@ -406,6 +419,26 @@ add_action(
 						return new WP_Error( 'ts_no_es_contacto', 'No es un contacto.', array( 'status' => 404 ) );
 					}
 					return array( 'borrado' => (bool) wp_delete_post( $id, true ) );
+				},
+			)
+		);
+		register_rest_route(
+			'tecnostar/v1',
+			'/contactos/limite',
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => $admin,
+				// Estado de los contadores (sin IP: solo envíos y fin de la ventana).
+				'callback'            => function () {
+					global $wpdb;
+					$filas = $wpdb->get_col( "SELECT option_value FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_ts\\_contacto\\_%'" ); // phpcs:ignore WordPress.DB
+					return array_map(
+						function ( $v ) {
+							$d = maybe_unserialize( $v );
+							return is_array( $d ) ? array( 'n' => (int) $d['n'], 'fin' => (int) $d['fin'] ) : null;
+						},
+						$filas
+					);
 				},
 			)
 		);

@@ -36,7 +36,7 @@ $total = count( $escenas );
 		<span class="bm__blob bm__blob--a"></span><span class="bm__blob bm__blob--b"></span>
 	</div>
 	<div class="bm__intro" aria-hidden="true">
-		<div class="bm__logo"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?>" width="849" height="227" alt="" decoding="async"><span class="bm__brillo"></span></div>
+		<div class="bm__logo"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?>" width="849" height="227" alt="" fetchpriority="low" decoding="async"><span class="bm__brillo"></span></div>
 	</div>
 	<div class="container bm__stage" aria-live="off">
 		<?php foreach ( $escenas as $i => $e ) : ?>
@@ -47,7 +47,7 @@ $total = count( $escenas );
 				</div>
 				<div class="bm__art" aria-hidden="true">
 					<span class="bm__fx"><i></i><i></i><i></i></span>
-					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/banner/' . $e['img'] . '.webp' ) ); ?>" width="150" height="150" alt=""<?php echo 0 === $i ? ' fetchpriority="low"' : ' loading="lazy"'; ?> decoding="async">
+					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/banner/' . $e['img'] . '.webp' ) ); ?>" width="150" height="150" alt=""<?php echo 0 === $i ? ' fetchpriority="high"' : ' loading="lazy"'; ?> decoding="async">
 				</div>
 			</article>
 		<?php endforeach; ?>

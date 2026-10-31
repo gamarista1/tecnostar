@@ -505,11 +505,27 @@
     modal.addEventListener('cancel', function (e) { e.preventDefault(); cerrar(); });
   }
 
+  // El globo se centra en la pantalla (dentro del margen) y su flecha apunta al botón.
+  function centrarTip(t) {
+    var g = t.querySelector('.ts-tip__globo');
+    if (!g) return;
+    var r = t.getBoundingClientRect(), w = g.offsetWidth, m = 12;
+    var izq = (window.innerWidth - w) / 2;
+    izq = Math.max(m, Math.min(izq, window.innerWidth - w - m));
+    var gl = izq - r.left;
+    var ax = Math.max(14, Math.min(r.left + r.width / 2 - izq, w - 14));
+    g.style.setProperty('--gl', gl + 'px');
+    g.style.setProperty('--ax', ax + 'px');
+  }
+  document.addEventListener('mouseover', function (e) { var t = e.target.closest('[data-tip]'); if (t) centrarTip(t); });
+  document.addEventListener('focusin', function (e) { var t = e.target.closest('[data-tip]'); if (t) centrarTip(t); });
+  window.addEventListener('resize', function () { document.querySelectorAll('[data-tip].is-abierto').forEach(centrarTip); });
+
   // Tooltips propios (Wompi): toque o teclado los abren; tocar fuera o Escape los cierra.
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-tip]');
     document.querySelectorAll('[data-tip].is-abierto').forEach(function (n) { if (n !== t) n.classList.remove('is-abierto'); });
-    if (t) t.classList.toggle('is-abierto');
+    if (t) { centrarTip(t); t.classList.toggle('is-abierto'); }
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') document.querySelectorAll('[data-tip].is-abierto').forEach(function (n) { n.classList.remove('is-abierto'); });

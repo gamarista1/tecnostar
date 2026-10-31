@@ -144,26 +144,58 @@ function tecnostar_contacto_ip_normalizada( string $ip ): string {
 	return $ip;
 }
 
+/**
+ * Contador de envíos por IP. Se guarda directo en la tabla de opciones (fila no autocargada) y se lee sin
+ * pasar por la caché de objetos: en el staging hay object-cache.php (LiteSpeed) que no comparte datos entre
+ * admin-ajax y las páginas, y con transients el envío sin JavaScript contaba en otro sitio.
+ * Prefijo de las filas: ts_contacto_lim_. El evento diario borra las vencidas.
+ */
+const TECNOSTAR_CONTACTO_PREFIJO_LIM = 'ts_contacto_lim_';
+
 /** Clave del contador por IP (HMAC; la IP no se guarda). */
 function tecnostar_contacto_clave(): string {
 	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	return 'ts_contacto_' . substr( hash_hmac( 'sha256', tecnostar_contacto_ip_normalizada( $ip ), wp_salt( 'nonce' ) ), 0, 24 );
+	return TECNOSTAR_CONTACTO_PREFIJO_LIM . substr( hash_hmac( 'sha256', tecnostar_contacto_ip_normalizada( $ip ), wp_salt( 'nonce' ) ), 0, 24 );
+}
+
+/** Lee el contador sin caché. */
+function tecnostar_contacto_contador_leer( string $clave ): array {
+	global $wpdb;
+	$v = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $clave ) ); // phpcs:ignore WordPress.DB
+	$d = $v ? json_decode( $v, true ) : null;
+	return is_array( $d ) && isset( $d['n'], $d['fin'] ) ? array( 'n' => (int) $d['n'], 'fin' => (int) $d['fin'] ) : array( 'n' => 0, 'fin' => 0 );
 }
 
 function tecnostar_contacto_agotado(): bool {
-	$d = get_transient( tecnostar_contacto_clave() );
-	return is_array( $d ) && (int) $d['n'] >= TECNOSTAR_CONTACTO_MAX_ENVIOS && (int) $d['fin'] > time();
+	$d = tecnostar_contacto_contador_leer( tecnostar_contacto_clave() );
+	return $d['n'] >= TECNOSTAR_CONTACTO_MAX_ENVIOS && $d['fin'] > time();
 }
 
 /** Suma un envío; la ventana de una hora empieza con el primero. */
 function tecnostar_contacto_sumar(): void {
+	global $wpdb;
 	$clave = tecnostar_contacto_clave();
-	$d     = get_transient( $clave );
-	if ( ! is_array( $d ) || (int) $d['fin'] <= time() ) {
+	$d     = tecnostar_contacto_contador_leer( $clave );
+	if ( $d['fin'] <= time() ) {
 		$d = array( 'n' => 0, 'fin' => time() + HOUR_IN_SECONDS );
 	}
-	$d['n'] = (int) $d['n'] + 1;
-	set_transient( $clave, $d, max( 1, (int) $d['fin'] - time() ) );
+	$d['n']++;
+	$wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no') ON DUPLICATE KEY UPDATE option_value = VALUES(option_value)", $clave, wp_json_encode( $d ) ) ); // phpcs:ignore WordPress.DB
+}
+
+/** Borra contadores: todos o solo los vencidos. Devuelve filas borradas. */
+function tecnostar_contacto_contadores_borrar( bool $todos ): int {
+	global $wpdb;
+	$like  = $wpdb->esc_like( TECNOSTAR_CONTACTO_PREFIJO_LIM ) . '%';
+	$filas = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) ); // phpcs:ignore WordPress.DB
+	$n     = 0;
+	foreach ( $filas as $f ) {
+		$d = json_decode( $f->option_value, true );
+		if ( $todos || ! is_array( $d ) || (int) $d['fin'] <= time() ) {
+			$n += (int) $wpdb->delete( $wpdb->options, array( 'option_name' => $f->option_name ) ); // phpcs:ignore WordPress.DB
+		}
+	}
+	return $n;
 }
 
 /** Aviso por correo. Sin ajuste de correo no se envía (queda como pendiente). */
@@ -332,6 +364,7 @@ add_action(
 		foreach ( $viejos as $id ) {
 			wp_delete_post( (int) $id, true );
 		}
+		tecnostar_contacto_contadores_borrar( false );
 	}
 );
 
@@ -431,10 +464,10 @@ add_action(
 				// Estado de los contadores (sin IP: solo envíos y fin de la ventana).
 				'callback'            => function () {
 					global $wpdb;
-					$filas = $wpdb->get_col( "SELECT option_value FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_ts\\_contacto\\_%'" ); // phpcs:ignore WordPress.DB
+					$filas = $wpdb->get_col( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( TECNOSTAR_CONTACTO_PREFIJO_LIM ) . '%' ) ); // phpcs:ignore WordPress.DB
 					return array_map(
 						function ( $v ) {
-							$d = maybe_unserialize( $v );
+							$d = json_decode( $v, true );
 							return is_array( $d ) ? array( 'n' => (int) $d['n'], 'fin' => (int) $d['fin'] ) : null;
 						},
 						$filas
@@ -448,12 +481,9 @@ add_action(
 			array(
 				'methods'             => 'DELETE',
 				'permission_callback' => $admin,
-				// Reinicia el límite de TODAS las conexiones (el navegador y el script de prueba pueden salir por IPv4 e IPv6).
+				// Reinicia el límite de todas las conexiones (útil tras una prueba o un bloqueo por error).
 				'callback'            => function () {
-					global $wpdb;
-					delete_transient( tecnostar_contacto_clave() );
-					$n = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_ts\\_contacto\\_%' OR option_name LIKE '\\_transient\\_timeout\\_ts\\_contacto\\_%'" ); // phpcs:ignore WordPress.DB
-					return array( 'reiniciado' => true, 'filas' => (int) $n );
+					return array( 'reiniciado' => true, 'filas' => tecnostar_contacto_contadores_borrar( true ) );
 				},
 			)
 		);

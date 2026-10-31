@@ -55,15 +55,161 @@ add_action( 'woocommerce_single_product_summary', function () {
 	}
 }, 6 );
 
-// Estilos solo en tienda, categorías, ficha y portada; el JS de filtros, solo en los listados.
+// Estilos solo en tienda, categorías, ficha y portada; el JS de filtros, solo en los listados;
+// el de la ficha (tooltips y video), solo en la ficha; el de la tarjeta "te lo conseguimos", solo en tienda y categorías.
 add_action( 'wp_enqueue_scripts', function () {
+	$js = get_template_directory_uri() . '/assets/js/';
 	if ( is_front_page() || is_shop() || is_product_taxonomy() || is_product() || tecnostar_es_busqueda_productos() ) {
 		wp_enqueue_style( 'tecnostar-tienda', get_template_directory_uri() . '/assets/css/tienda.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/tienda.css' ) );
 	}
 	if ( tecnostar_es_listado_tienda() ) {
-		wp_enqueue_script( 'tecnostar-tienda', get_template_directory_uri() . '/assets/js/tienda.js', array(), tecnostar_asset_ver( '/assets/js/tienda.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+		wp_enqueue_script( 'tecnostar-tienda', $js . 'tienda.js', array(), tecnostar_asset_ver( '/assets/js/tienda.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	}
+	if ( is_product() ) {
+		wp_enqueue_script( 'tecnostar-ficha', $js . 'ficha.js', array(), tecnostar_asset_ver( '/assets/js/ficha.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+	}
+	if ( tecnostar_consigue_visible() ) {
+		wp_enqueue_script( 'tecnostar-consigue', $js . 'consigue.js', array(), tecnostar_asset_ver( '/assets/js/consigue.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	}
 }, 20 );
+
+/* ------------------------------------------------------------------
+ * Ficha de producto: sello sobre la foto, características (icono + valor
+ * con tooltip), 4 fotos, video corto con carga al tocar y checklist.
+ * El carrito, el checkout y el formulario de compra no cambian: solo el texto del botón.
+ * ------------------------------------------------------------------ */
+
+if ( ! defined( 'TECNOSTAR_META_VIDEO' ) ) {
+	define( 'TECNOSTAR_META_VIDEO', '_ts_video' ); // Normalmente lo define mu-plugins/tecnostar-nucleo/productos.php.
+}
+
+/** Video de ejemplo mientras no haya videos en R2 (CC0, MDN). Se registra como pendiente. */
+const TECNOSTAR_VIDEO_EJEMPLO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+
+/** Columna de la foto: abre un bloque propio con el sello encima de la foto principal. */
+add_action( 'woocommerce_before_single_product_summary', function () {
+	echo '<div class="ts-pdp-media" data-ts-media>';
+	$sello = tecnostar_sello_html( get_the_ID(), 'foto' );
+	if ( $sello ) {
+		// El sello de la columna de información ya lo lee el lector de pantalla; este es visual.
+		echo '<div class="ts-pdp-media__sello" aria-hidden="true">' . $sello . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	}
+}, 19 );
+
+/** Bajo la foto: características, fotos que faltan (ejemplo marcado), video y cierre del bloque. */
+add_action( 'woocommerce_before_single_product_summary', function () {
+	$id = get_the_ID();
+	get_template_part( 'template-parts/producto-meta', null, array( 'product_id' => $id ) );
+	if ( function_exists( 'tecnostar_grado' ) && tecnostar_grado( $id ) ) {
+		echo tecnostar_fotos_faltantes_html( $id ); // phpcs:ignore WordPress.Security.EscapeOutput
+		echo tecnostar_video_html( $id ); // phpcs:ignore WordPress.Security.EscapeOutput
+	} elseif ( get_post_meta( $id, TECNOSTAR_META_VIDEO, true ) ) {
+		echo tecnostar_video_html( $id ); // phpcs:ignore WordPress.Security.EscapeOutput
+	}
+	echo '</div>';
+}, 21 );
+
+/** Número de fotos del producto (principal + galería). */
+function tecnostar_fotos_total( int $product_id ): int {
+	$producto = wc_get_product( $product_id );
+	if ( ! $producto ) {
+		return 0;
+	}
+	return ( $producto->get_image_id() ? 1 : 0 ) + count( array_filter( $producto->get_gallery_image_ids() ) );
+}
+
+/**
+ * Si el producto tiene menos de 4 fotos, completa con espacios marcados como ejemplo (no se inventan fotos).
+ * Solo en productos con Grado (el catálogo nuevo); el pendiente queda en Herramientas > Pendientes.
+ */
+function tecnostar_fotos_faltantes_html( int $product_id ): string {
+	$faltan = 4 - tecnostar_fotos_total( $product_id );
+	if ( $faltan <= 0 || ! function_exists( 'tecnostar_ejemplo' ) ) {
+		return '';
+	}
+	tecnostar_pendiente( 'ficha-fotos', 'Cada producto necesita 4 fotos reales (frente, teclado, laterales y puertos).', 'Ficha de producto > Galería' );
+	$html = '';
+	for ( $i = 0; $i < $faltan; $i++ ) {
+		$html .= '<li class="ts-fotos-faltan__item" data-foto-ejemplo><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg><span>Foto por cargar</span></li>';
+	}
+	return tecnostar_ejemplo( 'ficha-fotos', '<ul class="ts-fotos-faltan" aria-label="Fotos por cargar">' . $html . '</ul>' );
+}
+
+/**
+ * Video corto con carga al tocar: el <video> no tiene src hasta que el cliente pulsa el botón
+ * (assets/js/ficha.js); hasta entonces solo se ve el póster (la foto principal, ya descargada).
+ */
+function tecnostar_video_html( int $product_id ): string {
+	$url     = (string) get_post_meta( $product_id, TECNOSTAR_META_VIDEO, true );
+	$ejemplo = '' === $url;
+	if ( $ejemplo ) {
+		if ( ! function_exists( 'tecnostar_ejemplo' ) ) {
+			return '';
+		}
+		$url = TECNOSTAR_VIDEO_EJEMPLO;
+		tecnostar_pendiente( 'ficha-video', 'Video de 15 s por producto (equipo encendido y conectado), alojado en R2. Hoy se muestra un video de ejemplo.', 'Ficha de producto > Video' );
+	}
+	$poster = (string) wp_get_attachment_image_url( (int) get_post_thumbnail_id( $product_id ), 'woocommerce_single' );
+	$html   = sprintf(
+		'<figure class="ts-video" data-ts-video>'
+		. '<video class="ts-video__v" preload="none" playsinline%1$s data-src="%2$s" width="640" height="360" aria-label="Video de prueba del equipo"></video>'
+		. '<button type="button" class="ts-video__play" data-ts-video-play><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Ver video de prueba <small>(15 s)</small></span></button>'
+		. '<noscript><a href="%2$s">Ver video de prueba</a></noscript>'
+		. '<figcaption class="ts-video__cap">Así lo probamos: encendido y conectado.</figcaption>'
+		. '</figure>',
+		$poster ? ' poster="' . esc_url( $poster ) . '"' : '',
+		esc_url( $url )
+	);
+	return $ejemplo ? tecnostar_ejemplo( 'ficha-video', $html ) : $html;
+}
+
+/** Checklist del producto (cargador, batería, factura, garantía): solo lo marcado en el producto. */
+add_action( 'woocommerce_single_product_summary', function () {
+	if ( ! function_exists( 'tecnostar_campos_casillas' ) ) {
+		return;
+	}
+	$id    = get_the_ID();
+	$items = '';
+	foreach ( tecnostar_campos_casillas() as $meta => $etiqueta ) {
+		if ( 'yes' === get_post_meta( $id, $meta, true ) ) {
+			$items .= '<li data-chk="' . esc_attr( $meta ) . '"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' . esc_html( $etiqueta ) . '</li>';
+		}
+	}
+	if ( $items ) {
+		echo '<div class="ts-checklist" data-ts-checklist><p class="ts-checklist__t">Lo que recibes</p><ul>' . $items . '</ul></div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	}
+}, 25 );
+
+/** Botón de compra de la ficha: mismo formulario y mismo añadir al carrito; solo cambia el texto. */
+add_filter( 'woocommerce_product_single_add_to_cart_text', function () {
+	return 'Ver precio y comprar';
+} );
+
+/* ------------------------------------------------------------------
+ * Tarjeta "te lo conseguimos": solo en la tienda y en categorías de producto.
+ * Aparece a los 15 s o al 50 % de scroll (assets/js/consigue.js).
+ * ------------------------------------------------------------------ */
+
+function tecnostar_consigue_visible(): bool {
+	if ( is_admin() || ! ( is_shop() || is_product_category() ) ) {
+		return false;
+	}
+	return ! ( is_cart() || is_checkout() || is_front_page() );
+}
+
+add_action( 'wp_footer', function () {
+	if ( ! tecnostar_consigue_visible() ) {
+		return;
+	}
+	?>
+	<aside class="ts-consigue" data-ts-consigue aria-labelledby="ts-consigue-t" hidden>
+		<p class="ts-consigue__t" id="ts-consigue-t">¿No encuentras lo que buscas?</p>
+		<p class="ts-consigue__s">Si no lo tenemos, te lo conseguimos.</p>
+		<button type="button" class="ts-consigue__btn" data-wa-abrir="te-lo-conseguimos">Escríbenos y te lo cotizamos</button>
+		<button type="button" class="ts-consigue__x" data-ts-consigue-cerrar aria-label="Cerrar aviso"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+	</aside>
+	<?php
+}, 5 );
 
 /* ------------------------------------------------------------------
  * Buscador y filtros con URL propia: marca, grado, uso y presupuesto.

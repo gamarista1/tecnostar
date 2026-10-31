@@ -179,6 +179,9 @@ function tecnostar_campos_casillas() {
 	);
 }
 
+/** Meta del video corto del producto (URL del MP4, por ejemplo en R2). */
+const TECNOSTAR_META_VIDEO = '_ts_video';
+
 /** Pinta los campos en la pestaña General del producto. */
 function tecnostar_campos_producto_mostrar() {
 	echo '<div class="options_group">';
@@ -191,6 +194,15 @@ function tecnostar_campos_producto_mostrar() {
 			)
 		);
 	}
+	woocommerce_wp_text_input(
+		array(
+			'id'          => TECNOSTAR_META_VIDEO,
+			'label'       => 'Video de prueba (URL .mp4)',
+			'type'        => 'url',
+			'desc_tip'    => true,
+			'description' => 'Video corto (unos 15 s) del equipo encendido y conectado. Se descarga solo cuando el cliente lo toca.',
+		)
+	);
 	foreach ( tecnostar_campos_casillas() as $meta => $etiqueta ) {
 		woocommerce_wp_checkbox(
 			array(
@@ -221,6 +233,12 @@ function tecnostar_campos_producto_guardar( $post_id ) {
 		} else {
 			update_post_meta( $post_id, $meta, $valor );
 		}
+	}
+	$video = isset( $_POST[ TECNOSTAR_META_VIDEO ] ) ? esc_url_raw( trim( wp_unslash( $_POST[ TECNOSTAR_META_VIDEO ] ) ), array( 'https' ) ) : '';
+	if ( '' === $video ) {
+		delete_post_meta( $post_id, TECNOSTAR_META_VIDEO );
+	} else {
+		update_post_meta( $post_id, TECNOSTAR_META_VIDEO, $video );
 	}
 	foreach ( array_keys( tecnostar_campos_casillas() ) as $meta ) {
 		if ( isset( $_POST[ $meta ] ) ) {

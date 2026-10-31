@@ -1,8 +1,9 @@
 <?php
 /**
- * Lista de características del producto: icono + valor + tooltip accesible.
- * Recibe el ID por set_query_var( 'product_id', ... ) o por el argumento de get_template_part.
- * El tooltip se muestra con hover, foco de teclado y toque (el toque enfoca el botón).
+ * Características del producto (procesador, RAM, almacenamiento, pantalla, batería) como icono + valor.
+ * Recibe el ID por el argumento de get_template_part( ..., array( 'product_id' => ID ) ) o por set_query_var( 'product_id', ... ).
+ * Tooltip con el mismo patrón que el de Wompi (.ts-tip / .ts-tip__globo): hover, foco de teclado y toque
+ * (assets/js/ficha.js alterna .is-abierto al tocar; Escape cierra). Estilos en assets/css/tienda.css.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -24,7 +25,7 @@ $iconos  = array(
 $items = array();
 foreach ( tecnostar_campos_texto() as $meta => $etiqueta ) {
 	$valor = trim( (string) get_post_meta( $product_id, $meta, true ) );
-	if ( '' !== $valor ) {
+	if ( '' !== $valor && isset( $iconos[ $meta ] ) ) {
 		$items[] = array( 'meta' => $meta, 'etiqueta' => $etiqueta, 'valor' => $valor );
 	}
 }
@@ -32,32 +33,15 @@ if ( empty( $items ) ) {
 	return;
 }
 ?>
-<ul class="ts-meta" role="list">
+<ul class="ts-meta" aria-label="Características" data-ts-meta>
 	<?php foreach ( $items as $i => $item ) : ?>
 		<?php $tip_id = 'ts-tip-' . $product_id . '-' . $i; ?>
 		<li class="ts-meta__item">
-			<button type="button" class="ts-meta__btn" aria-describedby="<?php echo esc_attr( $tip_id ); ?>">
-				<span class="ts-meta__icono"><?php echo $iconos[ $item['meta'] ]; // SVG fijo del tema. ?></span>
+			<button type="button" class="ts-tip ts-meta__btn" data-tip data-meta="<?php echo esc_attr( $item['meta'] ); ?>" aria-label="<?php echo esc_attr( $item['etiqueta'] . ': ' . $item['valor'] ); ?>" aria-describedby="<?php echo esc_attr( $tip_id ); ?>">
+				<span class="ts-meta__icono"><?php echo $iconos[ $item['meta'] ]; // phpcs:ignore WordPress.Security.EscapeOutput -- SVG fijo del tema. ?></span>
 				<span class="ts-meta__valor"><?php echo esc_html( $item['valor'] ); ?></span>
+				<span id="<?php echo esc_attr( $tip_id ); ?>" class="ts-tip__globo" role="tooltip"><?php echo esc_html( $item['etiqueta'] ); ?></span>
 			</button>
-			<span id="<?php echo esc_attr( $tip_id ); ?>" role="tooltip" class="ts-meta__tip"><?php echo esc_html( $item['etiqueta'] ); ?></span>
 		</li>
 	<?php endforeach; ?>
 </ul>
-<?php
-// Estilos mínimos del tooltip, impresos una sola vez (hover, :focus-within y toque).
-static $ts_meta_css = false;
-if ( ! $ts_meta_css ) {
-	$ts_meta_css = true;
-	?>
-<style>
-.ts-meta{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin:0;padding:0;list-style:none}
-.ts-meta__item{position:relative}
-.ts-meta__btn{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .4rem;border:0;background:none;color:#0b3954;font:inherit;cursor:help}
-.ts-meta__btn:focus-visible{outline:2px solid #37409a;outline-offset:2px}
-.ts-meta__tip{position:absolute;left:0;bottom:100%;z-index:5;padding:.25rem .5rem;border-radius:4px;background:#0b3954;color:#fff;font-size:.8125rem;white-space:nowrap;visibility:hidden;opacity:0;pointer-events:none}
-.ts-meta__item:hover .ts-meta__tip,.ts-meta__item:focus-within .ts-meta__tip{visibility:visible;opacity:1}
-@media (prefers-reduced-motion:no-preference){.ts-meta__tip{transition:opacity .15s}}
-</style>
-	<?php
-}

@@ -40,9 +40,41 @@ function tecnostar_atributos_definicion() {
 	);
 }
 
+const TECNOSTAR_ATRIBUTOS_VERSION = '1';
+
+/** True si en esta petición se obtuvo el candado de creación. */
+function tecnostar_atributos_candado( $accion = 'estado' ) {
+	static $propio = false;
+	if ( 'tomar' === $accion ) {
+		if ( get_option( 'tecnostar_atributos_v' ) === TECNOSTAR_ATRIBUTOS_VERSION ) {
+			return false;
+		}
+		// add_option falla si ya existe: es atómico en MySQL.
+		if ( ! add_option( 'tecnostar_atributos_lock', time(), '', false ) ) {
+			$desde = (int) get_option( 'tecnostar_atributos_lock' );
+			if ( $desde && ( time() - $desde ) <= 60 ) {
+				return false;
+			}
+			// Candado vencido: se retira y se intenta de nuevo.
+			delete_option( 'tecnostar_atributos_lock' );
+			if ( ! add_option( 'tecnostar_atributos_lock', time(), '', false ) ) {
+				return false;
+			}
+		}
+		$propio = true;
+	} elseif ( 'soltar' === $accion ) {
+		delete_option( 'tecnostar_atributos_lock' );
+		$propio = false;
+	}
+	return $propio;
+}
+
 /** Crea los atributos globales que falten. WooCommerce registra sus taxonomías en init (prioridad 5). */
 function tecnostar_crear_atributos() {
 	if ( ! function_exists( 'wc_create_attribute' ) || ! function_exists( 'wc_attribute_taxonomy_id_by_name' ) ) {
+		return;
+	}
+	if ( ! tecnostar_atributos_candado( 'tomar' ) ) {
 		return;
 	}
 	$creado = false;
@@ -72,6 +104,10 @@ add_action( 'init', 'tecnostar_crear_atributos', 15 );
 
 /** Inserta los términos que falten, cuando las taxonomías ya existen. */
 function tecnostar_crear_terminos_atributos() {
+	if ( ! tecnostar_atributos_candado() ) {
+		return;
+	}
+	$completo = true;
 	foreach ( tecnostar_atributos_definicion() as $slug => $def ) {
 		$taxonomia = 'pa_' . $slug;
 		if ( ! taxonomy_exists( $taxonomia ) ) {
@@ -79,6 +115,7 @@ function tecnostar_crear_terminos_atributos() {
 			if ( function_exists( 'wc_attribute_taxonomy_id_by_name' ) && wc_attribute_taxonomy_id_by_name( $slug ) ) {
 				register_taxonomy( $taxonomia, array( 'product' ), array( 'hierarchical' => false, 'public' => false ) );
 			} else {
+				$completo = false;
 				continue;
 			}
 		}
@@ -86,8 +123,15 @@ function tecnostar_crear_terminos_atributos() {
 			if ( term_exists( $term_slug, $taxonomia ) ) {
 				continue;
 			}
-			wp_insert_term( $nombre, $taxonomia, array( 'slug' => $term_slug ) );
+			$res = wp_insert_term( $nombre, $taxonomia, array( 'slug' => $term_slug ) );
+			if ( is_wp_error( $res ) ) {
+				$completo = false;
+			}
 		}
 	}
+	if ( $completo ) {
+		update_option( 'tecnostar_atributos_v', TECNOSTAR_ATRIBUTOS_VERSION, true );
+	}
+	tecnostar_atributos_candado( 'soltar' );
 }
 add_action( 'init', 'tecnostar_crear_terminos_atributos', 20 );

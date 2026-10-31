@@ -509,12 +509,14 @@
   function centrarTip(t) {
     var g = t.querySelector('.ts-tip__globo');
     if (!g) return;
-    var r = t.getBoundingClientRect(), w = g.offsetWidth, m = 12;
-    var izq = (window.innerWidth - w) / 2;
-    izq = Math.max(m, Math.min(izq, window.innerWidth - w - m));
-    var gl = izq - r.left;
+    var caja = t.closest('.wc_payment_method') || document.documentElement;
+    var c = caja.getBoundingClientRect(), r = t.getBoundingClientRect(), m = 12;
+    var min = Math.max(c.left, 0) + m, max = Math.min(c.right, window.innerWidth) - m;
+    g.style.maxWidth = Math.min(256, max - min) + 'px';
+    var w = g.offsetWidth;
+    var izq = Math.max(min, Math.min((min + max - w) / 2, max - w));
     var ax = Math.max(14, Math.min(r.left + r.width / 2 - izq, w - 14));
-    g.style.setProperty('--gl', gl + 'px');
+    g.style.setProperty('--gl', (izq - r.left) + 'px');
     g.style.setProperty('--ax', ax + 'px');
   }
   document.addEventListener('mouseover', function (e) { var t = e.target.closest('[data-tip]'); if (t) centrarTip(t); });

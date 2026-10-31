@@ -20,6 +20,7 @@ require_once get_template_directory() . '/inc/llms-txt.php';
 require_once get_template_directory() . '/inc/cuenta.php';
 require_once get_template_directory() . '/inc/rendimiento.php';
 require_once get_template_directory() . '/inc/persona-natural.php';
+require_once get_template_directory() . '/inc/nosotros.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'tecnostar', get_template_directory() . '/languages' );

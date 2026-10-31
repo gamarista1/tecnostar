@@ -309,5 +309,13 @@ export function iniciar(raiz) {
   raiz.__linea = tl;
   const salto = parseFloat(new URLSearchParams(location.search).get('bm'));
   if (!Number.isNaN(salto)) tl.seek(salto, false);
+  else {
+    // La isla arranca unos segundos después de cargar (ver cargador.js): ese tiempo ya contó como
+    // tiempo de Addi, así que el video empieza más o menos cuando empezaría sin la espera.
+    const nav = performance.getEntriesByType('navigation')[0];
+    const yaVisto = nav && nav.loadEventEnd ? (performance.now() - nav.loadEventEnd) / 1000 : 0;
+    const desde = Math.min(Math.max(yaVisto, 0), BASE - 2);
+    if (desde > 0.5) tl.seek(desde, false);
+  }
   aplicarPausa();
 }

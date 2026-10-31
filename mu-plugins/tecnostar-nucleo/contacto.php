@@ -340,7 +340,7 @@ add_action(
 
 /**
  * Rutas solo para administradores (pruebas y mantenimiento): listar ids por texto, borrar uno y
- * reiniciar el límite de envíos de la IP que llama. No hay lectura pública.
+ * reiniciar el límite de envíos. No hay lectura pública.
  */
 add_action(
 	'rest_api_init',
@@ -396,8 +396,12 @@ add_action(
 			array(
 				'methods'             => 'DELETE',
 				'permission_callback' => $admin,
+				// Reinicia el límite de TODAS las conexiones (el navegador y el script de prueba pueden salir por IPv4 e IPv6).
 				'callback'            => function () {
-					return array( 'reiniciado' => delete_transient( tecnostar_contacto_clave() ) );
+					global $wpdb;
+					delete_transient( tecnostar_contacto_clave() );
+					$n = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_ts\\_contacto\\_%' OR option_name LIKE '\\_transient\\_timeout\\_ts\\_contacto\\_%'" ); // phpcs:ignore WordPress.DB
+					return array( 'reiniciado' => true, 'filas' => (int) $n );
 				},
 			)
 		);

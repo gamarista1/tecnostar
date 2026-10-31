@@ -120,7 +120,7 @@
     enviar(false).then(function (res) {
       var j = res.j || {};
       if (j.ok && j.wa_url) {
-        pintar(true, j.mensaje + ' Si no se abrió, toca el botón.', j.wa_url);
+        pintar(true, 'Listo, recibimos tu mensaje. Te abrimos WhatsApp con el texto listo; si no se abrió, toca el botón.', j.wa_url);
         if (ventana && !ventana.closed) { try { ventana.opener = null; ventana.location.href = j.wa_url; } catch (err) {} }
         form.reset();
       } else {

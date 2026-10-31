@@ -218,7 +218,7 @@ function tecnostar_contacto_procesar( array $in ): array {
 	tecnostar_contacto_avisar( (int) $id, $d, $sedes[ $d['sede'] ] );
 
 	$r['ok']      = true;
-	$r['mensaje'] = 'Listo. Te abrimos WhatsApp con tu mensaje para la sede ' . $sedes[ $d['sede'] ] . '.';
+	$r['mensaje'] = 'Listo, recibimos tu mensaje para la sede ' . $sedes[ $d['sede'] ] . '. Envíalo también por WhatsApp para atenderte más rápido.';
 	$r['wa_url']  = tecnostar_wa_url( $d['sede'], tecnostar_contacto_texto_wa( $d['nombre'], $d['celular'], $d['mensaje'] ) );
 	return $r;
 }

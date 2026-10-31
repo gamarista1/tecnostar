@@ -14,6 +14,11 @@
 		</nav>
 	</div>
 </footer>
+<?php
+if ( function_exists( 'tecnostar_wa_visible' ) && tecnostar_wa_visible() ) {
+	get_template_part( 'template-parts/wa-boton' );
+}
+?>
 <?php wp_footer(); ?>
 </body>
 </html>

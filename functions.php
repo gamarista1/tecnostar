@@ -45,6 +45,17 @@ function tecnostar_asset_ver( $relative_path ) {
 	return file_exists( $file ) ? (string) filemtime( $file ) : TECNOSTAR_VERSION;
 }
 
+/** El botón de WhatsApp aparece en todo el sitio menos en carrito y checkout, y solo si hay canales. */
+function tecnostar_wa_visible() {
+	if ( ! function_exists( 'tecnostar_canales_whatsapp' ) || ! tecnostar_canales_whatsapp() ) {
+		return false;
+	}
+	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() ) ) {
+		return false;
+	}
+	return true;
+}
+
 add_action( 'wp_enqueue_scripts', function () {
 	$css = get_template_directory_uri() . '/assets/css/';
 	wp_enqueue_style( 'tecnostar-tokens', $css . 'tokens.css', array(), tecnostar_asset_ver( '/assets/css/tokens.css' ) );
@@ -57,6 +68,12 @@ add_action( 'wp_enqueue_scripts', function () {
 		wp_enqueue_style( 'tecnostar-cuenta', $css . 'cuenta.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/cuenta.css' ) );
 		wp_enqueue_script( 'tecnostar-cuenta', get_template_directory_uri() . '/assets/js/cuenta.js', array(), tecnostar_asset_ver( '/assets/js/cuenta.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 		wp_add_inline_script( 'tecnostar-cuenta', 'window.tsCuenta=' . wp_json_encode( array( 'ajax' => admin_url( 'admin-ajax.php' ) ) ) . ';', 'before' );
+	}
+
+	// Menú radial de WhatsApp (no se carga en carrito ni checkout).
+	if ( tecnostar_wa_visible() ) {
+		wp_enqueue_style( 'tecnostar-whatsapp', $css . 'whatsapp.css', array( 'tecnostar-tokens' ), tecnostar_asset_ver( '/assets/css/whatsapp.css' ) );
+		wp_enqueue_script( 'tecnostar-whatsapp', get_template_directory_uri() . '/assets/js/whatsapp.js', array(), tecnostar_asset_ver( '/assets/js/whatsapp.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
 	}
 
 	// Portada: banner motion (estilos y cargador de islas; GSAP se descarga solo al acercarse el banner).

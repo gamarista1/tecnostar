@@ -1,0 +1,22 @@
+/* Menú radial de WhatsApp. Solo tokens de marca; el arco se calcula con trigonometría CSS. */
+.ts-wa{--r:8.5rem;--sx:-1;--sy:-1;--ox:calc(1rem + env(safe-area-inset-right));--oy:calc(1rem + env(safe-area-inset-bottom));position:fixed;z-index:800;width:3.5rem;height:3.5rem;font-family:var(--font-sans)}
+.ts-wa--inferior-derecha{right:var(--ox);bottom:var(--oy)}
+.ts-wa--inferior-izquierda{--sx:1;left:calc(1rem + env(safe-area-inset-left));bottom:var(--oy)}
+.ts-wa--superior-derecha{--sy:1;right:var(--ox);top:calc(1rem + env(safe-area-inset-top))}
+.ts-wa--superior-izquierda{--sx:1;--sy:1;left:calc(1rem + env(safe-area-inset-left));top:calc(1rem + env(safe-area-inset-top))}
+.ts-wa__fab{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;background:var(--color-primary);color:#fff;box-shadow:var(--shadow-2);transition:transform var(--dur-fast) var(--ease-spring),background-color var(--dur-fast)}
+.ts-wa__fab:hover{background:var(--color-primary-dark)}
+.ts-wa__fab:active{transform:scale(.94)}
+.ts-wa.is-open .ts-wa__fab{background:var(--color-primary-dark);transform:rotate(90deg)}
+.ts-wa__fab:focus-visible,.ts-wa__item:focus-visible .ts-wa__circ{outline:3px solid var(--color-accent);outline-offset:2px}
+.ts-wa__lista{list-style:none;margin:0;padding:0}
+.ts-wa__lista li{position:absolute;inset:0;margin:0;pointer-events:none}
+.ts-wa__item{position:absolute;bottom:.25rem;right:.25rem;display:flex;flex-direction:row-reverse;align-items:center;gap:.5rem;text-decoration:none;pointer-events:auto;visibility:hidden;opacity:0;transform:translate(0,0) scale(.5);transition:opacity var(--dur-fast),transform var(--dur) var(--ease-spring),visibility 0s var(--dur-fast)}
+.ts-wa--inferior-izquierda .ts-wa__item,.ts-wa--superior-izquierda .ts-wa__item{right:auto;left:.25rem;flex-direction:row}
+.ts-wa--superior-derecha .ts-wa__item,.ts-wa--superior-izquierda .ts-wa__item{bottom:auto;top:.25rem}
+.ts-wa__item{--a:calc(90deg * var(--k,0))}
+.ts-wa.is-open .ts-wa__item{visibility:visible;opacity:1;transform:translate(calc(var(--sx) * var(--r) * sin(var(--a))),calc(var(--sy) * var(--r) * cos(var(--a)))) scale(1);transition:opacity var(--dur-fast),transform var(--dur) var(--ease-spring),visibility 0s}
+.ts-wa__circ{flex:none;display:grid;place-items:center;width:3rem;height:3rem;border-radius:50%;background:var(--color-bg);color:var(--color-primary);border:2px solid var(--color-primary);font-weight:700;font-size:1.125rem;box-shadow:var(--shadow-1)}
+.ts-wa__etq{max-width:9rem;padding:.25rem .625rem;border-radius:var(--radius-sm);background:var(--color-primary-dark);color:#fff;font-size:.875rem;font-weight:500;line-height:1.2;box-shadow:var(--shadow-1)}
+.ts-wa__item:hover .ts-wa__circ,.ts-wa__item:focus-visible .ts-wa__circ{background:var(--color-accent);color:var(--color-primary-dark);border-color:var(--color-accent)}
+@media (prefers-reduced-motion:reduce){.ts-wa__fab,.ts-wa__item,.ts-wa.is-open .ts-wa__item{transition:none}.ts-wa__fab:active,.ts-wa.is-open .ts-wa__fab{transform:none}.ts-wa__item{transform:translate(0,0)}}

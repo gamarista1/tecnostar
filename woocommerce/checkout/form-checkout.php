@@ -106,7 +106,7 @@ $campos    = function ( array $claves ) use ( $billing, $checkout ) {
 					<?php tecnostar_envio_html(); ?>
 
 					<div class="ts-campos" data-direccion>
-						<?php $campos( array_diff( $paso2, array( 'billing_country', 'billing_state' ) ) ); ?>
+						<?php $campos( array_diff( $paso2, array( 'billing_country', 'billing_state', 'billing_localidad', 'billing_city' ) ) ); ?>
 					</div>
 
 					<?php do_action( 'woocommerce_after_checkout_billing_form', $checkout ); ?>

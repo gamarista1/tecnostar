@@ -373,3 +373,7 @@ form.checkout_coupon .button { height: 3rem; padding: 0 var(--space-6); border: 
 .ts-tip:focus-visible > .ts-tip__globo, .ts-tip.is-abierto > .ts-tip__globo { opacity: 1; transform: translate(-50%, 0) scale(1); }
 .ts-pagos__seguro .ts-tip:focus-visible > .ts-tip__globo, .ts-pagos__seguro .ts-tip.is-abierto > .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip:focus-visible > .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip.is-abierto > .ts-tip__globo { transform: translate(0, 0) scale(1); }
 @media (prefers-reduced-motion: reduce) { .ts-tip__globo { transition: opacity 120ms ease; transform: translate(-50%, 0); } .ts-pagos__seguro .ts-tip__globo, .ts-pagos__lista li:nth-last-child(-n+2) .ts-tip__globo { transform: none; } }
+
+/* Departamento y municipio/localidad van juntos; con retiro en tienda no se piden. */
+.ts-campos #billing_country_field { grid-column: 1 / -1; }
+.ts-co.is-recoge #billing_localidad_field, .ts-co.is-recoge #billing_city_field { display: none !important; }

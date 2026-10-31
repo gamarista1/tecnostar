@@ -135,3 +135,144 @@ function tecnostar_crear_terminos_atributos() {
 	tecnostar_atributos_candado( 'soltar' );
 }
 add_action( 'init', 'tecnostar_crear_terminos_atributos', 20 );
+
+/* ------------------------------------------------------------------
+ * Grado de producto, campos de características y validación.
+ * ------------------------------------------------------------------ */
+
+/** Devuelve 'A', 'B' o null según los términos de pa_grado del producto. */
+function tecnostar_grado( int $product_id ): ?string {
+	if ( ! taxonomy_exists( 'pa_grado' ) ) {
+		return null;
+	}
+	$terminos = wp_get_post_terms( $product_id, 'pa_grado', array( 'fields' => 'slugs' ) );
+	if ( is_wp_error( $terminos ) || empty( $terminos ) ) {
+		return null;
+	}
+	if ( in_array( 'a', $terminos, true ) ) {
+		return 'A';
+	}
+	if ( in_array( 'b', $terminos, true ) ) {
+		return 'B';
+	}
+	return null;
+}
+
+/** Campos de texto de características (meta => etiqueta). */
+function tecnostar_campos_texto() {
+	return array(
+		'_ts_procesador'     => 'Procesador',
+		'_ts_ram'            => 'Memoria RAM',
+		'_ts_almacenamiento' => 'Almacenamiento',
+		'_ts_pantalla'       => 'Pantalla',
+		'_ts_bateria'        => 'Batería',
+	);
+}
+
+/** Casillas de verificación (meta => etiqueta). */
+function tecnostar_campos_casillas() {
+	return array(
+		'_ts_chk_cargador' => 'Incluye cargador original',
+		'_ts_chk_bateria'  => 'Batería verificada',
+		'_ts_chk_factura'  => 'Incluye factura',
+		'_ts_chk_garantia' => 'Incluye garantía',
+	);
+}
+
+/** Pinta los campos en la pestaña General del producto. */
+function tecnostar_campos_producto_mostrar() {
+	echo '<div class="options_group">';
+	wp_nonce_field( 'tecnostar_campos_producto', 'tecnostar_campos_nonce' );
+	foreach ( tecnostar_campos_texto() as $meta => $etiqueta ) {
+		woocommerce_wp_text_input(
+			array(
+				'id'    => $meta,
+				'label' => $etiqueta,
+			)
+		);
+	}
+	foreach ( tecnostar_campos_casillas() as $meta => $etiqueta ) {
+		woocommerce_wp_checkbox(
+			array(
+				'id'    => $meta,
+				'label' => $etiqueta,
+			)
+		);
+	}
+	echo '</div>';
+}
+add_action( 'woocommerce_product_options_general_product_data', 'tecnostar_campos_producto_mostrar' );
+
+/** Guarda los campos con nonce, capacidad y saneado. */
+function tecnostar_campos_producto_guardar( $post_id ) {
+	if ( ! isset( $_POST['tecnostar_campos_nonce'] ) ) {
+		return;
+	}
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tecnostar_campos_nonce'] ) ), 'tecnostar_campos_producto' ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'edit_product', $post_id ) ) {
+		return;
+	}
+	foreach ( array_keys( tecnostar_campos_texto() ) as $meta ) {
+		$valor = isset( $_POST[ $meta ] ) ? sanitize_text_field( wp_unslash( $_POST[ $meta ] ) ) : '';
+		if ( '' === $valor ) {
+			delete_post_meta( $post_id, $meta );
+		} else {
+			update_post_meta( $post_id, $meta, $valor );
+		}
+	}
+	foreach ( array_keys( tecnostar_campos_casillas() ) as $meta ) {
+		if ( isset( $_POST[ $meta ] ) ) {
+			update_post_meta( $post_id, $meta, 'yes' );
+		} else {
+			delete_post_meta( $post_id, $meta );
+		}
+	}
+}
+add_action( 'woocommerce_process_product_meta', 'tecnostar_campos_producto_guardar' );
+
+/** True si el objeto producto (aún sin guardar) trae al menos un término de pa_grado. */
+function tecnostar_objeto_tiene_grado( $producto ) {
+	foreach ( $producto->get_attributes() as $clave => $atributo ) {
+		if ( 'pa_grado' === $clave && is_object( $atributo ) && method_exists( $atributo, 'get_options' ) ) {
+			$opciones = array_filter( (array) $atributo->get_options() );
+			if ( ! empty( $opciones ) ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/** REST: rechaza publicar sin Grado. */
+function tecnostar_rest_exigir_grado( $producto, $request ) {
+	if ( 'publish' === $producto->get_status() && ! tecnostar_objeto_tiene_grado( $producto ) ) {
+		return new WP_Error(
+			'tecnostar_grado_requerido',
+			'Un producto sin Grado (A o B) no se puede publicar. Guárdalo como borrador o asigna el atributo Grado.',
+			array( 'status' => 400 )
+		);
+	}
+	return $producto;
+}
+add_filter( 'woocommerce_rest_pre_insert_product_object', 'tecnostar_rest_exigir_grado', 10, 2 );
+
+/** Administrador: sin Grado vuelve a borrador y avisa. */
+function tecnostar_admin_exigir_grado( $producto ) {
+	if ( 'publish' !== $producto->get_status() || tecnostar_objeto_tiene_grado( $producto ) ) {
+		return;
+	}
+	$producto->set_status( 'draft' );
+	set_transient( 'tecnostar_aviso_grado_' . get_current_user_id(), 1, 120 );
+}
+add_action( 'woocommerce_admin_process_product_object', 'tecnostar_admin_exigir_grado', 99 );
+
+function tecnostar_admin_aviso_grado() {
+	$clave = 'tecnostar_aviso_grado_' . get_current_user_id();
+	if ( get_transient( $clave ) ) {
+		delete_transient( $clave );
+		echo '<div class="notice notice-error is-dismissible"><p><strong>Falta el Grado.</strong> El producto se guardó como borrador: asigna el atributo Grado (A o B) para poder publicarlo.</p></div>';
+	}
+}
+add_action( 'admin_notices', 'tecnostar_admin_aviso_grado' );

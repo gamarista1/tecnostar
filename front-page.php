@@ -66,49 +66,82 @@ $total = count( $escenas );
 </section>
 
 <?php
-$cats = function_exists( 'wc_get_page_permalink' ) ? get_terms(
+// Tres caminos: cada uno lleva a su página (Persona Natural, Empresas, Tienda).
+$caminos = array(
 	array(
-		'taxonomy'   => 'product_cat',
-		'hide_empty' => true,
-		'parent'     => 0,
-		'exclude'    => (int) get_option( 'default_product_cat' ),
-	)
-) : array();
-if ( $cats && ! is_wp_error( $cats ) ) :
-	?>
-<section class="section" aria-labelledby="cats-title">
+		'url' => home_url( '/persona-natural/' ),
+		't'   => 'Persona Natural',
+		'd'   => 'Diagnóstico, repotenciación y reparación de tu equipo.',
+		'svg' => '<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>',
+	),
+	array(
+		'url' => home_url( '/empresas/' ),
+		't'   => 'Empresas',
+		'd'   => 'Tu departamento de TI externo, con soporte mensual.',
+		'svg' => '<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/>',
+	),
+	array(
+		'url' => $shop_url,
+		't'   => 'Tienda',
+		'd'   => 'Equipos nuevos y usados certificados, con garantía.',
+		'svg' => '<path d="M4 8h16l-1.5 12h-13zM8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/>',
+	),
+);
+?>
+<section class="section caminos" aria-labelledby="caminos-title">
 	<div class="container">
-		<div class="section__head"><div><h2 id="cats-title" data-reveal>Encuentra lo que necesitas</h2><p class="section__sub" data-reveal>Computación, gaming y accesorios, ordenados para que llegues rápido a lo que buscas.</p></div></div>
-		<ul class="cats">
-			<?php foreach ( $cats as $cat ) : ?>
-				<?php $thumb = (int) get_term_meta( $cat->term_id, 'thumbnail_id', true ); ?>
+		<h2 id="caminos-title" class="screen-reader-text">Elige tu camino</h2>
+		<ul class="caminos__lista">
+			<?php foreach ( $caminos as $c ) : ?>
 				<li data-reveal>
-					<a class="cat" href="<?php echo esc_url( get_term_link( $cat ) ); ?>">
-						<?php
-						if ( $thumb ) {
-							echo wp_get_attachment_image( $thumb, 'thumbnail', false, array( 'alt' => '', 'loading' => 'lazy' ) );
-						}
-						?>
-						<span><?php echo esc_html( $cat->name ); ?></span>
+					<a class="camino" href="<?php echo esc_url( $c['url'] ); ?>">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><?php echo $c['svg']; // phpcs:ignore WordPress.Security.EscapeOutput -- SVG fijo del tema. ?></svg>
+						<span class="camino__t"><?php echo esc_html( $c['t'] ); ?></span>
+						<span class="camino__d"><?php echo esc_html( $c['d'] ); ?></span>
 					</a>
 				</li>
 			<?php endforeach; ?>
 		</ul>
 	</div>
 </section>
-<?php endif; ?>
 
 <?php if ( function_exists( 'wc_get_page_permalink' ) ) : ?>
-<section class="section" aria-labelledby="new-title">
+	<?php
+	$destacados = function_exists( 'wc_get_featured_product_ids' ) ? wc_get_featured_product_ids() : array();
+	$filtro     = $destacados ? 'visibility="featured"' : 'orderby="date" order="DESC"';
+	?>
+<section class="section section--alt" aria-labelledby="dest-title">
 	<div class="container">
 		<div class="section__head">
-			<div><h2 id="new-title" data-reveal>Recién llegados</h2><p class="section__sub" data-reveal>Lo último que entró a nuestro almacén, listo para despachar hoy.</p></div>
+			<div><h2 id="dest-title" data-reveal>Productos destacados</h2><p class="section__sub" data-reveal>Equipos listos para despachar, con garantía.</p></div>
 			<a href="<?php echo esc_url( $shop_url ); ?>" data-reveal>Ver toda la tienda</a>
 		</div>
-		<?php echo do_shortcode( '[products limit="8" columns="4" orderby="date" order="DESC"]' ); ?>
+		<?php echo do_shortcode( '[products limit="4" columns="4" ' . $filtro . ']' ); ?>
 	</div>
 </section>
 <?php endif; ?>
+
+<section class="section sedes" aria-labelledby="sedes-title">
+	<div class="container">
+		<div class="section__head"><div><h2 id="sedes-title" data-reveal>Visítanos en nuestras sedes</h2><p class="section__sub" data-reveal>Tócalo, pruébalo y llévate el equipo ideal.</p></div></div>
+		<div class="sedes__grid">
+			<?php
+			get_template_part( 'template-parts/sede', null, array( 'id' => 'bogota', 'nombre' => 'Bogotá', 'ciudad' => 'Bogotá', 'direccion' => 'C.C. Alta Tecnología, local 194', 'horario' => 'Lunes a sábado, 9:30 a. m. a 6:00 p. m.' ) );
+			get_template_part( 'template-parts/sede', null, array( 'id' => 'tocancipa', 'nombre' => 'Tocancipá', 'ciudad' => 'Tocancipá', 'direccion' => 'C.C. Milán Plaza, local 5-2', 'horario' => 'Lunes a sábado, 10:00 a. m. a 7:00 p. m.' ) );
+			?>
+		</div>
+	</div>
+</section>
+
+<section class="banda" aria-labelledby="banda-title">
+	<div class="container banda__in" data-reveal>
+		<div>
+			<h2 id="banda-title">¿No encuentras lo que buscas?</h2>
+			<p>Si no lo tenemos, te lo conseguimos.</p>
+		</div>
+		<a class="btn btn--accent" href="#" data-wa-abrir="busqueda">Escríbenos y te lo cotizamos</a>
+	</div>
+</section>
 
 <?php
 get_footer();

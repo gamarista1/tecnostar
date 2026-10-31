@@ -79,6 +79,7 @@ add_action( 'wp_enqueue_scripts', function () {
 	// Portada: banner motion (estilos y cargador de islas; GSAP se descarga solo al acercarse el banner).
 	if ( is_front_page() ) {
 		wp_enqueue_style( 'tecnostar-banner-motion', $css . 'banner-motion.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/banner-motion.css' ) );
+		wp_enqueue_style( 'tecnostar-home', $css . 'home.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/home.css' ) );
 		wp_enqueue_script( 'tecnostar-islas', get_template_directory_uri() . '/assets/js/islas/cargador.js', array(), tecnostar_asset_ver( '/assets/js/islas/cargador.js' ), array( 'in_footer' => true ) );
 	}
 

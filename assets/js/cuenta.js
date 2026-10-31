@@ -4,6 +4,7 @@
   var btn = document.querySelector('[data-cuenta-abrir]'), caja = document.getElementById('ts-cuenta'), cfg = window.tsCuenta || {};
   if (!btn || !caja || !cfg.ajax || !window.fetch) return;
   var reducido = matchMedia('(prefers-reduced-motion: reduce)'), movil = matchMedia('(max-width: 40rem)');
+  var hoverOk = matchMedia('(hover: hover) and (pointer: fine)'), porHover = false, panel = false, velo = null, cierre = 0;
   var abierto = false, cargado = false, cargando = null, tmp = 0, html = document.documentElement;
 
   function tarjeta() { return caja.querySelector('[data-cuenta-tarjeta]'); }
@@ -32,14 +33,16 @@
   }
 
   function enfocar() {
-    if (!abierto) return;
+    if (!abierto || porHover) return;
     var c = caja.querySelector('[data-cara]:not([hidden])');
     foco((c && (c.querySelector('input:not([type=checkbox]):not([tabindex="-1"])') || c.querySelector('a[href]'))) || caja);
   }
 
-  function abrir() {
+  function abrir(hover) {
     abierto = true;
+    porHover = hover === true;
     clearTimeout(tmp);
+    clearTimeout(cierre);
     ubicar();
     caja.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
@@ -48,7 +51,7 @@
     caja.classList.add('is-abierto');
     if (cargado) return enfocar();
     texto('Cargando…');
-    foco(caja);
+    if (!porHover) foco(caja);
     cargar().then(enfocar);
   }
 
@@ -58,13 +61,51 @@
     caja.classList.remove('is-abierto');
     btn.setAttribute('aria-expanded', 'false');
     html.classList.remove('ts-cuenta-abierta');
-    tmp = setTimeout(function () { caja.hidden = true; }, reducido.matches ? 0 : 200);
+    var eraPanel = panel;
+    if (panel) { velo.classList.remove('is-abierto'); html.classList.remove('ts-cuenta-panel'); }
+    tmp = setTimeout(function () {
+      caja.hidden = true;
+      if (eraPanel) { panel = false; caja.classList.remove('is-panel'); if (tarjeta()) caras('entrar'); }
+    }, reducido.matches ? 0 : (eraPanel ? 480 : 200));
+    porHover = false;
     if (volver !== false) foco(btn);
+  }
+
+  function caras(cual) {
+    tarjeta().querySelectorAll('[data-cara]').forEach(function (s) { s.hidden = s.getAttribute('data-cara') !== cual; });
+  }
+
+  // Crear cuenta se abre en un panel lateral, como el mini carrito.
+  function aPanel() {
+    if (!velo) {
+      velo = document.createElement('div');
+      velo.className = 'ts-cuenta-velo';
+      velo.addEventListener('click', function () { cerrar(); });
+      document.body.appendChild(velo);
+    }
+    panel = true;
+    porHover = false;
+    caja.classList.remove('is-abierto');
+    caja.classList.add('is-panel');
+    caja.setAttribute('aria-modal', 'true');
+    html.classList.add('ts-cuenta-panel');
+    void caja.offsetWidth;
+    caja.classList.add('is-abierto');
+    velo.classList.add('is-abierto');
+  }
+  function sinPanel() {
+    panel = false;
+    velo.classList.remove('is-abierto');
+    html.classList.remove('ts-cuenta-panel');
+    caja.classList.remove('is-panel');
+    ubicar();
   }
 
   // Cambia de cara (ingresar, crear, recuperar) con una transición breve de altura.
   function mostrar(cual) {
     var t = tarjeta(), h0 = t.offsetHeight;
+    if (cual === 'crear' && !panel) { aPanel(); caras(cual); t.querySelectorAll('[data-cuenta-aviso]').forEach(function (p) { aviso(p, ''); }); return enfocar(); }
+    if (cual !== 'crear' && panel) sinPanel();
     t.querySelectorAll('[data-cara]').forEach(function (s) { s.hidden = s.getAttribute('data-cara') !== cual; });
     t.querySelectorAll('[data-cuenta-aviso]').forEach(function (p) { aviso(p, ''); });
     if (!reducido.matches && !movil.matches) {
@@ -105,12 +146,34 @@
   btn.addEventListener('click', function (e) {
     if (e.ctrlKey || e.metaKey || e.shiftKey || e.button > 0) return;
     e.preventDefault();
+    if (hoverOk.matches && e.detail > 0) { if (!abierto) abrir(); else porHover = false; return; }
     if (abierto) cerrar(); else abrir();
   });
 
+  // Con puntero fino, el desplegable también se abre al pasar por encima y se cierra al salir (con una pequeña espera).
+  function salir() {
+    clearTimeout(cierre);
+    cierre = setTimeout(function () {
+      if (!abierto || panel) return;
+      var a = document.activeElement;
+      if (caja.contains(a) && /^(INPUT|BUTTON)$/.test(a.tagName) && !porHover) return;
+      cerrar(false);
+    }, 280);
+  }
+  function entrar() {
+    if (!hoverOk.matches || panel) return;
+    clearTimeout(cierre);
+    if (!abierto) abrir(true);
+  }
+  caja.addEventListener('focusin', function () { porHover = false; });
+  btn.addEventListener('mouseenter', entrar);
+  caja.addEventListener('mouseenter', function () { clearTimeout(cierre); });
+  btn.addEventListener('mouseleave', salir);
+  caja.addEventListener('mouseleave', salir);
+
   caja.addEventListener('click', function (e) {
     var ir = e.target.closest('[data-cuenta-ir]');
-    if (ir) { e.preventDefault(); mostrar(ir.getAttribute('data-cuenta-ir')); }
+    if (ir) { e.preventDefault(); porHover = false; mostrar(ir.getAttribute('data-cuenta-ir')); }
     else if (e.target.closest('[data-cuenta-cerrar]')) cerrar();
   });
 
@@ -133,7 +196,7 @@
   document.addEventListener('keydown', function (e) {
     if (!abierto) return;
     if (e.key === 'Escape') { e.preventDefault(); return cerrar(); }
-    if (e.key !== 'Tab') return;
+    if (e.key !== 'Tab' || porHover) return;
     var f = [].filter.call(caja.querySelectorAll('a[href], button:not([disabled]), input:not([tabindex="-1"])'), function (el) { return el.offsetParent; });
     var a = document.activeElement, ini = f[0], fin = f[f.length - 1], ir = null;
     if (!f.length) ir = caja;

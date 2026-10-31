@@ -76,3 +76,38 @@ add_action( 'wp_footer', function () {
 </script>
 	<?php
 }, 100 );
+
+/*
+ * 3. Portada: jQuery al pie. En la home ningún script de la cabecera ni del contenido lo usa, así que
+ *    deja de bloquear el primer pintado. En el resto de páginas no se toca.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	// Un script de cabecera que dependa de jQuery lo devolvería a la cabecera: se bajan también (ya iban con defer).
+	$ws       = wp_scripts();
+	$usa_jq   = function ( $h, $visto = array() ) use ( &$usa_jq, $ws ) {
+		if ( in_array( $h, array( 'jquery', 'jquery-core', 'jquery-migrate' ), true ) ) {
+			return true;
+		}
+		if ( isset( $visto[ $h ] ) || empty( $ws->registered[ $h ] ) ) {
+			return false;
+		}
+		$visto[ $h ] = true;
+		foreach ( (array) $ws->registered[ $h ]->deps as $d ) {
+			if ( $usa_jq( $d, $visto ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	foreach ( array_keys( $ws->registered ) as $h ) {
+		if ( $usa_jq( $h ) ) {
+			$ws->add_data( $h, 'group', 1 );
+		}
+	}
+	foreach ( array( 'jquery', 'jquery-core', 'jquery-migrate' ) as $h ) {
+		$ws->add_data( $h, 'group', 1 );
+	}
+}, 100 );

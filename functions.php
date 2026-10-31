@@ -9,6 +9,7 @@ define( 'TECNOSTAR_VERSION', '0.4.0' );
 
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/woocommerce.php';
+require_once get_template_directory() . '/inc/tienda.php';
 require_once get_template_directory() . '/inc/seo.php';
 require_once get_template_directory() . '/inc/checkout.php';
 require_once get_template_directory() . '/inc/minicart.php';

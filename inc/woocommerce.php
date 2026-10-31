@@ -36,3 +36,7 @@ add_filter( 'woocommerce_breadcrumb_defaults', function ( $args ) {
 	$args['wrap_before'] = '<nav class="woocommerce-breadcrumb" aria-label="' . esc_attr__( 'Ruta de navegación', 'tecnostar' ) . '">';
 	return $args;
 } );
+
+// Ficha de producto: foto, información y pestañas en un bloque propio; así la columna sticky se suelta donde terminan las pestañas, antes de los relacionados.
+add_action( 'woocommerce_before_single_product_summary', function () { echo '<div class="ts-pdp-top">'; }, 1 );
+add_action( 'woocommerce_after_single_product_summary', function () { echo '</div>'; }, 11 );

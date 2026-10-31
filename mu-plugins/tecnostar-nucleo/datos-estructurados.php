@@ -1,6 +1,6 @@
 <?php
 /**
- * Datos estructurados (JSON-LD) y sitemap: LocalBusiness de las dos sedes, Product con garantía por Grado y BreadcrumbList.
+ * Datos estructurados (JSON-LD) y sitemap: LocalBusiness de las dos sedes, Product con garantía por Grado, Service de los servicios y BreadcrumbList.
  *
  * Sitemap: se usa el nativo de WordPress (/wp-sitemap.xml). WordPress lo desactiva mientras la opción
  * "blog_public" sea 0 (sitio desindexado, como el staging); en producción queda activo. Aquí solo se
@@ -99,6 +99,29 @@ function tecnostar_ld_breadcrumb( array $items ): array {
 	);
 }
 
+/** Service de una página de servicio (ts_servicio). Función pura: recibe nombre, descripción, URL y URL del sitio. */
+function tecnostar_ld_servicio( string $nombre, string $descripcion, string $url, string $sitio ): array {
+	$datos = array(
+		'@context'    => 'https://schema.org',
+		'@type'       => 'Service',
+		'name'        => $nombre,
+		'url'         => $url,
+		'provider'    => array(
+			'@type' => 'LocalBusiness',
+			'name'  => 'Tecnostar Ingeniería Electrónica',
+			'url'   => $sitio,
+		),
+		'areaServed'  => array(
+			'@type' => 'Country',
+			'name'  => 'Colombia',
+		),
+	);
+	if ( '' !== $descripcion ) {
+		$datos['description'] = $descripcion;
+	}
+	return $datos;
+}
+
 /** Imprime un bloque JSON-LD. */
 function tecnostar_ld_imprimir( array $datos ): void {
 	echo '<script type="application/ld+json">' . wp_json_encode( $datos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . "</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput
@@ -192,6 +215,10 @@ add_action(
 			if ( $p ) {
 				tecnostar_ld_imprimir( tecnostar_ld_producto( $p ) );
 			}
+		}
+		if ( is_singular( 'ts_servicio' ) ) {
+			$desc = wp_trim_words( wp_strip_all_tags( get_post_field( 'post_content', get_queried_object_id() ) ), 40, '' );
+			tecnostar_ld_imprimir( tecnostar_ld_servicio( get_the_title( get_queried_object_id() ), $desc, get_permalink( get_queried_object_id() ), home_url( '/' ) ) );
 		}
 		$migas = tecnostar_ld_migas();
 		if ( count( $migas ) > 1 ) {

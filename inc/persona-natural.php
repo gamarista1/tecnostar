@@ -6,9 +6,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
-/** True en el índice de Persona Natural y en las páginas de servicio. */
+/** True en el índice de Persona Natural, Empresas y las páginas de servicio (comparten paginas.css). */
 function tecnostar_es_pagina_servicios(): bool {
-	return is_page_template( 'page-templates/persona-natural.php' ) || is_singular( 'ts_servicio' );
+	return is_page_template( array( 'page-templates/persona-natural.php', 'page-templates/empresas.php' ) ) || is_singular( 'ts_servicio' );
 }
 
 add_action(

@@ -16,7 +16,8 @@
 
   // Mensaje: el contexto libre o, si falta o es un código (tipo:slug), el título de la página.
   function url(a) {
-    var tema = contexto && !/^[a-z_]+:[\w-]+$/i.test(contexto) ? contexto : document.title;
+    var frases = { 'busqueda': 'busco un producto que no encuentro en la tienda', 'te-lo-conseguimos': 'busco un producto que no encuentro en la tienda' };
+    var tema = frases[contexto] || (contexto && !/^[a-z_]+:[\w-]+$/i.test(contexto) ? contexto : document.title);
     var texto = 'Hola, quiero información: ' + tema + ' ' + location.href;
     return 'https://wa.me/' + a.getAttribute('data-wa-num') + '?text=' + encodeURIComponent(texto);
   }

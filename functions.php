@@ -17,6 +17,7 @@ require_once get_template_directory() . '/inc/envio.php';
 require_once get_template_directory() . '/inc/envio-bogota.php';
 require_once get_template_directory() . '/inc/llms-txt.php';
 require_once get_template_directory() . '/inc/cuenta.php';
+require_once get_template_directory() . '/inc/rendimiento.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'tecnostar', get_template_directory() . '/languages' );

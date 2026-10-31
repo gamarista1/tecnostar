@@ -56,7 +56,7 @@ add_action( 'woocommerce_single_product_summary', function () {
 }, 6 );
 
 // Estilos solo en tienda, categorías, ficha y portada; el JS de filtros, solo en los listados;
-// el de la ficha (tooltips y video), solo en la ficha; el de la tarjeta "te lo conseguimos", solo en tienda y categorías.
+// el de la ficha (tooltips; el video va en inc/video.php), solo en la ficha; el de la tarjeta "te lo conseguimos", solo en tienda y categorías.
 add_action( 'wp_enqueue_scripts', function () {
 	$js = get_template_directory_uri() . '/assets/js/';
 	if ( is_front_page() || is_shop() || is_product_taxonomy() || is_product() || tecnostar_es_busqueda_productos() ) {
@@ -136,8 +136,9 @@ function tecnostar_fotos_faltantes_html( int $product_id ): string {
 }
 
 /**
- * Video corto con carga al tocar: el <video> no tiene src hasta que el cliente pulsa el botón
- * (assets/js/ficha.js); hasta entonces solo se ve el póster (la foto principal, ya descargada).
+ * Video corto con carga al tocar (template-parts/video.php + assets/js/video.js): el <video> no tiene src hasta
+ * que el cliente pulsa el botón; hasta entonces solo se ve el póster (la foto principal, ya descargada).
+ * _ts_video puede ser una clave de R2 (URL prefirmada al tocar) o una URL https completa.
  */
 function tecnostar_video_html( int $product_id ): string {
 	$url     = (string) get_post_meta( $product_id, TECNOSTAR_META_VIDEO, true );
@@ -149,16 +150,18 @@ function tecnostar_video_html( int $product_id ): string {
 		$url = TECNOSTAR_VIDEO_EJEMPLO;
 		tecnostar_pendiente( 'ficha-video', 'Video de 15 s por producto (equipo encendido y conectado), alojado en R2. Hoy se muestra un video de ejemplo.', 'Ficha de producto > Video' );
 	}
-	$poster = (string) wp_get_attachment_image_url( (int) get_post_thumbnail_id( $product_id ), 'woocommerce_single' );
-	$html   = sprintf(
-		'<figure class="ts-video" data-ts-video>'
-		. '<video class="ts-video__v" preload="none" playsinline%1$s data-src="%2$s" width="640" height="360" aria-label="Video de prueba del equipo"></video>'
-		. '<button type="button" class="ts-video__play" data-ts-video-play><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Ver video de prueba <small>(15 s)</small></span></button>'
-		. '<noscript><a href="%2$s">Ver video de prueba</a></noscript>'
-		. '<figcaption class="ts-video__cap">Así lo probamos: encendido y conectado.</figcaption>'
-		. '</figure>',
-		$poster ? ' poster="' . esc_url( $poster ) . '"' : '',
-		esc_url( $url )
+	$html = tecnostar_video_reproductor(
+		array(
+			'fuente'   => $url, // Clave de R2 (videos/xxx.mp4) o URL https.
+			'poster'   => (string) wp_get_attachment_image_url( (int) get_post_thumbnail_id( $product_id ), 'woocommerce_single' ),
+			'modo'     => 'video',
+			'etiqueta' => 'Video de prueba del equipo',
+			'boton'    => 'Ver video de prueba',
+			'duracion' => '15 s',
+			'pie'      => 'Así lo probamos: encendido y conectado.',
+			'pronto'   => 'Muy pronto: video del equipo encendido y conectado.',
+			'wa'       => 'el video de prueba de este equipo',
+		)
 	);
 	return $ejemplo ? tecnostar_ejemplo( 'ficha-video', $html ) : $html;
 }

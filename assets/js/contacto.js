@@ -1,7 +1,7 @@
 /* Nosotros / Contáctenos. Sin dependencias.
    - Mapa diferido: [data-mapa] guarda la URL del mapa; el iframe de Google solo se crea al tocar [data-mapa-abrir].
      Sin JS, ese enlace abre Google Maps en otra pestaña.
-   - Video diferido: [data-video] guarda la URL; el MP4 no se pide hasta tocar [data-video-play]. */
+   - El video del recorrido lo maneja assets/js/video.js (reproductor común con la ficha). */
 (function () {
   document.addEventListener('click', function (e) {
     var abrir = e.target.closest && e.target.closest('[data-mapa-abrir]');
@@ -20,22 +20,6 @@
       f.setAttribute('tabindex', '0');
       f.focus();
       return;
-    }
-    var play = e.target.closest && e.target.closest('[data-video-play]');
-    if (play) {
-      var v = play.closest('[data-video]');
-      if (!v) return;
-      var video = document.createElement('video');
-      video.src = v.getAttribute('data-video');
-      video.controls = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.setAttribute('playsinline', '');
-      v.innerHTML = '';
-      v.appendChild(video);
-      var p = video.play();
-      if (p && p.catch) p.catch(function () {});
-      video.focus();
     }
   });
 

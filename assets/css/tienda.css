@@ -119,21 +119,7 @@
   color: var(--color-text-muted); font-size: 0.6875rem; line-height: 1.2; text-align: center;
 }
 
-/* Video corto: póster con botón; el video se descarga al tocar. */
-.ts-video { position: relative; margin: 0; }
-.ts-video__v { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius); background: var(--color-primary-dark); object-fit: cover; }
-.ts-video__play {
-  position: absolute; inset: 0 0 auto; height: 0; padding-top: 56.25%; width: 100%;
-  border: 0; border-radius: var(--radius); background: rgb(11 57 84 / 0.35); color: #fff; font: inherit; cursor: pointer;
-}
-.ts-video__play > svg, .ts-video__play > span { position: absolute; left: 50%; transform: translateX(-50%); }
-.ts-video__play > svg { top: calc(50% - 2.75rem); width: 3.5rem; height: 3.5rem; padding: 0.875rem; border-radius: 50%; background: var(--color-accent); color: var(--color-primary-dark); box-shadow: var(--shadow-2); transition: transform var(--dur-fast) var(--ease-spring); }
-.ts-video__play > span { top: calc(50% + 1.25rem); width: max-content; font-weight: 700; text-shadow: 0 1px 2px rgb(0 0 0 / 0.5); }
-.ts-video__play small { font-weight: 500; }
-.ts-video__play:hover > svg { transform: translateX(-50%) scale(1.06); }
-.ts-video__play:active > svg { transform: translateX(-50%) scale(0.94); }
-.ts-video__play:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
-.ts-video__cap { margin-top: var(--space-2); font-size: 0.8125rem; color: var(--color-text-muted); }
+/* Video corto: estilos en video.css (reproductor común con Nosotros). */
 
 /* Checklist: lo que recibe el cliente con el equipo. */
 .ts-checklist { margin: var(--space-3) 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--color-surface); }
@@ -181,9 +167,8 @@ body:has(.ts-wa--inferior-izquierda) .ts-consigue { left: calc(5.25rem + env(saf
 
 @media (prefers-reduced-motion: reduce) {
   .ts-tip__globo { transition: opacity 120ms ease; transform: none; }
-  .ts-meta__btn, .ts-video__play > svg, .ts-consigue__btn { transition: none; }
+  .ts-meta__btn, .ts-consigue__btn { transition: none; }
   .ts-meta__btn:active, .ts-consigue__btn:active { transform: none; }
-  .ts-video__play:hover > svg, .ts-video__play:active > svg { transform: translateX(-50%); }
   .ts-consigue { transition: opacity 150ms linear; transform: none; }
 }
 @media (forced-colors: active) {

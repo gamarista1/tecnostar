@@ -1,6 +1,6 @@
 /**
- * Ficha de producto: tooltips de las características (mismo patrón que los de Wompi en el pago)
- * y video corto que no se descarga hasta que el cliente lo toca. Sin dependencias.
+ * Ficha de producto: tooltips de las características (mismo patrón que los de Wompi en el pago).
+ * El video corto va en assets/js/video.js. Sin dependencias.
  */
 (function () {
   'use strict';
@@ -40,19 +40,5 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarTodos(null); });
     window.addEventListener('resize', function () { raiz.querySelectorAll('[data-tip].is-abierto').forEach(centrar); }, { passive: true });
   }
-
-  // ---- Video: sin src hasta el toque; entonces se asigna, se carga y se reproduce.
-  document.querySelectorAll('[data-ts-video]').forEach(function (fig) {
-    var v = fig.querySelector('video'), btn = fig.querySelector('[data-ts-video-play]');
-    if (!v || !btn) return;
-    btn.addEventListener('click', function () {
-      if (!v.getAttribute('src')) v.setAttribute('src', v.getAttribute('data-src'));
-      v.controls = true;
-      fig.classList.add('is-activo');
-      btn.hidden = true;
-      var p = v.play();
-      if (p && p.catch) p.catch(function () {});
-      v.focus({ preventScroll: true });
-    });
-  });
+  // El video corto lo maneja assets/js/video.js (reproductor común con Nosotros).
 })();

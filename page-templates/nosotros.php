@@ -42,7 +42,7 @@ $redes = array(
 	array( 'TikTok', 'https://www.tiktok.com/@tecnostaringenieria' ),
 );
 
-// Video del recorrido: URL desde R2 cuando exista (tarea 10.1). Mientras tanto, imagen de ejemplo.
+// Video del recorrido: clave de R2 (videos/recorrido-sedes.mp4) o URL https completa (tarea 10.1). Vacío: imagen de ejemplo.
 $video = (string) apply_filters( 'tecnostar_video_recorrido', '' );
 ?>
 <div class="pn ns">
@@ -80,16 +80,23 @@ $video = (string) apply_filters( 'tecnostar_video_recorrido', '' );
 	<section class="section section--alt ns-recorrido" aria-labelledby="ns-recorrido-t">
 		<div class="container">
 			<div class="section__head"><h2 id="ns-recorrido-t">Recorre nuestras sedes</h2></div>
-			<?php ob_start(); ?>
-			<div class="ns-video"<?php echo $video ? ' data-video="' . esc_url( $video ) . '"' : ''; ?>>
-				<img src="<?php echo esc_url( $img . 'recorrido.svg' ); ?>" width="1280" height="720" loading="lazy" decoding="async" alt="Portada del video de 30 segundos con el recorrido por las sedes (imagen de ejemplo)">
-				<?php if ( $video ) : ?>
-					<button type="button" class="ns-video__play" data-video-play>Ver el recorrido (30 s)</button>
-				<?php else : ?>
-					<p class="ns-video__pronto">Muy pronto: video de 30 segundos con el recorrido por las dos sedes.</p>
-				<?php endif; ?>
-			</div>
-			<?php echo $ej( 'nosotros-video-recorrido', 'Video de 30 s del recorrido por las dos sedes (subir a R2, tarea 10.1)', ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+			<?php
+			$reproductor = tecnostar_video_reproductor(
+				array(
+					'fuente'   => $video,
+					'poster'   => $img . 'recorrido.svg',
+					'modo'     => 'imagen',
+					'alt'      => 'Portada del video de 30 segundos con el recorrido por las sedes (imagen de ejemplo)',
+					'etiqueta' => 'Recorrido por las sedes de Tecnostar',
+					'boton'    => 'Ver el recorrido',
+					'duracion' => '30 s',
+					'pronto'   => 'Muy pronto: video de 30 segundos con el recorrido por las dos sedes.',
+					'clase'    => 'ns-video',
+					'wa'       => 'el video del recorrido por las sedes',
+				)
+			);
+			echo $ej( 'nosotros-video-recorrido', 'Video de 30 s del recorrido por las dos sedes (subir a R2, tarea 10.1)', $reproductor ); // phpcs:ignore WordPress.Security.EscapeOutput
+			?>
 		</div>
 	</section>
 

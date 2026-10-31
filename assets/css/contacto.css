@@ -11,17 +11,7 @@
 .ns-cap__t { margin: var(--space-1) 0 var(--space-2); font-size: clamp(1.25rem, 4.4vw, 1.75rem); line-height: 1.2; color: var(--color-primary-dark); }
 .ns-cap__d { margin: 0; max-width: 36rem; color: #3d5566; font-size: 1.0625rem; line-height: 1.55; }
 
-/* ---------- Video del recorrido (diferido) ---------- */
-.ns-video { position: relative; overflow: hidden; border-radius: var(--radius); background: var(--color-primary-dark); box-shadow: var(--shadow-1); aspect-ratio: 16 / 9; }
-.ns-video img, .ns-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
-.ns-video__play, .ns-video__pronto {
-  position: absolute; left: 50%; bottom: var(--space-4); transform: translateX(-50%);
-  margin: 0; padding: var(--space-2) var(--space-4); border-radius: 999px; width: max-content; max-width: calc(100% - 2rem);
-  background: rgb(11 57 84 / 0.86); color: #fff; font: inherit; font-weight: 600; text-align: center; line-height: 1.3;
-}
-.ns-video__pronto { bottom: var(--space-2); font-size: 0.8125rem; font-weight: 500; }
-.ns-video__play { min-height: 3rem; border: 0; cursor: pointer; background: var(--color-accent); color: var(--color-primary-dark); }
-.ns-video__play:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+/* ---------- Video del recorrido: estilos en video.css (template-parts/video.php, modo imagen) ---------- */
 
 /* ---------- Sedes ---------- */
 .ns-sedes__grid { display: grid; gap: var(--space-6); }
@@ -83,6 +73,5 @@
   .ns-cap { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8); }
   .ns-cap:nth-child(even) .ns-cap__f { order: 2; }
   .ns-sedes__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ns-video__pronto { bottom: var(--space-4); font-size: 1rem; font-weight: 600; }
   .ns-contacto__in { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; }
 }

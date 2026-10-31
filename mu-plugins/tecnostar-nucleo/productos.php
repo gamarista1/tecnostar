@@ -179,7 +179,7 @@ function tecnostar_campos_casillas() {
 	);
 }
 
-/** Meta del video corto del producto (URL del MP4, por ejemplo en R2). */
+/** Meta del video corto del producto: clave de R2 (videos/xxx.mp4) o URL https completa del MP4. */
 const TECNOSTAR_META_VIDEO = '_ts_video';
 
 /** Pinta los campos en la pestaña General del producto. */
@@ -197,10 +197,11 @@ function tecnostar_campos_producto_mostrar() {
 	woocommerce_wp_text_input(
 		array(
 			'id'          => TECNOSTAR_META_VIDEO,
-			'label'       => 'Video de prueba (URL .mp4)',
-			'type'        => 'url',
+			'label'       => 'Video de prueba',
+			'type'        => 'text',
+			'placeholder' => 'videos/nombre-del-equipo.mp4',
 			'desc_tip'    => true,
-			'description' => 'Video corto (unos 15 s) del equipo encendido y conectado. Se descarga solo cuando el cliente lo toca.',
+			'description' => 'Clave del video en R2 (videos/nombre.mp4, minúsculas, sin espacios) o una URL https completa. Video corto (unos 15 s) del equipo encendido y conectado; se descarga solo cuando el cliente lo toca.',
 		)
 	);
 	foreach ( tecnostar_campos_casillas() as $meta => $etiqueta ) {
@@ -234,7 +235,9 @@ function tecnostar_campos_producto_guardar( $post_id ) {
 			update_post_meta( $post_id, $meta, $valor );
 		}
 	}
-	$video = isset( $_POST[ TECNOSTAR_META_VIDEO ] ) ? esc_url_raw( trim( wp_unslash( $_POST[ TECNOSTAR_META_VIDEO ] ) ), array( 'https' ) ) : '';
+	$video = isset( $_POST[ TECNOSTAR_META_VIDEO ] ) ? (string) wp_unslash( $_POST[ TECNOSTAR_META_VIDEO ] ) : '';
+	// Clave de R2 (videos/xxx.mp4) o URL https; cualquier otra cosa se descarta (video-r2.php).
+	$video = function_exists( 'tecnostar_video_fuente_normalizar' ) ? tecnostar_video_fuente_normalizar( $video ) : esc_url_raw( trim( $video ), array( 'https' ) );
 	if ( '' === $video ) {
 		delete_post_meta( $post_id, TECNOSTAR_META_VIDEO );
 	} else {

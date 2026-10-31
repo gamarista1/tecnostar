@@ -106,6 +106,75 @@ $video = (string) apply_filters( 'tecnostar_video_recorrido', '' );
 		</div>
 	</section>
 
+	<?php
+	if ( function_exists( 'tecnostar_contacto_sedes' ) && tecnostar_contacto_sedes() ) :
+		$f_sedes = tecnostar_contacto_sedes();
+		$f_res   = tecnostar_contacto_resultado();
+		$f_dat   = $f_res && ! empty( $f_res['datos'] ) ? $f_res['datos'] : array();
+		$f_err   = $f_res && ! empty( $f_res['errores'] ) ? $f_res['errores'] : array();
+		$f_val   = function ( $k ) use ( $f_dat ) {
+			return isset( $f_dat[ $k ] ) ? (string) $f_dat[ $k ] : '';
+		};
+		$f_campo = function ( $k ) use ( $f_err ) {
+			return isset( $f_err[ $k ] ) ? ' aria-invalid="true" aria-describedby="' . esc_attr( $k . '-err' ) . '"' : '';
+		};
+		$f_msg = function ( $k ) use ( $f_err ) {
+			return isset( $f_err[ $k ] ) ? '<span class="ns-form__err" id="' . esc_attr( $k . '-err' ) . '">' . esc_html( $f_err[ $k ] ) . '</span>' : '';
+		};
+		?>
+	<section id="contacto" class="section section--alt ns-contacto" aria-labelledby="ns-contacto-t">
+		<div class="container ns-contacto__in">
+			<div class="ns-contacto__intro">
+				<h2 id="ns-contacto-t">Escríbenos</h2>
+				<p>Déjanos tus datos y tu mensaje. Al enviarlo te abrimos WhatsApp con la sede que elijas y el mensaje listo.</p>
+			</div>
+			<form class="ns-form" method="post" action="<?php echo esc_url( get_permalink() . '#contacto' ); ?>" data-contacto data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
+				<input type="hidden" name="ts_contacto_enviar" value="1">
+				<?php wp_nonce_field( 'ts_contacto', 'ts_nonce', false ); ?>
+				<div class="ns-form__trampa" aria-hidden="true">
+					<label for="ts_web">No llenes este campo</label>
+					<input type="text" name="ts_web" id="ts_web" tabindex="-1" autocomplete="off" value="">
+				</div>
+				<p class="ns-form__campo">
+					<label for="ts_nombre">Nombre</label>
+					<input type="text" name="ts_nombre" id="ts_nombre" required minlength="2" maxlength="80" autocomplete="name" value="<?php echo esc_attr( $f_val( 'nombre' ) ); ?>"<?php echo $f_campo( 'ts_nombre' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+					<?php echo $f_msg( 'ts_nombre' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				</p>
+				<p class="ns-form__campo">
+					<label for="ts_celular">Celular</label>
+					<input type="tel" name="ts_celular" id="ts_celular" required maxlength="20" inputmode="tel" autocomplete="tel" value="<?php echo esc_attr( $f_val( 'celular' ) ); ?>"<?php echo $f_campo( 'ts_celular' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+					<?php echo $f_msg( 'ts_celular' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				</p>
+				<p class="ns-form__campo">
+					<label for="ts_sede">Sede</label>
+					<select name="ts_sede" id="ts_sede" required<?php echo $f_campo( 'ts_sede' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+						<option value="">Elige una sede</option>
+						<?php foreach ( $f_sedes as $sid => $snombre ) : ?>
+							<option value="<?php echo esc_attr( $sid ); ?>"<?php selected( $f_val( 'sede' ), $sid ); ?>><?php echo esc_html( $snombre ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<?php echo $f_msg( 'ts_sede' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				</p>
+				<p class="ns-form__campo">
+					<label for="ts_mensaje">Mensaje</label>
+					<textarea name="ts_mensaje" id="ts_mensaje" rows="5" required maxlength="2000"<?php echo $f_campo( 'ts_mensaje' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>><?php echo esc_textarea( $f_val( 'mensaje' ) ); ?></textarea>
+					<?php echo $f_msg( 'ts_mensaje' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				</p>
+				<p class="ns-form__nota">Usamos tus datos solo para responderte. La copia del mensaje se borra a los 90 días.</p>
+				<button type="submit" class="btn btn--accent ns-form__enviar">Enviar y abrir WhatsApp</button>
+				<div class="ns-form__estado" role="status" aria-live="polite" data-contacto-estado>
+					<?php if ( $f_res ) : ?>
+						<p class="<?php echo $f_res['ok'] ? 'is-ok' : 'is-error'; ?>"><?php echo esc_html( $f_res['mensaje'] ); ?></p>
+						<?php if ( ! empty( $f_res['wa_url'] ) ) : ?>
+							<a class="btn btn--accent ns-form__wa" href="<?php echo esc_url( $f_res['wa_url'] ); ?>" target="_blank" rel="noopener" data-contacto-wa>Abrir WhatsApp</a>
+						<?php endif; ?>
+					<?php endif; ?>
+				</div>
+			</form>
+		</div>
+	</section>
+	<?php endif; ?>
+
 	<section class="section ns-redes" aria-labelledby="ns-redes-t">
 		<div class="container">
 			<div class="section__head"><h2 id="ns-redes-t">Síguenos</h2></div>

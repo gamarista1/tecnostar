@@ -125,10 +125,29 @@ function tecnostar_contacto_validar( array $in, array $sedes ): array {
 	);
 }
 
+/**
+ * IP normalizada para el contador. Función pura.
+ * - IPv4 mapeada en IPv6 (::ffff:1.2.3.4, la que puede llegar por HTTP/3) cuenta como la IPv4.
+ * - IPv6 se agrupa por su /64 (las direcciones temporales cambian dentro de la misma red).
+ */
+function tecnostar_contacto_ip_normalizada( string $ip ): string {
+	$ip = trim( $ip );
+	if ( 0 === stripos( $ip, '::ffff:' ) && filter_var( substr( $ip, 7 ), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 ) ) {
+		return substr( $ip, 7 );
+	}
+	if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 ) ) {
+		$bin = inet_pton( $ip );
+		if ( false !== $bin ) {
+			return inet_ntop( substr( $bin, 0, 8 ) . str_repeat( "\0", 8 ) ) . '/64';
+		}
+	}
+	return $ip;
+}
+
 /** Clave del contador por IP (HMAC; la IP no se guarda). */
 function tecnostar_contacto_clave(): string {
 	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-	return 'ts_contacto_' . substr( hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) ), 0, 24 );
+	return 'ts_contacto_' . substr( hash_hmac( 'sha256', tecnostar_contacto_ip_normalizada( $ip ), wp_salt( 'nonce' ) ), 0, 24 );
 }
 
 function tecnostar_contacto_agotado(): bool {

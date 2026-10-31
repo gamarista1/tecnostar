@@ -11,7 +11,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /** Módulos del núcleo, en orden de carga. Cada nuevo archivo de tecnostar-nucleo/ se añade aquí. */
-foreach ( array( 'pendientes.php', 'productos.php', 'servicios.php', 'whatsapp.php' ) as $tecnostar_nucleo_archivo ) {
+foreach ( array( 'pendientes.php', 'productos.php', 'servicios.php', 'whatsapp.php', 'seo.php' ) as $tecnostar_nucleo_archivo ) {
 	$tecnostar_nucleo_ruta = __DIR__ . '/tecnostar-nucleo/' . $tecnostar_nucleo_archivo;
 	if ( file_exists( $tecnostar_nucleo_ruta ) ) {
 		require_once $tecnostar_nucleo_ruta;

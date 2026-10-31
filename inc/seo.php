@@ -31,7 +31,7 @@ function tecnostar_meta_description() {
 	if ( '' === $text ) {
 		$text = $default;
 	}
-	return mb_strimwidth( $text, 0, 158, '…' );
+	return apply_filters( 'tecnostar_meta_description', mb_strimwidth( $text, 0, 158, '…' ) );
 }
 
 /**

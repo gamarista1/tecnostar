@@ -97,7 +97,8 @@ function tecnostar_contacto_validar( array $in, array $sedes ): array {
 	$nombre  = isset( $in['ts_nombre'] ) ? trim( sanitize_text_field( (string) $in['ts_nombre'] ) ) : '';
 	$celular = isset( $in['ts_celular'] ) ? trim( preg_replace( '/[^\d+ ]+/', '', (string) $in['ts_celular'] ) ) : '';
 	$sede    = isset( $in['ts_sede'] ) ? sanitize_key( (string) $in['ts_sede'] ) : '';
-	$mensaje = isset( $in['ts_mensaje'] ) ? trim( sanitize_textarea_field( (string) $in['ts_mensaje'] ) ) : '';
+	// Los navegadores envían los saltos del textarea como \r\n: se normalizan antes de contar.
+	$mensaje = isset( $in['ts_mensaje'] ) ? trim( sanitize_textarea_field( str_replace( array( "\r\n", "\r" ), "\n", (string) $in['ts_mensaje'] ) ) ) : '';
 	$errores = array();
 
 	$ln = mb_strlen( $nombre, 'UTF-8' );

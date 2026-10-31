@@ -247,7 +247,10 @@ function tecnostar_objeto_tiene_grado( $producto ) {
 
 /** REST: rechaza publicar sin Grado. */
 function tecnostar_rest_exigir_grado( $producto, $request ) {
-	if ( 'publish' === $producto->get_status() && ! tecnostar_objeto_tiene_grado( $producto ) ) {
+	$id     = (int) $producto->get_id();
+	$previo = $id ? get_post_status( $id ) : false;
+	// Solo la transición a publicado: lo ya publicado se edita libremente.
+	if ( 'publish' === $producto->get_status() && 'publish' !== $previo && ! tecnostar_objeto_tiene_grado( $producto ) ) {
 		return new WP_Error(
 			'tecnostar_grado_requerido',
 			'Un producto sin Grado (A o B) no se puede publicar. Guárdalo como borrador o asigna el atributo Grado.',
@@ -258,20 +261,42 @@ function tecnostar_rest_exigir_grado( $producto, $request ) {
 }
 add_filter( 'woocommerce_rest_pre_insert_product_object', 'tecnostar_rest_exigir_grado', 10, 2 );
 
-/** Administrador: sin Grado vuelve a borrador y avisa. */
+/** Estado previo de cada producto en esta petición (lo fija core antes de guardar). */
+function tecnostar_estado_previo( $nuevo = null, $viejo = null, $post = null ) {
+	static $mapa = array();
+	if ( $post instanceof WP_Post && 'product' === $post->post_type ) {
+		$mapa[ $post->ID ] = $viejo;
+	}
+	return $mapa;
+}
+add_action( 'transition_post_status', 'tecnostar_estado_previo', 10, 3 );
+
+/** Administrador: al pasar a publicado sin Grado vuelve a borrador y avisa; lo ya publicado se guarda tal cual. */
 function tecnostar_admin_exigir_grado( $producto ) {
 	if ( 'publish' !== $producto->get_status() || tecnostar_objeto_tiene_grado( $producto ) ) {
 		return;
 	}
+	$mapa   = tecnostar_estado_previo();
+	$previo = $mapa[ $producto->get_id() ] ?? null;
+	if ( 'publish' === $previo ) {
+		set_transient( 'tecnostar_aviso_grado_' . get_current_user_id(), 'info', 120 );
+		return;
+	}
 	$producto->set_status( 'draft' );
-	set_transient( 'tecnostar_aviso_grado_' . get_current_user_id(), 1, 120 );
+	set_transient( 'tecnostar_aviso_grado_' . get_current_user_id(), 'error', 120 );
 }
 add_action( 'woocommerce_admin_process_product_object', 'tecnostar_admin_exigir_grado', 99 );
 
 function tecnostar_admin_aviso_grado() {
 	$clave = 'tecnostar_aviso_grado_' . get_current_user_id();
-	if ( get_transient( $clave ) ) {
-		delete_transient( $clave );
+	$tipo  = get_transient( $clave );
+	if ( ! $tipo ) {
+		return;
+	}
+	delete_transient( $clave );
+	if ( 'info' === $tipo ) {
+		echo '<div class="notice notice-warning is-dismissible"><p>Este producto no tiene Grado; asígnalo cuando puedas.</p></div>';
+	} else {
 		echo '<div class="notice notice-error is-dismissible"><p><strong>Falta el Grado.</strong> El producto se guardó como borrador: asigna el atributo Grado (A o B) para poder publicarlo.</p></div>';
 	}
 }

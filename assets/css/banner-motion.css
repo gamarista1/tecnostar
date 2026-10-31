@@ -117,6 +117,9 @@
 .hc { position: relative; height: 280px; overflow: hidden; }
 .hc__slide { position: absolute; inset: 0; }
 .hc__slide--motion { visibility: hidden; }
+/* La escena activa hereda la visibilidad de su diapositiva: hasta que arranca la isla, el video no se pinta encima de Addi. */
+.hc .bm__scene.is-active { visibility: inherit; }
+.no-js .hc__slide--motion { visibility: visible; }
 .hc__slide .bm { position: absolute; inset: 0; height: auto; }
 .hc__slide--addi > * { max-width: 100%; }
 .hc .bm__wipe { z-index: 3; }

@@ -22,6 +22,13 @@
 				fetchpriority="high" decoding="async">
 		</a>
 
+		<?php if ( function_exists( 'wc_get_page_permalink' ) ) : ?>
+			<?php /* Mismo HTML para todos (cacheable): el contenido de la tarjeta se pide al abrirla (inc/cuenta.php). Sin JS es un enlace a Mi cuenta. */ ?>
+			<a class="icon-btn" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" data-cuenta-abrir aria-label="<?php esc_attr_e( 'Mi cuenta', 'tecnostar' ); ?>" aria-expanded="false" aria-haspopup="dialog" aria-controls="ts-cuenta">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c1.4-3.8 4.4-5.8 8-5.8s6.6 2 8 5.8"/></svg>
+			</a>
+		<?php endif; ?>
+
 		<?php if ( function_exists( 'wc_get_cart_url' ) ) : ?>
 			<a class="icon-btn" data-mc-abrir href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="<?php esc_attr_e( 'Carrito', 'tecnostar' ); ?>">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L20 8H6.2"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
@@ -51,6 +58,8 @@
 		</div>
 	</div>
 </div>
+<?php /* Fuera de la cabecera: su backdrop-filter haría de bloque contenedor del position: fixed. */ ?>
+<div id="ts-cuenta" class="ts-cuenta" role="dialog" aria-label="<?php esc_attr_e( 'Mi cuenta', 'tecnostar' ); ?>" tabindex="-1" hidden></div>
 <main id="contenido" class="site-main">
 <?php if ( ! is_front_page() ) : ?>
 <div class="container section">

@@ -16,6 +16,7 @@ require_once get_template_directory() . '/inc/cart.php';
 require_once get_template_directory() . '/inc/envio.php';
 require_once get_template_directory() . '/inc/envio-bogota.php';
 require_once get_template_directory() . '/inc/llms-txt.php';
+require_once get_template_directory() . '/inc/cuenta.php';
 
 add_action( 'after_setup_theme', function () {
 	load_theme_textdomain( 'tecnostar', get_template_directory() . '/languages' );
@@ -50,6 +51,13 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'tecnostar-base', $css . 'base.css', array( 'tecnostar-tokens' ), tecnostar_asset_ver( '/assets/css/base.css' ) );
 	wp_enqueue_style( 'tecnostar-components', $css . 'components.css', array( 'tecnostar-base' ), tecnostar_asset_ver( '/assets/css/components.css' ) );
 	wp_enqueue_script( 'tecnostar-motion', get_template_directory_uri() . '/assets/js/motion.js', array(), tecnostar_asset_ver( '/assets/js/motion.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+
+	// Widget Mi cuenta (cabecera): CSS y JS mínimos; el contenido de la tarjeta llega por AJAX al abrirla.
+	if ( function_exists( 'wc_get_page_permalink' ) ) {
+		wp_enqueue_style( 'tecnostar-cuenta', $css . 'cuenta.css', array( 'tecnostar-components' ), tecnostar_asset_ver( '/assets/css/cuenta.css' ) );
+		wp_enqueue_script( 'tecnostar-cuenta', get_template_directory_uri() . '/assets/js/cuenta.js', array(), tecnostar_asset_ver( '/assets/js/cuenta.js' ), array( 'in_footer' => true, 'strategy' => 'defer' ) );
+		wp_add_inline_script( 'tecnostar-cuenta', 'window.tsCuenta=' . wp_json_encode( array( 'ajax' => admin_url( 'admin-ajax.php' ) ) ) . ';', 'before' );
+	}
 
 	// Portada: banner motion (estilos y cargador de islas; GSAP se descarga solo al acercarse el banner).
 	if ( is_front_page() ) {

@@ -247,6 +247,11 @@
   .woocommerce div.product .product_title { font-size: clamp(1.75rem, 3vw, 2.5rem); }
   .woocommerce div.product p.price, .woocommerce div.product span.price { font-size: 1.75rem; }
   .woocommerce div.product div.summary { position: sticky; top: 5.5rem; }
+  /* Foto y pestañas a la izquierda; la columna de información (sticky) acompaña hasta donde terminan las pestañas y se suelta al llegar a los relacionados. */
+  .woocommerce div.product div.images { grid-column: 1; grid-row: 1; }
+  .woocommerce div.product div.summary { grid-column: 2; grid-row: 1 / span 2; position: sticky; top: 5.5rem; }
+  .woocommerce div.product .woocommerce-tabs { grid-column: 1; grid-row: 2; }
+  .woocommerce div.product .related, .woocommerce div.product .upsells { grid-column: 1 / -1; grid-row: auto; }
   .woocommerce div.product form.cart .single_add_to_cart_button:hover { box-shadow: var(--shadow-2); transform: translateY(-1px); }
 }
 @media (min-width: 52rem) and (prefers-reduced-motion: reduce) {

@@ -188,6 +188,11 @@ add_filter(
 			'/*?presupuesto=',
 			'/*?filter_',
 			'/*?s=',
+			// El mismo filtro detrás de otro parámetro (?s=...&marca=..., ?orderby=...&grado=...).
+			'/*&marca=',
+			'/*&grado=',
+			'/*&uso=',
+			'/*&presupuesto=',
 		);
 		$rutas = array(
 			'cart'      => '/carrito/',

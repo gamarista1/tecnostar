@@ -13,3 +13,65 @@
 @media (forced-colors: active) {
   .ts-sello { border: 1px solid CanvasText; }
 }
+
+/* ---------- Buscador y filtros de la tienda ---------- */
+.ts-tienda { display: flex; flex-direction: column; gap: var(--space-4); }
+.ts-buscar { display: flex; gap: var(--space-2); max-width: 40rem; }
+.ts-buscar__campo {
+  flex: 1; min-width: 0; min-height: 3rem; padding: 0 var(--space-4);
+  border: 1px solid #77838a; border-radius: 999px; background: #fff; font: inherit; color: var(--color-text);
+}
+.ts-buscar__campo::placeholder { color: var(--color-text-muted); opacity: 1; }
+.ts-buscar__btn {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 3rem; padding: 0 var(--space-4);
+  border: 0; border-radius: 999px; background: var(--color-primary-dark); color: #fff; font: inherit; font-weight: 600; cursor: pointer;
+}
+.ts-buscar__btn:active { transform: scale(0.96); }
+@media (max-width: 30rem) { .ts-buscar__btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+
+.ts-filtros { border-radius: var(--radius); background: var(--color-surface); }
+.ts-filtros__resumen {
+  display: flex; align-items: center; gap: var(--space-2); min-height: 3rem; padding: 0 var(--space-4);
+  cursor: pointer; font-weight: 700; color: var(--color-primary-dark); list-style: none;
+}
+.ts-filtros__resumen::-webkit-details-marker { display: none; }
+.ts-filtros__resumen::after {
+  content: ""; width: 0.5rem; height: 0.5rem; margin-left: auto;
+  border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px);
+}
+.ts-filtros[open] > .ts-filtros__resumen::after { transform: rotate(-135deg) translateY(-2px); }
+.ts-filtros__n { color: var(--color-primary); }
+.ts-filtros__cuerpo { display: grid; gap: var(--space-4); padding: 0 var(--space-4) var(--space-4); }
+.ts-filtro__titulo { margin: 0 0 var(--space-2); font-size: 0.875rem; font-weight: 700; color: var(--color-primary-dark); }
+.ts-filtro__lista { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.ts-chip {
+  display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 var(--space-4);
+  border: 1px solid #c9d3d8; border-radius: 999px; background: #fff;
+  color: var(--color-primary-dark); font-size: 0.875rem; font-weight: 600; text-decoration: none;
+  transition: background-color var(--dur-fast), border-color var(--dur-fast), transform var(--dur-fast) var(--ease-spring);
+}
+.ts-chip:hover { border-color: var(--color-primary); }
+.ts-chip:active { transform: scale(0.96); transition-duration: var(--dur-press); }
+.ts-chip.is-activo { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+.ts-chip.is-activo::after { content: "\00d7"; margin-left: var(--space-2); font-size: 1.125rem; line-height: 1; }
+.ts-filtros__limpiar { grid-column: 1 / -1; margin: 0; }
+.ts-filtros__limpiar a, .ts-vacio__a { color: var(--color-primary); font-weight: 700; }
+@media (min-width: 56.25rem) {
+  .ts-filtros__cuerpo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.ts-resultados { transition: opacity var(--dur-fast); }
+.ts-resultados:focus { outline: none; }
+.ts-resultados:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 6px; }
+.ts-tienda.is-cargando .ts-resultados { opacity: 0.5; }
+.ts-vacio { padding: var(--space-8) var(--space-4); border-radius: var(--radius); background: var(--color-surface); text-align: center; }
+.ts-vacio__t { margin: 0 0 var(--space-2); font-size: 1.125rem; font-weight: 700; color: var(--color-primary-dark); }
+.ts-vacio__s { margin: 0 0 var(--space-4); color: var(--color-text-muted); }
+.ts-vacio__a { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0 var(--space-4); }
+@media (prefers-reduced-motion: reduce) {
+  .ts-chip, .ts-resultados { transition: none; }
+  .ts-chip:active, .ts-buscar__btn:active { transform: none; }
+}
+@media (forced-colors: active) {
+  .ts-chip.is-activo { outline: 2px solid CanvasText; }
+}

@@ -111,3 +111,28 @@ add_action( 'wp_enqueue_scripts', function () {
 		$ws->add_data( $h, 'group', 1 );
 	}
 }, 100 );
+
+/*
+ * 4. Portada: banner de Addi. Su script de arranque (S3) se imprime sin defer en el cuerpo y detiene el
+ *    análisis del HTML 1-2,5 s mientras se descarga; después encadena 3 scripts de cdn.addi.com y al
+ *    final la imagen, que es el LCP real de la home. Con defer el HTML no espera; las conexiones se abren
+ *    antes y la imagen se precarga (Addi la usa como fondo: móvil < 600 px, escritorio >= 600 px).
+ *    Solo en la home: en producto y checkout el widget de Addi queda como lo entrega el plugin.
+ */
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+	if ( 'widget-addi' === $handle && is_front_page() && false === strpos( $tag, ' defer' ) ) {
+		$tag = preg_replace( '/<script\b(?=[^>]*\bid=["\']widget-addi-js["\'])/', '<script defer', $tag, 1 );
+	}
+	return $tag;
+}, 10, 2 );
+
+add_action( 'wp_head', function () {
+	if ( ! is_front_page() || ! wp_script_is( 'widget-addi', 'enqueued' ) ) {
+		return;
+	}
+	echo '<link rel="preconnect" href="https://s3.amazonaws.com">' . "\n";
+	echo '<link rel="preconnect" href="https://cdn.addi.com" crossorigin>' . "\n";
+	echo '<link rel="preconnect" href="https://statics.addi.com">' . "\n";
+	echo '<link rel="preload" as="image" href="https://statics.addi.com/addi-home-banner/banner2-mobile.png" media="(max-width: 599.98px)" fetchpriority="high">' . "\n";
+	echo '<link rel="preload" as="image" href="https://statics.addi.com/addi-home-banner/banner2-desktop.png" media="(min-width: 600px)" fetchpriority="high">' . "\n";
+}, 2 );

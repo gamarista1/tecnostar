@@ -27,3 +27,52 @@ add_action( 'init', function () {
 	remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
 	add_filter( 'emoji_svg_url', '__return_false' );
 } );
+
+/*
+ * 2. Atribución de pedidos de WooCommerce (sourcebuster + order-attribution, ~0,4 s de hilo principal
+ *    en móvil): fuera de carrito, checkout y cuenta se descarga tras la primera interacción o 8 s
+ *    después de cargar. Lee la URL y el referente de la página actual, así que sigue registrando el
+ *    origen de la visita. En carrito, checkout y cuenta (donde rellena campos del formulario) no cambia.
+ */
+function tecnostar_atribucion_diferida() {
+	if ( is_admin() || ! function_exists( 'is_checkout' ) ) {
+		return false;
+	}
+	return ! ( is_cart() || is_checkout() || is_account_page() );
+}
+
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+	if ( in_array( $handle, array( 'sourcebuster-js', 'wc-order-attribution' ), true ) && tecnostar_atribucion_diferida() ) {
+		$tag = preg_replace( '/(<script[^>]*\bid=["\']' . preg_quote( $handle, '/' ) . '-js["\'][^>]*?)\ssrc=/', '$1 data-ts-src=', $tag );
+	}
+	return $tag;
+}, 10, 2 );
+
+add_action( 'wp_footer', function () {
+	if ( ! tecnostar_atribucion_diferida() ) {
+		return;
+	}
+	?>
+<script id="tecnostar-diferidos">
+(function () {
+	var ev = ['pointerdown', 'keydown', 'touchstart', 'scroll'], hecho = false;
+	function cargar() {
+		if (hecho) return;
+		hecho = true;
+		ev.forEach(function (e) { removeEventListener(e, cargar, { passive: true }); });
+		var lista = [].slice.call(document.querySelectorAll('script[data-ts-src]'));
+		(function siguiente() {
+			var s = lista.shift();
+			if (!s) return;
+			var n = document.createElement('script');
+			n.src = s.getAttribute('data-ts-src');
+			n.onload = n.onerror = siguiente;
+			s.parentNode.insertBefore(n, s.nextSibling);
+		})();
+	}
+	ev.forEach(function (e) { addEventListener(e, cargar, { passive: true }); });
+	addEventListener('load', function () { setTimeout(cargar, 8000); });
+})();
+</script>
+	<?php
+}, 100 );

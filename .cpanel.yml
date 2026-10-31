@@ -5,7 +5,7 @@ deployment:
     - export DEPLOYPATH=/home/tecnosta/public_html/v2.tecnostaringenieria.com/wp-content/themes/tecnostar/
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R assets inc woocommerce template-parts $DEPLOYPATH
-    - /bin/cp style.css functions.php header.php footer.php index.php front-page.php woocommerce.php $DEPLOYPATH
+    - /bin/cp style.css functions.php header.php footer.php index.php front-page.php woocommerce.php single-ts_servicio.php $DEPLOYPATH
     # mu-plugins: cargan solos y no dependen del tema (acceso /tsi y /acceso).
     - export MUPATH=/home/tecnosta/public_html/v2.tecnostaringenieria.com/wp-content/mu-plugins/
     - /bin/mkdir -p $MUPATH

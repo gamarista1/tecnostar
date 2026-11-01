@@ -158,6 +158,6 @@
       abrirPre();
       return;
     }
-    if (!pre.hidden && !raiz.contains(e.target)) cerrar(false);
+    if (!pre.hidden && e.target.isConnected && !raiz.contains(e.target)) cerrar(false);
   });
 })();

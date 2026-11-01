@@ -117,13 +117,26 @@ add_action( 'wp_enqueue_scripts', function () {
  *    análisis del HTML 1-2,5 s mientras se descarga; después encadena 3 scripts de cdn.addi.com y al
  *    final la imagen, que es el LCP real de la home. Con defer el HTML no espera; las conexiones se abren
  *    antes y la imagen se precarga (Addi la usa como fondo: móvil < 600 px, escritorio >= 600 px).
+ *    Carga diferida: el script se inserta tras el evento load + 3,5 s, o antes si el visitante interactúa.
  *    Solo en la home: en producto y checkout el widget de Addi queda como lo entrega el plugin.
  */
 add_filter( 'script_loader_tag', function ( $tag, $handle ) {
-	if ( 'widget-addi' === $handle && is_front_page() && false === strpos( $tag, ' defer' ) ) {
-		$tag = preg_replace( '/<script\b(?=[^>]*\bid=["\']widget-addi-js["\'])/', '<script defer', $tag, 1 );
+	if ( 'widget-addi' !== $handle || ! is_front_page() || false !== strpos( $tag, 'data-addi-diferido' ) ) {
+		return $tag;
 	}
-	return $tag;
+	// Se conservan sus atributos (data-*): el script los lee de su propia etiqueta al ejecutarse.
+	if ( ! preg_match( '/\bsrc=["\']([^"\']+)["\']/', $tag, $src ) ) {
+		return $tag;
+	}
+	preg_match_all( '/\s(data-[a-z-]+)=(?:"([^"]*)"|\'([^\']*)\'|([^\s>]+))/i', $tag, $m, PREG_SET_ORDER );
+	$attrs = array();
+	foreach ( $m as $a ) {
+		$attrs[ $a[1] ] = isset( $a[4] ) ? $a[4] : ( isset( $a[3] ) && '' !== $a[3] ? $a[3] : $a[2] );
+	}
+	$cfg = wp_json_encode( array( 'src' => $src[1], 'attrs' => $attrs ) );
+	return '<script data-addi-diferido>(function(c){var n=0;function ir(){if(n++)return;["pointerdown","keydown","scroll","touchstart"].forEach(function(e){removeEventListener(e,ir)});var s=document.createElement("script");s.id="widget-addi-js";s.src=c.src;for(var k in c.attrs)s.setAttribute(k,c.attrs[k]);document.body.appendChild(s)}'
+		. '["pointerdown","keydown","scroll","touchstart"].forEach(function(e){addEventListener(e,ir,{once:true,passive:true})});'
+		. 'addEventListener("load",function(){setTimeout(ir,3500)})})(' . $cfg . ')</script>' . "\n";
 }, 10, 2 );
 
 add_action( 'wp_head', function () {

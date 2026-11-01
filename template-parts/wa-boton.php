@@ -24,71 +24,41 @@ $redes = array(
 	array( 'nombre' => 'Facebook', 'url' => 'https://www.facebook.com/tecnostar.ing/', 'c' => '#1877f2', 'ct' => '#fff', 'svg' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.500 21v-8h2.700l.4-3.200h-3.100V7.800c0-.9.300-1.500 1.600-1.500h1.700V3.400c-.3 0-1.300-.1-2.400-.1-2.400 0-4.100 1.500-4.100 4.200v2.300H7.600V13h2.700v8h3.200Z"/></svg>' ),
 	array( 'nombre' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/tecnostar-ingenier%C3%ADa-electr%C3%B3nica-profesional-sas-13b57b441/', 'c' => '#0a66c2', 'ct' => '#fff', 'svg' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 9h3.500v11H5V9Zm1.800-5.500a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM10.500 9h3.300v1.500c.5-.9 1.700-1.800 3.400-1.800 3.500 0 4.100 2.300 4.100 5.300V20h-3.500v-5.300c0-1.300 0-2.900-1.800-2.900s-2 1.400-2 2.800V20h-3.500V9Z"/></svg>' ),
 );
-$motivos = array( 'Queja', 'Reclamo', 'Sugerencia', 'Felicitación', 'Denuncia', 'Otro' );
 ?>
 <div class="ts-wa ts-wa--<?php echo esc_attr( $esquina ); ?>" data-wa>
-	<ul class="ts-wa__lista" id="ts-wa-lista">
-		<?php
-		foreach ( $canales as $i => $c ) :
-			$ini  = mb_strtoupper( mb_substr( trim( preg_replace( '/^sede\s+/iu', '', $c['nombre'] ) ), 0, 1 ) );
-			$pqrs = 'pqrs' === $c['id'];
-			?>
-			<li style="--i:<?php echo esc_attr( $i + 1 ); ?>">
-				<a class="ts-wa__item ts-wa__item--<?php echo $pqrs ? 'pqrs' : 'wa'; ?>" href="<?php echo esc_url( tecnostar_wa_url( $c['id'], $saludo ) ); ?>" data-wa-canal="<?php echo esc_attr( $c['id'] ); ?>" data-wa-num="<?php echo esc_attr( $c['numero'] ); ?>"<?php echo $pqrs ? ' data-wa-pqrs aria-haspopup="dialog"' : ''; ?> target="_blank" rel="noopener" tabindex="-1" style="--c:#25d366;--ct:#06361c">
-					<span class="ts-wa__circ" aria-hidden="true">
-						<?php
-						if ( $pqrs ) {
-							echo '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" focusable="false"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>';
-						} else {
-							echo esc_html( $ini );
-						}
-						?>
-						<span class="ts-wa__ins"><?php echo $wa_ico( 10 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					</span>
-					<span class="ts-wa__etq"><?php echo esc_html( $pqrs ? 'PQRS: quejas, sugerencias y más' : $c['nombre'] ); ?></span>
-				</a>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-	<ul class="ts-wa__lista ts-wa__lista--redes">
+	<ul class="ts-wa__lista ts-wa__lista--redes" id="ts-wa-lista">
 		<?php foreach ( $redes as $j => $r ) : ?>
-			<li style="--i:<?php echo esc_attr( $n + 1.4 + $j ); ?>">
-				<a class="ts-wa__item ts-wa__item--red" href="<?php echo esc_url( $r['url'] ); ?>" target="_blank" rel="noopener noreferrer" tabindex="-1" style="--c:<?php echo esc_attr( $r['c'] ); ?>;--ct:<?php echo esc_attr( $r['ct'] ); ?>">
-					<span class="ts-wa__circ" aria-hidden="true"><?php echo $r['svg']; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
-					<span class="ts-wa__etq"><?php echo esc_html( $r['nombre'] ); ?><span class="screen-reader-text"> (se abre en una pestaña nueva)</span></span>
+			<li style="--k:<?php echo esc_attr( $j / ( count( $redes ) - 1 ) ); ?>">
+				<a class="ts-wa__item ts-wa__item--red" href="<?php echo esc_url( $r['url'] ); ?>" target="_blank" rel="noopener noreferrer" tabindex="-1" title="<?php echo esc_attr( $r['nombre'] ); ?>" style="--c:<?php echo esc_attr( $r['c'] ); ?>">
+					<span class="ts-wa__circ"><?php echo $r['svg']; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+					<span class="screen-reader-text"><?php echo esc_html( $r['nombre'] ); ?> (se abre en una pestaña nueva)</span>
 				</a>
 			</li>
 		<?php endforeach; ?>
 	</ul>
 	<div class="ts-wa__pre" id="ts-wa-pre" role="dialog" aria-labelledby="ts-wa-pre-t" hidden>
 		<div class="ts-wa__pre-cab">
-			<div><strong id="ts-wa-pre-t">PQRS Tecnostar</strong><span>Tu mensaje llega directo a la dirección</span></div>
+			<div><strong id="ts-wa-pre-t">Escríbenos por WhatsApp</strong><span>Cuéntanos con quién y para qué</span></div>
 			<button type="button" class="ts-wa__pre-x" data-pre-cerrar aria-label="Cerrar">&times;</button>
 		</div>
-		<div class="ts-wa__pre-cuerpo" aria-live="polite">
-			<p class="ts-wa__bur">Hola 👋 Este canal recibe <strong>quejas, reclamos, sugerencias, felicitaciones y denuncias</strong> de todas las sedes y de la página web.</p>
-			<p class="ts-wa__bur">¿Cuál es el motivo de tu contacto?</p>
-			<p class="ts-wa__bur ts-wa__bur--yo" data-pre-yo hidden></p>
-			<p class="ts-wa__bur" data-pre-pide hidden>Cuéntanos qué pasó. Si aplica, indica la sede o tu número de pedido.</p>
-		</div>
+		<div class="ts-wa__pre-cuerpo" data-pre-cuerpo aria-live="polite"></div>
 		<div class="ts-wa__pre-pie">
-			<div class="ts-wa__chips" data-pre-chips>
-				<?php foreach ( $motivos as $m ) : ?>
-					<button type="button" class="ts-wa__chip" data-pre-motivo="<?php echo esc_attr( $m ); ?>"><?php echo esc_html( $m ); ?></button>
-				<?php endforeach; ?>
-			</div>
+			<div class="ts-wa__chips" data-pre-chips></div>
 			<form class="ts-wa__form" data-pre-form hidden>
 				<label class="screen-reader-text" for="ts-wa-pre-msg">Tu mensaje</label>
-				<textarea id="ts-wa-pre-msg" rows="3" maxlength="800" placeholder="Escribe tu mensaje…" required></textarea>
+				<textarea id="ts-wa-pre-msg" rows="3" maxlength="800" placeholder="Escribe brevemente lo que necesitas…" required></textarea>
 				<div class="ts-wa__form-fila">
-					<button type="button" class="ts-wa__atras" data-pre-atras>Cambiar motivo</button>
+					<button type="button" class="ts-wa__atras" data-pre-atras>Volver</button>
 					<button type="submit" class="ts-wa__enviar">Enviar por WhatsApp</button>
 				</div>
 				<p class="ts-wa__nota">Se abrirá WhatsApp con tu mensaje listo para enviar.</p>
 			</form>
 		</div>
+		<?php foreach ( $canales as $c ) : ?>
+			<span hidden data-pre-canal="<?php echo esc_attr( $c['id'] ); ?>" data-wa-num="<?php echo esc_attr( $c['numero'] ); ?>" data-nombre="<?php echo esc_attr( 'pqrs' === $c['id'] ? 'PQRS' : $c['nombre'] ); ?>"></span>
+		<?php endforeach; ?>
 	</div>
-	<a class="ts-wa__fab" href="<?php echo esc_url( tecnostar_wa_url( $canales[0]['id'], $saludo ) ); ?>" data-wa-fab target="_blank" rel="noopener" aria-controls="ts-wa-lista" aria-label="<?php esc_attr_e( 'Escríbenos por WhatsApp', 'tecnostar' ); ?>">
+	<a class="ts-wa__fab" href="<?php echo esc_url( tecnostar_wa_url( $canales[0]['id'], $saludo ) ); ?>" data-wa-fab target="_blank" rel="noopener" aria-controls="ts-wa-pre" aria-label="<?php esc_attr_e( 'Escríbenos por WhatsApp', 'tecnostar' ); ?>">
 		<?php echo $wa_ico( 28 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 	</a>
 </div>

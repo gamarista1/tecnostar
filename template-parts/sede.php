@@ -37,7 +37,7 @@ if ( $a['detalle'] ) :
 		<div class="sede__acciones">
 			<a class="btn btn--accent" href="<?php echo esc_url( $dir ); ?>" target="_blank" rel="noopener" data-ruta="google">Cómo llegar<span class="screen-reader-text"> a la sede <?php echo esc_html( $a['nombre'] ); ?> con Google Maps (se abre en una pestaña nueva)</span></a>
 			<a class="btn sede__waze" href="<?php echo esc_url( $waze ); ?>" target="_blank" rel="noopener" data-ruta="waze">Waze<span class="screen-reader-text">: ir a la sede <?php echo esc_html( $a['nombre'] ); ?> (se abre en una pestaña nueva)</span></a>
-			<a class="sede__enlace" href="<?php echo esc_url( $wa ); ?>" data-wa-sede="<?php echo esc_attr( $a['id'] ); ?>" data-wa-abrir="<?php echo esc_attr( 'sede:' . $a['id'] ); ?>">Escríbenos por WhatsApp</a>
+			<a class="sede__enlace" href="<?php echo esc_url( $wa ); ?>" data-wa-sede="<?php echo esc_attr( $a['id'] ); ?>" data-wa-abrir="<?php echo esc_attr( 'sede:' . $a['id'] ); ?>">Escríbenos por WhatsApp<span class="screen-reader-text"> a la sede <?php echo esc_html( $a['nombre'] ); ?></span></a>
 		</div>
 	</div>
 	<?php
@@ -60,7 +60,7 @@ endif;
 	<p class="sede__dato"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span><?php echo $ej( 'home-sede-' . $a['id'] . '-direccion', esc_html( $a['direccion'] ) ); ?></span></p>
 	<p class="sede__dato"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><?php echo $ej( 'home-sede-' . $a['id'] . '-horario', esc_html( $a['horario'] ) ); ?></span></p>
 	<div class="sede__acciones">
-		<a class="btn btn--accent" href="<?php echo esc_url( $wa ); ?>" data-wa-sede="<?php echo esc_attr( $a['id'] ); ?>" data-wa-abrir="<?php echo esc_attr( 'sede:' . $a['id'] ); ?>">Escríbenos</a>
+		<a class="btn btn--accent" href="<?php echo esc_url( $wa ); ?>" data-wa-sede="<?php echo esc_attr( $a['id'] ); ?>" data-wa-abrir="<?php echo esc_attr( 'sede:' . $a['id'] ); ?>">Escríbenos<span class="screen-reader-text"> por WhatsApp a la sede <?php echo esc_html( $a['nombre'] ); ?></span></a>
 		<?php echo $ej( 'home-sede-' . $a['id'] . '-mapas', '<a class="sede__enlace" href="' . esc_url( 'https://www.google.com/maps/search/?api=1&query=' . $q ) . '" target="_blank" rel="noopener">Google Maps</a> <a class="sede__enlace" href="' . esc_url( 'https://waze.com/ul?q=' . $q . '&navigate=yes' ) . '" target="_blank" rel="noopener">Waze</a>' ); ?>
 	</div>
 </article>

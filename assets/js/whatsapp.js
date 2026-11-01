@@ -69,6 +69,8 @@
     var yo = elPre('[data-pre-yo]');
     yo.hidden = !escribiendo;
     yo.textContent = motivo;
+    var cu = elPre('.ts-wa__pre-cuerpo');
+    cu.scrollTop = cu.scrollHeight;
   }
   function abrirPre() {
     if (!pre) return;

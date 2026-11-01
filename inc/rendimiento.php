@@ -124,7 +124,7 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 	if ( 'widget-addi' !== $handle || ! is_front_page() || false !== strpos( $tag, 'data-addi-diferido' ) ) {
 		return $tag;
 	}
-	// Se conservan sus atributos (data-*): el script los lee de su propia etiqueta al ejecutarse.
+	// Prioridad alta: el plugin añade sus data-* en otro filtro. El script los lee de su propia etiqueta al ejecutarse.
 	if ( ! preg_match( '/\bsrc=["\']([^"\']+)["\']/', $tag, $src ) ) {
 		return $tag;
 	}
@@ -137,5 +137,5 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 	return '<script data-addi-diferido>(function(c){var n=0;function ir(){if(n++)return;["pointerdown","keydown","scroll","touchstart"].forEach(function(e){removeEventListener(e,ir)});var s=document.createElement("script");s.id="widget-addi-js";s.src=c.src;for(var k in c.attrs)s.setAttribute(k,c.attrs[k]);document.body.appendChild(s)}'
 		. '["pointerdown","keydown","scroll","touchstart"].forEach(function(e){addEventListener(e,ir,{once:true,passive:true})});'
 		. 'addEventListener("load",function(){setTimeout(ir,3500)})})(' . $cfg . ')</script>' . "\n";
-}, 10, 2 );
+}, 99, 2 );
 

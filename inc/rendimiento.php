@@ -137,5 +137,5 @@ add_filter( 'script_loader_tag', function ( $tag, $handle ) {
 	return '<script data-addi-diferido>(function(c){var n=0;function ir(){if(n++)return;["pointerdown","keydown","scroll","touchstart"].forEach(function(e){removeEventListener(e,ir)});var s=document.createElement("script");s.id="widget-addi-js";s.src=c.src;for(var k in c.attrs)s.setAttribute(k,c.attrs[k]);document.body.appendChild(s)}'
 		. '["pointerdown","keydown","scroll","touchstart"].forEach(function(e){addEventListener(e,ir,{once:true,passive:true})});'
 		. 'addEventListener("load",function(){setTimeout(ir,3500)})})(' . $cfg . ')</script>' . "\n";
-}, 99, 2 );
+}, PHP_INT_MAX, 2 );
 

@@ -46,13 +46,14 @@
 .ts-wa__chip--suave{border-color:transparent;background:none;text-decoration:underline}
 .ts-wa__chip:active{transform:scale(.96)}
 .ts-wa__form{display:grid;gap:.625rem}
-.ts-wa__form[hidden]{display:none}
-.ts-wa__form textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:4.5rem;padding:.625rem .75rem;border:1.5px solid var(--color-primary);border-radius:.75rem;font:inherit;font-size:.9375rem;color:inherit}
+.ts-wa__form[hidden],.ts-wa__form [hidden]{display:none}
+.ts-wa__form input[type=text],.ts-wa__form textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:4.5rem;padding:.625rem .75rem;border:1.5px solid var(--color-primary);border-radius:.75rem;font:inherit;font-size:.9375rem;color:inherit}
 .ts-wa__form-fila{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
 .ts-wa__atras{border:0;background:none;color:var(--color-primary);font:600 .875rem var(--font-sans);text-decoration:underline;cursor:pointer;padding:.25rem}
 .ts-wa__enviar{padding:.625rem 1rem;border:0;border-radius:999px;background:#25d366;color:#06361c;font:700 .9375rem var(--font-sans);cursor:pointer;transition:transform var(--dur-fast) var(--ease-spring),background-color var(--dur-fast)}
 .ts-wa__enviar:hover,.ts-wa__enviar:focus-visible{background:#1ebe5b}
 .ts-wa__enviar:active{transform:scale(.96)}
 .ts-wa__nota{margin:0;font-size:.8125rem;color:var(--color-primary-dark);opacity:.8}
-.ts-wa__chip:focus-visible,.ts-wa__enviar:focus-visible,.ts-wa__atras:focus-visible,.ts-wa__pre-x:focus-visible,.ts-wa__form textarea:focus-visible{outline:3px solid var(--color-accent);outline-offset:2px}
+.ts-wa__chip:focus-visible,.ts-wa__enviar:focus-visible,.ts-wa__atras:focus-visible,.ts-wa__pre-x:focus-visible,.ts-wa__form input[type=text]:focus-visible,.ts-wa__form textarea:focus-visible{outline:3px solid var(--color-accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.ts-wa__fab,.ts-wa__item,.ts-wa.is-open .ts-wa__item,.ts-wa__circ,.ts-wa__chip,.ts-wa__enviar{transition:none}.ts-wa__pre{animation:none}.ts-wa__fab:active,.ts-wa.is-open .ts-wa__fab{transform:none}.ts-wa__item{transform:translate(0,0)}.ts-wa.is-open .ts-wa__item{transform:translate(calc(var(--sx) * var(--r) * sin(90deg * var(--k,0))),calc(var(--sy) * var(--r) * cos(90deg * var(--k,0))))}}
+.ts-wa__form input[type=text]{min-height:0}

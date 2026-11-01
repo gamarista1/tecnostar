@@ -45,6 +45,8 @@ $redes = array(
 		<div class="ts-wa__pre-pie">
 			<div class="ts-wa__chips" data-pre-chips></div>
 			<form class="ts-wa__form" data-pre-form hidden>
+				<label class="screen-reader-text" for="ts-wa-pre-nom">Tu nombre</label>
+				<input id="ts-wa-pre-nom" type="text" maxlength="60" autocomplete="name" placeholder="Escribe tu nombre…" data-pre-nombre required>
 				<label class="screen-reader-text" for="ts-wa-pre-msg">Tu mensaje</label>
 				<textarea id="ts-wa-pre-msg" rows="3" maxlength="800" placeholder="Escribe brevemente lo que necesitas…" required></textarea>
 				<div class="ts-wa__form-fila">

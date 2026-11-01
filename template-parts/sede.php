@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 $a = wp_parse_args(
 	isset( $args ) ? $args : array(),
-	array( 'id' => '', 'nombre' => '', 'ciudad' => '', 'direccion' => '', 'horario' => '', 'detalle' => false, 'lat' => '', 'lng' => '' )
+	array( 'id' => '', 'nombre' => '', 'ciudad' => '', 'direccion' => '', 'horario' => '', 'detalle' => false, 'lat' => '', 'lng' => '', 'mapa' => '', 'embed' => '' )
 );
 $ej = function ( $id, $html ) {
 	return function_exists( 'tecnostar_ejemplo' ) ? tecnostar_ejemplo( $id, $html ) : $html;
@@ -24,6 +24,10 @@ if ( $a['detalle'] ) :
 	$dir  = 'https://www.google.com/maps/dir/?api=1&destination=' . $q;
 	$waze = 'https://waze.com/ul?ll=' . $ll . '&navigate=yes';
 	$ver  = 'https://www.google.com/maps/search/?api=1&query=' . $q;
+	if ( $a['mapa'] ) {
+		$dir = $a['mapa'];
+		$ver = $a['mapa'];
+	}
 	$emb  = 'https://maps.google.com/maps?q=' . $ll . '&z=16&output=embed';
 	if ( function_exists( 'tecnostar_pendiente' ) ) {
 		tecnostar_pendiente( $pre . '-coordenadas', 'Coordenadas reales de la sede ' . $a['nombre'] . ' (Waze y mapa usan unas de ejemplo)', 'Nosotros > Sedes' );
@@ -42,12 +46,20 @@ if ( $a['detalle'] ) :
 	</div>
 	<?php
 	ob_start();
-	?>
+	if ( $a['embed'] ) :
+		?>
+	<div class="sede__mapa">
+		<iframe src="<?php echo esc_url( $a['embed'] ); ?>" title="<?php echo esc_attr( 'Mapa de la sede ' . $a['nombre'] ); ?>" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+	</div>
+		<?php
+	else :
+		?>
 	<div class="sede__mapa" data-mapa="<?php echo esc_url( $emb ); ?>" data-mapa-titulo="<?php echo esc_attr( 'Mapa de la sede ' . $a['nombre'] ); ?>">
 		<img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/nosotros/mapa.svg' ) ); ?>" width="640" height="360" loading="lazy" decoding="async" alt="<?php echo esc_attr( 'Ubicación aproximada de la sede ' . $a['nombre'] . ' (imagen de ejemplo)' ); ?>">
 		<a class="sede__mapa-btn" href="<?php echo esc_url( $ver ); ?>" target="_blank" rel="noopener" data-mapa-abrir>Ver mapa interactivo<span class="screen-reader-text"> de la sede <?php echo esc_html( $a['nombre'] ); ?></span></a>
 	</div>
-	<?php
+		<?php
+	endif;
 	echo $ej( $pre . '-mapa', ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput
 	?>
 </article>
@@ -61,6 +73,6 @@ endif;
 	<p class="sede__dato"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><?php echo $ej( 'home-sede-' . $a['id'] . '-horario', esc_html( $a['horario'] ) ); ?></span></p>
 	<div class="sede__acciones">
 		<a class="btn btn--accent" href="<?php echo esc_url( $wa ); ?>" data-wa-sede="<?php echo esc_attr( $a['id'] ); ?>" data-wa-abrir="<?php echo esc_attr( 'sede:' . $a['id'] ); ?>">Escríbenos<span class="screen-reader-text"> por WhatsApp a la sede <?php echo esc_html( $a['nombre'] ); ?></span></a>
-		<?php echo $ej( 'home-sede-' . $a['id'] . '-mapas', '<a class="sede__enlace" href="' . esc_url( 'https://www.google.com/maps/search/?api=1&query=' . $q ) . '" target="_blank" rel="noopener">Google Maps<span class="screen-reader-text"> de la sede ' . esc_html( $a['nombre'] ) . ' (se abre en una pestaña nueva)</span></a> <a class="sede__enlace" href="' . esc_url( 'https://waze.com/ul?q=' . $q . '&navigate=yes' ) . '" target="_blank" rel="noopener">Waze<span class="screen-reader-text"> a la sede ' . esc_html( $a['nombre'] ) . ' (se abre en una pestaña nueva)</span></a>' ); ?>
+		<?php echo $ej( 'home-sede-' . $a['id'] . '-mapas', '<a class="sede__enlace" href="' . esc_url( $a['mapa'] ? $a['mapa'] : 'https://www.google.com/maps/search/?api=1&query=' . $q ) . '" target="_blank" rel="noopener">Google Maps<span class="screen-reader-text"> de la sede ' . esc_html( $a['nombre'] ) . ' (se abre en una pestaña nueva)</span></a> <a class="sede__enlace" href="' . esc_url( 'https://waze.com/ul?q=' . $q . '&navigate=yes' ) . '" target="_blank" rel="noopener">Waze<span class="screen-reader-text"> a la sede ' . esc_html( $a['nombre'] ) . ' (se abre en una pestaña nueva)</span></a>' ); ?>
 	</div>
 </article>

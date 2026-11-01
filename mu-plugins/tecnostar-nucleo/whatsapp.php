@@ -21,7 +21,7 @@ function tecnostar_wa_defaults(): array {
 		'canales' => array(
 			'bogota'    => array( 'nombre' => 'Sede Bogotá', 'numero' => '573503335394', 'orden' => 1, 'activo' => true ),
 			'tocancipa' => array( 'nombre' => 'Sede Tocancipá', 'numero' => '573104719817', 'orden' => 2, 'activo' => true ),
-			'pqrs'      => array( 'nombre' => 'PQRS / Redes sociales', 'numero' => '', 'orden' => 3, 'activo' => true ),
+			'pqrs'      => array( 'nombre' => 'PQRS / Redes sociales', 'numero' => '573143677060', 'orden' => 3, 'activo' => true ),
 		),
 		'esquina' => 'inferior-derecha',
 	);

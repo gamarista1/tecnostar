@@ -130,7 +130,7 @@ $caminos = array(
 		<div class="section__head"><div><h2 id="sedes-title" data-reveal>Visítanos en nuestras sedes</h2><p class="section__sub" data-reveal>Tócalo, pruébalo y llévate el equipo ideal.</p></div></div>
 		<div class="sedes__grid">
 			<?php
-			get_template_part( 'template-parts/sede', null, array( 'id' => 'bogota', 'nombre' => 'Bogotá', 'ciudad' => 'Bogotá', 'direccion' => 'C.C. Alta Tecnología, local 194', 'horario' => 'Lunes a sábado, 9:30 a. m. a 6:00 p. m.' ) );
+			get_template_part( 'template-parts/sede', null, array( 'id' => 'bogota', 'nombre' => 'Bogotá', 'ciudad' => 'Bogotá', 'direccion' => 'C.C. Alta Tecnología, local 194', 'horario' => 'Lunes a sábado, 9:30 a. m. a 6:00 p. m.', 'mapa' => 'https://maps.app.goo.gl/VQpb22csoSEj8VtW8' ) );
 			get_template_part( 'template-parts/sede', null, array( 'id' => 'tocancipa', 'nombre' => 'Tocancipá', 'ciudad' => 'Tocancipá', 'direccion' => 'C.C. Milán Plaza, local 5-2', 'horario' => 'Lunes a sábado, 10:00 a. m. a 7:00 p. m.' ) );
 			?>
 		</div>

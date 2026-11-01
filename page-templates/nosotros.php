@@ -32,7 +32,7 @@ $capitulos = array(
 );
 
 $sedes = array(
-	array( 'id' => 'bogota', 'nombre' => 'Bogotá', 'ciudad' => 'Bogotá', 'direccion' => 'C.C. Alta Tecnología, local 194', 'horario' => 'Lunes a sábado, 9:30 a. m. a 6:00 p. m.', 'lat' => 4.665870, 'lng' => -74.057620 ),
+	array( 'id' => 'bogota', 'nombre' => 'Bogotá', 'ciudad' => 'Bogotá', 'direccion' => 'C.C. Alta Tecnología, local 194', 'horario' => 'Lunes a sábado, 9:30 a. m. a 6:00 p. m.', 'lat' => 4.664226, 'lng' => -74.061678, 'mapa' => 'https://maps.app.goo.gl/VQpb22csoSEj8VtW8', 'embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.605448990441!2d-74.06167782522168!3d4.664226141973107!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9b825bff0927%3A0xa604fafad579e433!2sTecnostar%20Ingenier%C3%ADa%20Electr%C3%B3nica!5e0!3m2!1ses!2sve!4v1793521971778!5m2!1ses!2sve' ),
 	array( 'id' => 'tocancipa', 'nombre' => 'Tocancipá', 'ciudad' => 'Tocancipá', 'direccion' => 'C.C. Milán Plaza, local 5-2', 'horario' => 'Lunes a sábado, 10:00 a. m. a 7:00 p. m.', 'lat' => 4.965000, 'lng' => -73.913000 ),
 );
 

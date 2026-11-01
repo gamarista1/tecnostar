@@ -44,7 +44,7 @@ $total = count( $escenas );
 	</div>
 	<div class="container bm__stage" aria-live="off">
 		<?php foreach ( $escenas as $i => $e ) : ?>
-			<article class="bm__scene<?php echo 0 === $i ? ' is-active' : ''; ?>" data-fx="<?php echo esc_attr( $e['fx'] ); ?>" role="group" aria-roledescription="<?php esc_attr_e( 'diapositiva', 'tecnostar' ); ?>" aria-label="<?php echo esc_attr( ( $i + 1 ) . ' / ' . $total ); ?>"<?php echo 0 === $i ? '' : ' hidden'; ?>>
+			<div class="bm__scene<?php echo 0 === $i ? ' is-active' : ''; ?>" data-fx="<?php echo esc_attr( $e['fx'] ); ?>" role="group" aria-roledescription="<?php esc_attr_e( 'diapositiva', 'tecnostar' ); ?>" aria-label="<?php echo esc_attr( ( $i + 1 ) . ' / ' . $total ); ?>"<?php echo 0 === $i ? '' : ' hidden'; ?>>
 				<div class="bm__text">
 					<h2 class="bm__title"><?php echo esc_html( $e['t'] ); ?></h2>
 					<p class="bm__desc"><?php echo esc_html( $e['d'] ); ?></p>
@@ -53,7 +53,7 @@ $total = count( $escenas );
 					<span class="bm__fx"><i></i><i></i><i></i></span>
 					<img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/banner/' . $e['img'] . '.webp' ) ); ?>" width="150" height="150" alt=""<?php echo 0 === $i ? ' fetchpriority="high"' : ' loading="lazy"'; ?> decoding="async">
 				</div>
-			</article>
+			</div>
 		<?php endforeach; ?>
 	</div>
 	</div>

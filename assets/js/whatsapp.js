@@ -12,7 +12,8 @@
 
   function leer() { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } }
   function guardar(id) { try { localStorage.setItem(KEY, id); } catch (e) {} }
-  function items() { return [].slice.call(raiz.querySelectorAll('[data-wa-canal]')); }
+  function items() { return [].slice.call(raiz.querySelectorAll('.ts-wa__item')); }
+  function canales() { return [].slice.call(raiz.querySelectorAll('[data-wa-canal]')); }
 
   // Mensaje: el contexto libre o, si falta o es un código (tipo:slug), el título de la página.
   function url(a) {
@@ -26,12 +27,12 @@
     try { window.dispatchEvent(new CustomEvent('ts:wa', { detail: { canal: a.getAttribute('data-wa-canal') } })); } catch (e) {}
   }
 
-  // Ordena: la última sede usada va primero (ángulo 0). --k reparte el arco de 0 a 1.
+  // Ordena: la última sede usada queda junto al botón. --i es la posición en la columna.
   function ordenar() {
-    var id = leer(), its = items();
+    var id = leer(), its = canales();
     var ult = its.filter(function (a) { return a.getAttribute('data-wa-canal') === id; })[0];
     if (ult && its[0] !== ult) lista.insertBefore(ult.parentNode, lista.firstChild);
-    items().forEach(function (a, i, todos) { a.parentNode.style.setProperty('--k', todos.length > 1 ? i / (todos.length - 1) : 0); });
+    canales().forEach(function (a, i) { a.parentNode.style.setProperty('--i', i + 1); });
   }
 
   function abrir(ctx, enfocar) {
@@ -57,9 +58,57 @@
   fab.removeAttribute('target');
   ordenar();
 
+  // Pre-chat de PQRS: el motivo se elige antes de abrir WhatsApp y viaja en el mensaje.
+  var pre = raiz.querySelector('.ts-wa__pre');
+  var motivo = '';
+  function elPre(sel) { return pre.querySelector(sel); }
+  function paso(escribiendo) {
+    elPre('[data-pre-chips]').hidden = escribiendo;
+    elPre('[data-pre-form]').hidden = !escribiendo;
+    elPre('[data-pre-pide]').hidden = !escribiendo;
+    var yo = elPre('[data-pre-yo]');
+    yo.hidden = !escribiendo;
+    yo.textContent = motivo;
+  }
+  function abrirPre() {
+    if (!pre) return;
+    motivo = '';
+    paso(false);
+    pre.hidden = false;
+    elPre('[data-pre-motivo]').focus();
+  }
+  function cerrarPre(devolver) {
+    if (!pre || pre.hidden) return;
+    pre.hidden = true;
+    if (devolver) fab.focus();
+  }
+  if (pre) {
+    pre.addEventListener('click', function (e) {
+      var m = e.target.closest('[data-pre-motivo]');
+      if (m) { motivo = m.getAttribute('data-pre-motivo'); paso(true); elPre('textarea').focus(); return; }
+      if (e.target.closest('[data-pre-atras]')) { motivo = ''; paso(false); elPre('[data-pre-motivo]').focus(); return; }
+      if (e.target.closest('[data-pre-cerrar]')) cerrarPre(true);
+    });
+    elPre('[data-pre-form]').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var txt = elPre('textarea').value.trim();
+      if (!txt) { elPre('textarea').focus(); return; }
+      var num = raiz.querySelector('[data-wa-pqrs]').getAttribute('data-wa-num');
+      var msg = ['Hola, escribo al canal PQRS de Tecnostar.', 'Motivo: ' + motivo, '', txt, '', 'Desde: ' + location.href].join('\n');
+      elegido(raiz.querySelector('[data-wa-pqrs]'));
+      window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+      elPre('textarea').value = '';
+      cerrarPre(true);
+    });
+    pre.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { e.stopPropagation(); cerrarPre(true); }
+    });
+  }
+
   fab.addEventListener('click', function (e) {
     if (e.ctrlKey || e.metaKey || e.shiftKey) return;
     e.preventDefault();
+    if (pre && !pre.hidden) { cerrarPre(false); return; }
     if (abierto) cerrar(false); else { contexto = ''; abrir('', e.detail === 0); }
   });
   fab.addEventListener('keydown', function (e) {
@@ -67,8 +116,10 @@
   });
 
   raiz.addEventListener('click', function (e) {
-    var a = e.target.closest('[data-wa-canal]');
+    var a = e.target.closest('.ts-wa__item');
     if (!a) return;
+    if (!a.hasAttribute('data-wa-canal')) { cerrar(false); return; }
+    if (a.hasAttribute('data-wa-pqrs')) { e.preventDefault(); cerrar(false); abrirPre(); return; }
     a.href = url(a);
     elegido(a);
     cerrar(false);
@@ -101,6 +152,7 @@
         return;
       }
     }
+    if (e.target.closest && e.target.closest('[data-pqrs-abrir]') && pre) { e.preventDefault(); cerrar(false); abrirPre(); return; }
     var disp = e.target.closest && e.target.closest('[data-wa-abrir]');
     if (disp && !raiz.contains(disp)) {
       e.preventDefault();
@@ -108,5 +160,6 @@
       return;
     }
     if (abierto && !raiz.contains(e.target)) cerrar(false);
+    if (pre && !pre.hidden && !raiz.contains(e.target)) cerrarPre(false);
   });
 })();

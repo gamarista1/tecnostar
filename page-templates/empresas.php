@@ -33,7 +33,7 @@ $planes = array(
 	array( 'Pyme', '15', 'Hasta 15 equipos', 'Una o dos visitas al mes', 'Por lotes' ),
 	array( 'Corporativo', '20+', '20+ equipos', 'Visitas a la medida', 'Por lotes y sedes' ),
 );
-$ld_url = 'https://www.linkedin.com/company/tecnostar-ingenieria-electronica';
+$ld_url = 'https://www.linkedin.com/in/tecnostar-ingenier%C3%ADa-electr%C3%B3nica-profesional-sas-13b57b441/';
 ?>
 <div class="pn em">
 	<section class="pn-hero">

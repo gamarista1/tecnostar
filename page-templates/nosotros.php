@@ -37,9 +37,9 @@ $sedes = array(
 );
 
 $redes = array(
-	array( 'Instagram', 'https://www.instagram.com/tecnostaringenieria/' ),
-	array( 'Facebook', 'https://www.facebook.com/tecnostaringenieria/' ),
-	array( 'TikTok', 'https://www.tiktok.com/@tecnostaringenieria' ),
+	array( 'Instagram', 'https://www.instagram.com/tecnostar.ing/' ),
+	array( 'Facebook', 'https://www.facebook.com/tecnostar.ing/' ),
+	array( 'LinkedIn', 'https://www.linkedin.com/in/tecnostar-ingenier%C3%ADa-electr%C3%B3nica-profesional-sas-13b57b441/' ),
 );
 
 // Video del recorrido: clave de R2 (videos/recorrido-sedes.mp4) o URL https completa (tarea 10.1). Vacío: imagen de ejemplo.
@@ -191,7 +191,7 @@ $video = (string) apply_filters( 'tecnostar_video_recorrido', '' );
 					<li><a href="<?php echo esc_url( $r[1] ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( $r[0] ); ?><span class="screen-reader-text"> (se abre en una pestaña nueva)</span></a></li>
 				<?php endforeach; ?>
 			</ul>
-			<?php echo $ej( 'nosotros-redes', 'Enlaces reales de las redes sociales (Instagram, Facebook, TikTok)', ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+			<?php echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		</div>
 	</section>
 	<?php the_content(); ?>

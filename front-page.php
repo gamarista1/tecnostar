@@ -26,6 +26,10 @@ $total = count( $escenas );
 	<div class="hc__slide hc__slide--addi">
 		<?php /* Ancla del banner de Addi: su script lo inserta justo después de este <header>. */ ?>
 		<header class="addi-anchor" aria-hidden="true"></header>
+		<?php /* Marcador de carga: el logo se ve mientras llega el banner de Addi (su script se carga diferido); el script del cargador lo retira cuando el banner está listo. */ ?>
+		<div class="addi-carga" aria-hidden="true">
+			<div class="addi-carga__logo"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?>" srcset="<?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal.png' ) ); ?> 1x, <?php echo esc_url( get_theme_file_uri( 'assets/img/logo/logo-horizontal@2x.png' ) ); ?> 2x" width="849" height="227" alt="" decoding="async"><span class="addi-carga__brillo"></span></div>
+		</div>
 	</div>
 	<div class="hc__slide hc__slide--motion">
 	<div class="bm" aria-label="<?php esc_attr_e( 'Por qué comprar en Tecnostar', 'tecnostar' ); ?>">

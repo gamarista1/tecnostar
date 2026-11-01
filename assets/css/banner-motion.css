@@ -122,6 +122,19 @@
 .no-js .hc__slide--motion { visibility: visible; }
 .hc__slide .bm { position: absolute; inset: 0; height: auto; }
 .hc__slide--addi > * { max-width: 100%; }
+
+/* Marcador de carga de la diapositiva de Addi: logo con pulso suave y un brillo que lo cruza; se desvanece cuando el banner está listo. */
+.addi-carga { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; background: #ecf7fb; transition: opacity 0.45s ease, visibility 0s 0.45s; }
+.hc__slide--addi.is-listo .addi-carga { opacity: 0; visibility: hidden; pointer-events: none; }
+.addi-carga__logo { position: relative; overflow: hidden; width: clamp(11rem, 30vw, 21rem); animation: ts-carga-pulso 2.4s ease-in-out infinite; }
+.addi-carga__logo img { display: block; width: 100%; height: auto; }
+.addi-carga__brillo { position: absolute; inset: 0 -30%; background: linear-gradient(100deg, transparent 35%, rgb(255 255 255 / 0.85) 50%, transparent 65%); transform: translateX(-160%) skewX(-18deg); animation: ts-carga-brillo 2.4s 0.4s ease-in-out infinite; }
+@keyframes ts-carga-pulso { 0%, 100% { opacity: 0.78; transform: scale(0.985); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes ts-carga-brillo { 0%, 40% { transform: translateX(-160%) skewX(-18deg); } 100% { transform: translateX(160%) skewX(-18deg); } }
+@media (prefers-reduced-motion: reduce) {
+	.addi-carga__logo, .addi-carga__brillo { animation: none; }
+	.addi-carga { transition: none; }
+}
 .hc .bm__wipe { z-index: 3; }
 
 /* Puntos del carrusel, centrados abajo; el punto activo se alarga */

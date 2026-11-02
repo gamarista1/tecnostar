@@ -41,7 +41,7 @@
 .ts-wa__pre-pie{padding:.75rem 1rem 1rem;background:var(--color-bg)}
 .ts-wa__chips{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.5rem}
 .ts-wa__chips[hidden]{display:none}
-.ts-wa__chip{padding:.5rem .875rem;border:1.5px solid var(--color-primary);border-radius:999px;background:#fff;color:var(--color-primary);font:600 .875rem var(--font-sans);cursor:pointer;transition:transform var(--dur-fast) var(--ease-spring),background-color var(--dur-fast),color var(--dur-fast)}
+.ts-wa__chip{min-height:44px;padding:.5rem .875rem;border:1.5px solid var(--color-primary);border-radius:999px;background:#fff;color:var(--color-primary);font:600 .875rem var(--font-sans);cursor:pointer;transition:transform var(--dur-fast) var(--ease-spring),background-color var(--dur-fast),color var(--dur-fast)}
 .ts-wa__chip:hover,.ts-wa__chip:focus-visible{background:var(--color-primary);color:#fff}
 .ts-wa__chip--suave{border-color:transparent;background:none;text-decoration:underline}
 .ts-wa__chip:active{transform:scale(.96)}

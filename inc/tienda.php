@@ -466,3 +466,14 @@ add_action( 'woocommerce_no_products_found', function () {
 		esc_html( $accion )
 	);
 }, 5 );
+
+/**
+ * Botones de los listados: el nombre accesible empieza por el texto visible ("Añadir al carrito: «X»"),
+ * como pide WCAG 2.5.3, en lugar del aria-label genérico de WooCommerce.
+ */
+add_filter( 'woocommerce_loop_add_to_cart_args', function ( $args, $product ) {
+	if ( $product instanceof WC_Product ) {
+		$args['attributes']['aria-label'] = wp_strip_all_tags( $product->add_to_cart_text() . ': «' . $product->get_name() . '»' );
+	}
+	return $args;
+}, 20, 2 );

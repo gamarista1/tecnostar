@@ -276,3 +276,5 @@
 
 /* Ancla vacía para el banner de Addi (ver front-page.php). */
 .addi-anchor { display: block; height: 0; margin: 0; padding: 0; }
+
+.woocommerce div.product p.stock { color: #1d6b3a; }

@@ -47,6 +47,8 @@ p { margin: 0 0 var(--space-4); }
 .btn:active { transform: scale(0.97); transition-duration: var(--dur-press); }
 .btn--accent { background: var(--color-accent); color: var(--color-primary-dark); }
 .btn--accent:hover { color: var(--color-primary-dark); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.btn--primary { background: var(--color-primary); color: #fff; }
+.btn--primary:hover { color: #fff; background: #2d3585; box-shadow: var(--shadow-2); transform: translateY(-1px); }
 .btn--ghost { background: rgb(255 255 255 / 0.14); color: #fff; }
 .btn--ghost:hover { color: #fff; background: rgb(255 255 255 / 0.24); }
 

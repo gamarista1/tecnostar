@@ -19,11 +19,7 @@ $wa_path = 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.4A10 10 0 1 0 12 2Zm0 18.2a8.2 8
 $wa_ico  = static function ( int $px ) use ( $wa_path ): string {
 	return '<svg width="' . $px . '" height="' . $px . '" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="' . $wa_path . '"/></svg>';
 };
-$redes = array(
-	array( 'nombre' => 'Instagram', 'url' => 'https://www.instagram.com/tecnostar.ing/', 'c' => '#c13584', 'ct' => '#fff', 'svg' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>' ),
-	array( 'nombre' => 'Facebook', 'url' => 'https://www.facebook.com/tecnostar.ing/', 'c' => '#1877f2', 'ct' => '#fff', 'svg' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.500 21v-8h2.700l.4-3.200h-3.100V7.800c0-.9.300-1.500 1.600-1.500h1.700V3.400c-.3 0-1.300-.1-2.400-.1-2.400 0-4.100 1.500-4.100 4.200v2.300H7.600V13h2.700v8h3.200Z"/></svg>' ),
-	array( 'nombre' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/tecnostar-ingenier%C3%ADa-electr%C3%B3nica-profesional-sas-13b57b441/', 'c' => '#0a66c2', 'ct' => '#fff', 'svg' => '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M5 9h3.500v11H5V9Zm1.800-5.500a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM10.500 9h3.300v1.500c.5-.9 1.700-1.800 3.400-1.800 3.500 0 4.100 2.300 4.100 5.300V20h-3.500v-5.300c0-1.300 0-2.900-1.800-2.900s-2 1.400-2 2.800V20h-3.500V9Z"/></svg>' ),
-);
+$redes = function_exists( 'tecnostar_redes_sociales' ) ? tecnostar_redes_sociales() : array();
 ?>
 <div class="ts-wa ts-wa--<?php echo esc_attr( $esquina ); ?>" data-wa>
 	<ul class="ts-wa__lista ts-wa__lista--redes" id="ts-wa-lista">

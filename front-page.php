@@ -137,15 +137,5 @@ $caminos = array(
 	</div>
 </section>
 
-<section class="banda" aria-labelledby="banda-title">
-	<div class="container banda__in" data-reveal>
-		<div>
-			<h2 id="banda-title">¿No encuentras lo que buscas?</h2>
-			<p>Si no lo tenemos, te lo conseguimos.</p>
-		</div>
-		<a class="btn btn--accent" href="#" data-wa-abrir="busqueda">Escríbenos y te lo cotizamos</a>
-	</div>
-</section>
-
 <?php
 get_footer();

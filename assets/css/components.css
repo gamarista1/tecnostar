@@ -16,8 +16,6 @@
 .site-header a { color: var(--color-primary-dark); text-decoration: none; }
 .brand { display: inline-flex; align-items: center; margin-right: auto; }
 .brand img { height: 2.5rem; width: auto; }
-.footer-logo { display: inline-block; }
-.footer-logo img { width: 9rem; height: auto; }
 
 .icon-btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
@@ -186,11 +184,33 @@
 .woocommerce div.product .related > h2, .woocommerce div.product .upsells > h2 { margin-bottom: var(--space-3); font-size: 1.375rem; }
 
 /* ---------- Pie ---------- */
-.site-footer { background: var(--color-primary-dark); color: rgb(255 255 255 / 0.85); margin-top: var(--space-12); padding-block: var(--space-8); }
-.site-footer .container { display: grid; gap: var(--space-4); }
+.site-footer { margin-top: var(--space-12); background: var(--color-primary-dark); color: rgb(255 255 255 / 0.86); }
 .site-footer p { margin: 0; }
 .site-footer a { color: var(--color-accent); }
-.footer-nav { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.footer-cta { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color: #fff; }
+.footer-cta__in { display: grid; gap: var(--space-4); align-items: center; padding-block: var(--space-8); }
+.footer-cta h2 { margin: 0; color: #fff; font-size: 1.5rem; text-wrap: balance; }
+.footer-cta p { margin: var(--space-1) 0 0; color: rgb(255 255 255 / 0.92); }
+.site-footer .footer-cta .btn { color: var(--color-primary-dark); justify-self: start; }
+.footer-main { display: grid; gap: var(--space-8); padding-block: var(--space-12) var(--space-8); }
+.footer-logo { display: inline-block; }
+.footer-logo img { width: 8rem; height: auto; }
+.footer-lema { max-width: 28ch; margin-top: var(--space-3); line-height: 1.45; }
+.footer-redes { display: flex; flex-wrap: wrap; gap: var(--space-3); list-style: none; margin: var(--space-4) 0 0; padding: 0; }
+.site-footer .footer-redes a { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: rgb(255 255 255 / 0.1); color: #fff; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.22); transition: background-color var(--dur-fast), transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-fast); }
+.site-footer .footer-redes a:hover, .site-footer .footer-redes a:focus-visible { background: var(--c); color: #fff; box-shadow: inset 0 0 0 1.5px var(--c), 0 0 0 1.5px #fff; transform: translateY(-2px); }
+.site-footer .footer-redes a:active { transform: scale(0.94); }
+.footer-tit { margin: 0 0 var(--space-3); color: #fff; font-size: 1.0625rem; font-weight: 600; }
+.footer-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.site-footer .footer-nav a { display: inline-flex; align-items: center; min-height: 2.75rem; color: rgb(255 255 255 / 0.9); text-decoration: none; }
+.site-footer .footer-nav a:hover, .site-footer .footer-nav a:focus-visible { color: var(--color-accent); text-decoration: underline; text-underline-offset: 0.25em; }
+.footer-sedes { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-3); }
+.footer-sedes li { display: grid; gap: 0.125rem; }
+.footer-sedes strong { color: #fff; font-weight: 600; }
+.footer-wa { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0; border: 0; background: none; color: var(--color-accent); font: 600 1rem var(--font-sans); text-decoration: underline; text-underline-offset: 0.25em; cursor: pointer; }
+.footer-wa:hover { color: #fff; }
+.site-footer a:focus-visible, .footer-wa:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-radius: 4px; }
+.footer-legal { padding-block: var(--space-4) var(--space-6); border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 0.875rem; color: rgb(255 255 255 / 0.78); }
 
 /* ---------- Accesibilidad de materiales ---------- */
 @media (prefers-reduced-transparency: reduce) {
@@ -217,7 +237,9 @@
   .woocommerce ul.products li.product .woocommerce-loop-product__title { font-size: 1rem; }
   .woocommerce ul.products li.product .button { font-size: 0.875rem; }
   .woocommerce .woocommerce-ordering select { width: auto; }
-  .site-footer .container { grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-8); }
+  .footer-cta__in { grid-template-columns: 1fr auto; gap: var(--space-8); }
+  .footer-cta h2 { font-size: 2rem; }
+  .footer-main { grid-template-columns: 1.2fr 1fr 1.2fr; gap: var(--space-12); }
 }
 
 /* ---------- Escritorio (>= 52rem) ---------- */

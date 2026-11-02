@@ -18,6 +18,7 @@ require_once get_template_directory() . '/inc/envio.php';
 require_once get_template_directory() . '/inc/envio-bogota.php';
 require_once get_template_directory() . '/inc/llms-txt.php';
 require_once get_template_directory() . '/inc/cuenta.php';
+require_once get_template_directory() . '/inc/redes.php';
 require_once get_template_directory() . '/inc/rendimiento.php';
 require_once get_template_directory() . '/inc/persona-natural.php';
 require_once get_template_directory() . '/inc/nosotros.php';

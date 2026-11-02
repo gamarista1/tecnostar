@@ -25,27 +25,20 @@
 .sede__dato { display: flex; gap: var(--space-2); align-items: flex-start; margin: 0 0 var(--space-2); }
 .sede__dato svg { flex: none; width: 1.25rem; height: 1.25rem; margin-top: 0.125rem; fill: none; stroke: var(--color-primary); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .sede__acciones { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin-top: var(--space-4); }
-.sede__enlace { display: inline-flex; align-items: center; min-height: 2.75rem; font-weight: 600; color: var(--color-primary); }
-
-/* ---------- Banda ---------- */
-.banda { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%); color: #fff; }
-.banda__in { display: grid; gap: var(--space-4); align-items: center; padding-block: var(--space-8); }
-.banda h2 { margin: 0; color: #fff; font-size: 1.5rem; }
-.banda p { margin: var(--space-1) 0 0; color: rgb(255 255 255 / 0.92); }
+.sede__enlace { display: inline-flex; align-items: center; min-height: 2.75rem; padding-inline: var(--space-4); border: 1.5px solid rgb(55 64 154 / 0.28); border-radius: 999px; font-weight: 600; color: var(--color-primary); text-decoration: none; transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast); }
+.sede__enlace:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
 
 @media (prefers-reduced-motion: reduce) {
   .camino:active { transform: none; }
 }
 @media (min-width: 40rem) {
   .sedes__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .banda__in { grid-template-columns: 1fr auto; gap: var(--space-8); }
 }
 @media (min-width: 52rem) {
   .caminos__lista { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
   .camino { grid-template-columns: 1fr; row-gap: var(--space-2); padding: var(--space-6); }
   .camino svg { grid-row: auto; width: 4rem; height: 4rem; margin-bottom: var(--space-2); }
   .camino:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
-  .banda h2 { font-size: 2rem; }
 }
 @media (min-width: 52rem) and (prefers-reduced-motion: reduce) {
   .camino:hover { transform: none; }

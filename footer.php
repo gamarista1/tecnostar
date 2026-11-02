@@ -27,31 +27,13 @@
 				</ul>
 			<?php endif; ?>
 		</div>
-		<nav class="footer-col" aria-labelledby="footer-nav-t">
-			<h2 class="footer-tit" id="footer-nav-t">Explora</h2>
-			<?php
-			wp_nav_menu(
-				array(
-					'theme_location' => has_nav_menu( 'footer' ) ? 'footer' : 'primary',
-					'container'      => false,
-					'menu_class'     => 'footer-nav',
-					'depth'          => 1,
-					'fallback_cb'    => false,
-				)
-			);
-			?>
-		</nav>
-		<div class="footer-col">
-			<h2 class="footer-tit">Nuestras sedes</h2>
-			<ul class="footer-sedes">
-				<li><strong>Bogotá</strong><span>C.C. Alta Tecnología, local 194</span></li>
-				<li><strong>Tocancipá</strong><span>C.C. Milán Plaza, local 5-2</span></li>
-			</ul>
-			<button type="button" class="footer-wa" data-wa-abrir="">Escríbenos por WhatsApp</button>
-		</div>
 	</div>
 	<div class="container footer-legal">
 		<p>&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?></p>
+		<ul class="footer-legal__enl">
+			<li><a href="<?php echo esc_url( home_url( '/politica-privacidad/' ) ); ?>">Política de Privacidad</a></li>
+			<li><a href="<?php echo esc_url( home_url( '/terminos-y-condiciones/' ) ); ?>">Términos y Condiciones</a></li>
+		</ul>
 	</div>
 </footer>
 <?php
